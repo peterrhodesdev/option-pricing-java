@@ -19,6 +19,7 @@ public class EuropeanOption implements IOption {
      * @param T time until option expiration (time from the start of the contract until maturity)
      * @param σ standard deviation of the underlying's returns (a measure of volatility)
      * @param r annualized risk-free interest rate, continuously compounded
+     * @throws IllegalArgumentException if S, K, T, or σ are not greater than zero
      */
     public EuropeanOption(
         OptionType optionType,
@@ -27,13 +28,20 @@ public class EuropeanOption implements IOption {
         double T,
         double σ,
         double r
-    ) {
+    ) throws IllegalArgumentException {
         this.optionType = optionType;
-        this.S = S;
-        this.K = K;
-        this.T = T;
-        this.σ = σ;
+        this.S = this.checkGreaterThanZero(S, "S");
+        this.K = this.checkGreaterThanZero(K, "K");
+        this.T = this.checkGreaterThanZero(T, "T");
+        this.σ = this.checkGreaterThanZero(σ, "σ");
         this.r = r;
+    }
+
+    private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
+        if (value <= 0) {
+            throw new IllegalArgumentException(name + " must be greater than zero");
+        }
+        return value;
     }
 
     public double analyticalPrice() {
