@@ -1,6 +1,7 @@
 package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
 
 import java.lang.Math;
 
@@ -46,7 +47,15 @@ public class EuropeanOption implements IOption {
         return value;
     }
 
-    /* analyticalPrice */
+    //region analytical
+    //----------------------------------------------------------------------
+
+    private double d_i(int i) {
+        double sign = i == 1 ? 1d : -1d;
+        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.v, 2d) / 2d) * this.T);
+    }
+
+    /* price */
 
     @Override
     public double analyticalPrice() {
@@ -72,8 +81,19 @@ public class EuropeanOption implements IOption {
         return this.S * Math.exp((this.r - this.q) * this.T);
     }
 
-    private double d_i(int i) {
-        double sign = i == 1 ? 1d : -1d;
-        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.v, 2d) / 2d) * this.T);
+    /* calculation model */
+
+    public AnalyticalCalculation analyticalCalculation() {
+        double price = this.analyticalPrice();
+        //TODO
+        double delta = 0.0;
+        double gamma = 0.0;
+        double vega = 0.0;
+        double theta = 0.0;
+        double rho = 0.0;
+        return new AnalyticalCalculation(price, delta, gamma, vega, theta, rho);
     }
+
+    //----------------------------------------------------------------------
+    //endregion
 }
