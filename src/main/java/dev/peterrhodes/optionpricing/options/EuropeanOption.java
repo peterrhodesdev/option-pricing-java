@@ -57,18 +57,18 @@ public class EuropeanOption implements IOption {
     }
 
     private double analyticalCallPrice() {
-        return this.discountFactor() * (this.F() * this.N.cumulativeProbability(this.d_i(1)) - this.K * this.N.cumulativeProbability(this.d_i(2)));
+        return this.discountFactor() * (this.forwardPrice() * this.N.cumulativeProbability(this.d_i(1)) - this.K * this.N.cumulativeProbability(this.d_i(2)));
     }
 
     private double analyticalPutPrice() {
-        return this.discountFactor() * (this.K * this.N.cumulativeProbability(-this.d_i(2)) - this.F() * this.N.cumulativeProbability(-this.d_i(1)));
+        return this.discountFactor() * (this.K * this.N.cumulativeProbability(-this.d_i(2)) - this.forwardPrice() * this.N.cumulativeProbability(-this.d_i(1)));
     }
 
     private double discountFactor() {
         return Math.exp(-this.r * this.T);
     }
 
-    private double F() {
+    private double forwardPrice() {
         return this.S * Math.exp((this.r - this.q) * this.T);
     }
 
