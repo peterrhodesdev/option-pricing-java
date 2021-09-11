@@ -50,10 +50,15 @@ class EuropeanOptionTest {
           .hasMessageContaining(this.greaterThanZeroMessage);
     }
 
-    /* https://www.wolframalpha.com/input/?i=black+scholes */
+    /*
+     * Calculations
+     * Values checked with https://www.wolframalpha.com/input/?i=black+scholes
+     */
+
+    /* call, no dividend */
 
     @Test
-    void calculation1() {
+    void calculation_call_noDividend_1() {
         // Arrange
         EuropeanOption euro = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.25, 0.1);
 
@@ -62,5 +67,19 @@ class EuropeanOptionTest {
 
         // Assert
         assertThat(result).isEqualTo(14.98, withPrecision(0.01));
+    }
+
+    /* put, no dividend */
+
+    @Test
+    void calculation_put_noDividend_1() {
+        // Arrange
+        EuropeanOption euro = new EuropeanOption(OptionType.PUT, 100.0, 100.0, 1.0, 0.25, 0.1);
+
+        // Act
+        double result = euro.analyticalPrice();
+
+        // Assert
+        assertThat(result).isEqualTo(5.46, withPrecision(0.01));
     }
 }

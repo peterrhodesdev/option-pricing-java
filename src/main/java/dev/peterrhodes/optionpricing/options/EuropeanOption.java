@@ -14,6 +14,7 @@ public class EuropeanOption implements IOption {
     private double T;
     private double σ;
     private double r;
+    private NormalDistribution N;
 
     /**
      * Creates a European option with the specified parameters.
@@ -32,6 +33,7 @@ public class EuropeanOption implements IOption {
         this.T = this.checkGreaterThanZero(T, "T");
         this.σ = this.checkGreaterThanZero(σ, "σ");
         this.r = r;
+        this.N = new NormalDistribution();
     }
 
     private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
@@ -41,17 +43,27 @@ public class EuropeanOption implements IOption {
         return value;
     }
 
+    /* analyticalPrice */
+
     public double analyticalPrice() {
-        NormalDistribution N = new NormalDistribution();
-        return N.cumulativeProbability(this.d_1()) * this.S - N.cumulativeProbability(this.d_2()) * this.K * Math.exp(-1d * this.r * this.T);
+        if (this.optionType == OptionType.CALL) {
+            return this.callPrice();
+        }
+        return this.putPrice();
     }
 
-    //private double d_1(double S, double K, double T, double σ, double r) {
+    private double callPrice() {
+        return this.N.cumulativeProbability(this.d_1()) * this.S - this.N.cumulativeProbability(this.d_2()) * this.K * Math.exp(-this.r * this.T);
+    }
+
+    private double putPrice() {
+        return this.N.cumulativeProbability(-this.d_2()) * this.K * Math.exp(-this.r * this.T) - this.N.cumulativeProbability(-this.d_1()) * this.S;
+    }
+
     private double d_1() {
         return 1d / (this.σ * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r + Math.pow(this.σ, 2d) / 2d) * this.T);
     }
 
-    //private double d_2(double d_1, double T, double σ) {
     private double d_2() {
         return this.d_1() - this.σ * Math.sqrt(this.T);
     }
