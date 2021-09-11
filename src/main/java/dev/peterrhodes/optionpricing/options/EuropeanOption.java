@@ -12,7 +12,7 @@ public class EuropeanOption implements IOption {
     private double S;
     private double K;
     private double T;
-    private double σ;
+    private double v;
     private double r;
     private NormalDistribution N;
 
@@ -22,16 +22,16 @@ public class EuropeanOption implements IOption {
      * @param S price of the underlying asset (spot price)
      * @param K strike price of the option (exercise price)
      * @param T time until option expiration (time from the start of the contract until maturity)
-     * @param σ standard deviation of the underlying's returns (a measure of volatility)
+     * @param v (σ) underlying volatility (standard deviation of log returns)
      * @param r annualized risk-free interest rate, continuously compounded
-     * @throws IllegalArgumentException if S, K, T, or σ are not greater than zero
+     * @throws IllegalArgumentException if S, K, T, or v are not greater than zero
      */
-    public EuropeanOption(OptionType optionType, double S, double K, double T, double σ, double r) throws IllegalArgumentException {
+    public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r) throws IllegalArgumentException {
         this.optionType = optionType;
         this.S = this.checkGreaterThanZero(S, "S");
         this.K = this.checkGreaterThanZero(K, "K");
         this.T = this.checkGreaterThanZero(T, "T");
-        this.σ = this.checkGreaterThanZero(σ, "σ");
+        this.v = this.checkGreaterThanZero(v, "v");
         this.r = r;
         this.N = new NormalDistribution();
     }
@@ -53,18 +53,15 @@ public class EuropeanOption implements IOption {
     }
 
     private double callPrice() {
-        return this.N.cumulativeProbability(this.d_1()) * this.S - this.N.cumulativeProbability(this.d_2()) * this.K * Math.exp(-this.r * this.T);
+        return this.N.cumulativeProbability(this.d_i(1)) * this.S - this.N.cumulativeProbability(this.d_i(2)) * this.K * Math.exp(-this.r * this.T);
     }
 
     private double putPrice() {
-        return this.N.cumulativeProbability(-this.d_2()) * this.K * Math.exp(-this.r * this.T) - this.N.cumulativeProbability(-this.d_1()) * this.S;
+        return this.N.cumulativeProbability(-this.d_i(2)) * this.K * Math.exp(-this.r * this.T) - this.N.cumulativeProbability(-this.d_i(1)) * this.S;
     }
 
-    private double d_1() {
-        return 1d / (this.σ * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r + Math.pow(this.σ, 2d) / 2d) * this.T);
-    }
-
-    private double d_2() {
-        return this.d_1() - this.σ * Math.sqrt(this.T);
+    private double d_i(int i) {
+        double sign = i == 1 ? 1d : -1d;
+        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r + sign * Math.pow(this.v, 2d) / 2d) * this.T);
     }
 }
