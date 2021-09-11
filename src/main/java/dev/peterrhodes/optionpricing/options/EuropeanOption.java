@@ -2,6 +2,10 @@ package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
+import java.lang.Math;
+
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 public class EuropeanOption implements IOption {
 
     private OptionType optionType;
@@ -21,14 +25,7 @@ public class EuropeanOption implements IOption {
      * @param r annualized risk-free interest rate, continuously compounded
      * @throws IllegalArgumentException if S, K, T, or σ are not greater than zero
      */
-    public EuropeanOption(
-        OptionType optionType,
-        double S,
-        double K,
-        double T,
-        double σ,
-        double r
-    ) throws IllegalArgumentException {
+    public EuropeanOption(OptionType optionType, double S, double K, double T, double σ, double r) throws IllegalArgumentException {
         this.optionType = optionType;
         this.S = this.checkGreaterThanZero(S, "S");
         this.K = this.checkGreaterThanZero(K, "K");
@@ -45,6 +42,17 @@ public class EuropeanOption implements IOption {
     }
 
     public double analyticalPrice() {
-        return 0.0;
+        NormalDistribution N = new NormalDistribution();
+        return N.cumulativeProbability(this.d_1()) * this.S - N.cumulativeProbability(this.d_2()) * this.K * Math.exp(-1d * this.r * this.T);
+    }
+
+    //private double d_1(double S, double K, double T, double σ, double r) {
+    private double d_1() {
+        return 1d / (this.σ * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r + Math.pow(this.σ, 2d) / 2d) * this.T);
+    }
+
+    //private double d_2(double d_1, double T, double σ) {
+    private double d_2() {
+        return this.d_1() - this.σ * Math.sqrt(this.T);
     }
 }

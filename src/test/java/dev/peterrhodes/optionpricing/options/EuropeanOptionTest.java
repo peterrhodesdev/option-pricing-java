@@ -4,7 +4,9 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.withPrecision;
 
 class EuropeanOptionTest {
 
@@ -48,6 +50,17 @@ class EuropeanOptionTest {
           .hasMessageContaining(this.greaterThanZeroMessage);
     }
 
-    /**/
+    /* https://www.wolframalpha.com/input/?i=black+scholes */
 
+    @Test
+    void calculation1() {
+        // Arrange
+        EuropeanOption euro = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.25, 0.1);
+
+        // Act
+        double result = euro.analyticalPrice();
+
+        // Assert
+        assertThat(result).isEqualTo(14.98, withPrecision(0.01));
+    }
 }
