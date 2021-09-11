@@ -51,7 +51,8 @@ class EuropeanOptionTest {
     }
 
     /*
-     * Calculation
+     * analyticalPrice
+     *
      * Values checked with:
      * - https://www.wolframalpha.com/input/?i=black+scholes
      * - http://www.option-price.com/index.php
@@ -60,7 +61,7 @@ class EuropeanOptionTest {
     /* call */
 
     @Test
-    void calculation_call_1() {
+    void analyticalPrice_call_1() {
         // Arrange
         EuropeanOption euro = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.25, 0.1, 0.05);
 
@@ -72,7 +73,7 @@ class EuropeanOptionTest {
     }
 
     @Test
-    void calculation_call_2() {
+    void analyticalPrice_call_2() {
         // Arrange
         EuropeanOption euro = new EuropeanOption(OptionType.CALL, 95.0, 105.0, 2.0, 0.2, 0.05, 0.15);
 
@@ -86,7 +87,7 @@ class EuropeanOptionTest {
     /* put */
 
     @Test
-    void calculation_put_1() {
+    void analyticalPrice_put_1() {
         // Arrange
         EuropeanOption euro = new EuropeanOption(OptionType.PUT, 100.0, 100.0, 1.0, 0.25, 0.1, 0.05);
 
@@ -98,7 +99,7 @@ class EuropeanOptionTest {
     }
 
     @Test
-    void calculation_put_2() {
+    void analyticalPrice_put_2() {
         // Arrange
         EuropeanOption euro = new EuropeanOption(OptionType.PUT, 95.0, 105.0, 2.0, 0.2, 0.05, 0.15);
 
