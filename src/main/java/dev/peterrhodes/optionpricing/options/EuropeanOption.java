@@ -14,6 +14,7 @@ public class EuropeanOption implements IOption {
     private double T;
     private double v;
     private double r;
+    private double q;
     private NormalDistribution N;
 
     /**
@@ -24,15 +25,17 @@ public class EuropeanOption implements IOption {
      * @param T time until option expiration (time from the start of the contract until maturity)
      * @param v (σ) underlying volatility (standard deviation of log returns)
      * @param r annualized risk-free interest rate, continuously compounded
+     * @param q continuous dividend yield
      * @throws IllegalArgumentException if S, K, T, or v are not greater than zero
      */
-    public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r) throws IllegalArgumentException {
+    public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
         this.optionType = optionType;
         this.S = this.checkGreaterThanZero(S, "S");
         this.K = this.checkGreaterThanZero(K, "K");
         this.T = this.checkGreaterThanZero(T, "T");
         this.v = this.checkGreaterThanZero(v, "v");
         this.r = r;
+        this.q = q;
         this.N = new NormalDistribution();
     }
 
@@ -45,23 +48,32 @@ public class EuropeanOption implements IOption {
 
     /* analyticalPrice */
 
+    @Override
     public double analyticalPrice() {
         if (this.optionType == OptionType.CALL) {
-            return this.callPrice();
+            return this.analyticalCallPrice();
         }
-        return this.putPrice();
+        return this.analyticalPutPrice();
     }
 
-    private double callPrice() {
-        return this.N.cumulativeProbability(this.d_i(1)) * this.S - this.N.cumulativeProbability(this.d_i(2)) * this.K * Math.exp(-this.r * this.T);
+    private double analyticalCallPrice() {
+        return this.discountFactor() * (this.F() * this.N.cumulativeProbability(this.d_i(1)) - this.K * this.N.cumulativeProbability(this.d_i(2)));
     }
 
-    private double putPrice() {
-        return this.N.cumulativeProbability(-this.d_i(2)) * this.K * Math.exp(-this.r * this.T) - this.N.cumulativeProbability(-this.d_i(1)) * this.S;
+    private double analyticalPutPrice() {
+        return this.discountFactor() * (this.K * this.N.cumulativeProbability(-this.d_i(2)) - this.F() * this.N.cumulativeProbability(-this.d_i(1)));
+    }
+
+    private double discountFactor() {
+        return Math.exp(-this.r * this.T);
+    }
+
+    private double F() {
+        return this.S * Math.exp((this.r - this.q) * this.T);
     }
 
     private double d_i(int i) {
         double sign = i == 1 ? 1d : -1d;
-        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r + sign * Math.pow(this.v, 2d) / 2d) * this.T);
+        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.v, 2d) / 2d) * this.T);
     }
 }
