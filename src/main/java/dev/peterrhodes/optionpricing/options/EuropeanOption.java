@@ -14,7 +14,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
 
     /**
      * Creates a European option with the specified parameters.
-     * @see AbstractAnalyticalOption#AbstractAnalyticalOption
+     * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionType optionType, double, double, double, double, double, double)
      */
     public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
         super(optionType, S, K, T, v, r, q);
@@ -29,6 +29,9 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region price
     //----------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double price() {
         return this.optionType == OptionType.CALL ? this.callPrice() : this.putPrice();
@@ -48,6 +51,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region delta
     //----------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double delta() {
         return this.optionType == OptionType.CALL ? this.callDelta() : this.putDelta();
     }
@@ -63,6 +70,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //----------------------------------------------------------------------
     //endregion
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double gamma() {
         return Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) / (this.S * this.v * Math.sqrt(this.T));
     }
@@ -74,6 +85,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region theta
     //----------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double theta() {
         return this.optionType == OptionType.CALL ? this.callTheta() : this.putTheta();
     }
@@ -98,6 +113,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region rho
     //----------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double rho() {
         return this.optionType == OptionType.CALL ? this.callRho() : this.putRho();
     }
@@ -113,6 +132,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //----------------------------------------------------------------------
     //endregion
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public AnalyticalCalculation analyticalCalculation() {
         double price = this.price();
         double delta = this.delta();
