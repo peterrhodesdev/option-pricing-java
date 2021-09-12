@@ -1,6 +1,6 @@
 package dev.peterrhodes.optionpricing.core;
 
-import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
+import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
 public interface AnalyticalOption extends Option {
 
@@ -15,5 +15,6 @@ public interface AnalyticalOption extends Option {
     double vega();
     double theta();
     double rho();
-    AnalyticalCalculation analyticalCalculation();
+
+    AnalyticalCalculationModel calculation();
 }

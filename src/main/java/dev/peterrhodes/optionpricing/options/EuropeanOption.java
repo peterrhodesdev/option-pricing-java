@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
+import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
 import java.lang.Math;
 
@@ -136,13 +136,13 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public AnalyticalCalculation analyticalCalculation() {
+    public AnalyticalCalculationModel calculation() {
         double price = this.price();
         double delta = this.delta();
         double gamma = this.gamma();
         double vega = this.vega();
         double theta = this.theta();
         double rho = this.rho();
-        return new AnalyticalCalculation(price, delta, gamma, vega, theta, rho);
+        return new AnalyticalCalculationModel(price, delta, gamma, vega, theta, rho);
     }
 }

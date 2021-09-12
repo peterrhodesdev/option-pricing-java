@@ -1,11 +1,12 @@
 package dev.peterrhodes.optionpricing.models;
 
+import dev.peterrhodes.optionpricing.core.CalculationModel;
+
 import lombok.Getter;
 
 @Getter
-public class AnalyticalCalculation {
+public class AnalyticalCalculationModel extends CalculationModel {
 
-    private double price;
     private double delta;
     private double gamma;
     private double vega;
@@ -21,8 +22,8 @@ public class AnalyticalCalculation {
      * @param theta (Θ) negative first derivative of the option value with respect to the time to maturity
      * @param rho (Ρ) first derivative of the option value with respect to the risk free interest rate
      */
-    public AnalyticalCalculation(double price, double delta, double gamma, double vega, double theta, double rho) {
-        this.price = price;
+    public AnalyticalCalculationModel(double price, double delta, double gamma, double vega, double theta, double rho) {
+        super(price);
         this.delta = delta;
         this.gamma = gamma;
         this.vega = vega;
