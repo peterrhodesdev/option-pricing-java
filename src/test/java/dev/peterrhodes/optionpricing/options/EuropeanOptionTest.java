@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.withPrecision;
 
 class EuropeanOptionTest {
 
+    // Hull: Options, Futures, and Other Derivatives (9th edition)
+
     private final String greaterThanZeroMessage = "must be greater than zero";
     private final double pricePrecision = 0.01;
     private final double greekPrecision = 0.001;
@@ -61,8 +63,7 @@ class EuropeanOptionTest {
     //----------------------------------------------------------------------
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 360, section 15.9, Example 15.6
+     * Hull: page 360, section 15.9, Example 15.6
      */
     @Test
     void price_Hull_Ex15_6() {
@@ -81,8 +82,7 @@ class EuropeanOptionTest {
     }
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 363, section 15.10, Example 15.7
+     * Hull: page 363, section 15.10, Example 15.7
      */
     @Test
     void price_Hull_Ex15_7() {
@@ -97,8 +97,7 @@ class EuropeanOptionTest {
     }
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * pages 370-373, Chapter 15 Practice Questions
+     * Hull: pages 370-373, Chapter 15 Practice Questions
      */
     @Test
     void price_Hull_Chapter15_PracticeQuestions() {
@@ -108,8 +107,7 @@ class EuropeanOptionTest {
     // TODO: Hull Chapter 16
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 396, section 17.4, Example 17.1
+     * Hull: page 396, section 17.4, Example 17.1
      */
     @Test
     void price_Hull_Ex17_1() {
@@ -124,8 +122,7 @@ class EuropeanOptionTest {
     }
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 399, section 17.5, Example 17.2
+     * Hull: page 399, section 17.5, Example 17.2
      */
     @Test
     void price_Hull_Ex17_2() {
@@ -143,8 +140,7 @@ class EuropeanOptionTest {
     }
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * pages 402-404, Chapter 17 Practice Questions
+     * Hull: pages 402-404, Chapter 17 Practice Questions
      */
     @Test
     void price_Hull_Chapter17_PracticeQuestions() {
@@ -158,8 +154,7 @@ class EuropeanOptionTest {
     //----------------------------------------------------------------------
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 427, section 19.4, Example 19.1
+     * Hull: page 427, section 19.4, Example 19.1
      */
     @Test
     void delta_Hull_Ex19_1() {
@@ -173,7 +168,62 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(0.522, withPrecision(0.001));
     }
 
-    // TODO put
+    /*
+     * Hull: page 445, section 19.13, Example 19.9
+     */
+    @Test
+    void delta_Hull_Ex19_9() {
+        // Arrange
+        EuropeanOption option = new EuropeanOption(OptionType.PUT, 90, 87, 0.5, 0.25, 0.09, 0.03);
+
+        // Act
+        double result = option.delta();
+
+        // Assert
+        assertThat(result).isEqualTo(-0.3215, withPrecision(0.0001));
+    }
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region gamma
+    //----------------------------------------------------------------------
+
+    /*
+     * Hull: page 436, section 19.6, Example 19.4
+     */
+    @Test
+    void gamma_Hull_Ex19_4() {
+        // Arrange
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+
+        // Act
+        double result = option.gamma();
+
+        // Assert
+        assertThat(result).isEqualTo(0.066, withPrecision(0.001));
+    }
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region vega
+    //----------------------------------------------------------------------
+
+    /*
+     * Hull: page 438, section 19.8, Example 19.6
+     */
+    @Test
+    void gamma_Hull_Ex19_6() {
+        // Arrange
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+
+        // Act
+        double result = option.vega();
+
+        // Assert
+        assertThat(result).isEqualTo(12.1, withPrecision(0.1));
+    }
 
     //----------------------------------------------------------------------
     //endregion
@@ -182,8 +232,7 @@ class EuropeanOptionTest {
     //----------------------------------------------------------------------
 
     /*
-     * Hull: Options, Futures, and Other Derivatives (9th edition)
-     * page 431, section 19.5, Example 19.2
+     * Hull: page 431, section 19.5, Example 19.2
      */
     @Test
     void theta_Hull_Ex19_2() {
@@ -201,4 +250,29 @@ class EuropeanOptionTest {
 
     //----------------------------------------------------------------------
     //endregion
+
+    //region rho
+    //----------------------------------------------------------------------
+
+    /*
+     * Hull: page 439, section 19.9, Example 19.7
+     */
+    @Test
+    void rho_Hull_Ex19_7() {
+        // Arrange
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+
+        // Act
+        double result = option.rho();
+
+        // Assert
+        assertThat(result).isEqualTo(8.91, withPrecision(0.01));
+    }
+
+    // TODO put
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    // TODO Hull Chapter 19 Practice Questions
 }

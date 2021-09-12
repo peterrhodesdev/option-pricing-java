@@ -90,11 +90,11 @@ public class EuropeanOption implements IOption {
     //endregion
 
     public double gamma() {
-        return 0.0;
+        return Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) / (this.S * this.v * Math.sqrt(this.T));
     }
 
     public double vega() {
-        return 0.0;
+        return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) * Math.sqrt(this.T);
     }
 
     //region theta
@@ -112,7 +112,10 @@ public class EuropeanOption implements IOption {
     }
 
     private double putTheta() {
-        return 0.0;
+        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.v) / (2d * Math.sqrt(this.T));
+        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d_i(2));
+        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
+        return term1 + term2 - term3;
     }
 
     //----------------------------------------------------------------------
@@ -126,11 +129,11 @@ public class EuropeanOption implements IOption {
     }
 
     private double callRho() {
-        return 0.0;
+        return this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d_i(2));
     }
 
     private double putRho() {
-        return 0.0;
+        return -this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d_i(2));
     }
 
     //----------------------------------------------------------------------
