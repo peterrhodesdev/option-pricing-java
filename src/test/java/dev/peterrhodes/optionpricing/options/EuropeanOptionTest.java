@@ -1,7 +1,7 @@
 package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
+//import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
 import org.junit.jupiter.api.Test;
 

@@ -4,8 +4,6 @@ import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
-import java.lang.Math;
-
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 public class EuropeanOption extends AbstractAnalyticalOption {
