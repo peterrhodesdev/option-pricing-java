@@ -85,13 +85,32 @@ public class EuropeanOption implements IOption {
 
     public AnalyticalCalculation analyticalCalculation() {
         double price = this.analyticalPrice();
-        //TODO
-        double delta = 0.0;
-        double gamma = 0.0;
-        double vega = 0.0;
-        double theta = 0.0;
-        double rho = 0.0;
+        double delta = this.delta();
+        double gamma = this.gamma();
+        double vega = this.vega();
+        double theta = this.theta();
+        double rho = this.rho();
         return new AnalyticalCalculation(price, delta, gamma, vega, theta, rho);
+    }
+
+    private double delta() {
+        return 0.0;
+    }
+
+    private double gamma() {
+        return 0.0;
+    }
+
+    private double vega() {
+        return 0.0;
+    }
+
+    private double theta() {
+        return 0.0;
+    }
+
+    private double rho() {
+        return 0.0;
     }
 
     //----------------------------------------------------------------------

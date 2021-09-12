@@ -1,5 +1,8 @@
 package dev.peterrhodes.optionpricing.models;
 
+import lombok.Getter;
+
+@Getter
 public class AnalyticalCalculation {
 
     private double price;
