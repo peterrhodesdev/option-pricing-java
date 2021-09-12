@@ -1,5 +1,6 @@
 package dev.peterrhodes.optionpricing.options;
 
+import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
 
@@ -7,44 +8,17 @@ import java.lang.Math;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
-public class EuropeanOption implements IOption {
-
-    private OptionType optionType;
-    private double S;
-    private double K;
-    private double T;
-    private double v;
-    private double r;
-    private double q;
+public class EuropeanOption extends AbstractAnalyticalOption {
+    
     private NormalDistribution N;
 
     /**
      * Creates a European option with the specified parameters.
-     * @param optionType type of the option (call or put)
-     * @param S price of the underlying asset (spot price)
-     * @param K strike price of the option (exercise price)
-     * @param T time until option expiration (time from the start of the contract until maturity)
-     * @param v (σ) underlying volatility (standard deviation of log returns)
-     * @param r annualized risk-free interest rate, continuously compounded
-     * @param q continuous dividend yield
-     * @throws IllegalArgumentException if S, K, T, or v are not greater than zero
+     * @see AbstractAnalyticalOption#AbstractAnalyticalOption
      */
     public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
-        this.optionType = optionType;
-        this.S = this.checkGreaterThanZero(S, "S");
-        this.K = this.checkGreaterThanZero(K, "K");
-        this.T = this.checkGreaterThanZero(T, "T");
-        this.v = this.checkGreaterThanZero(v, "v");
-        this.r = r;
-        this.q = q;
+        super(optionType, S, K, T, v, r, q);
         this.N = new NormalDistribution();
-    }
-
-    private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
-        if (value <= 0) {
-            throw new IllegalArgumentException(name + " must be greater than zero");
-        }
-        return value;
     }
 
     private double d_i(int i) {
