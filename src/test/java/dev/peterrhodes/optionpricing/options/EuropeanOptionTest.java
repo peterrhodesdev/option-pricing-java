@@ -173,45 +173,31 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(0.522, withPrecision(0.001));
     }
 
+    // TODO put
+
     //----------------------------------------------------------------------
     //endregion
 
-    //region analyticalCalculation
+    //region theta
     //----------------------------------------------------------------------
 
+    /*
+     * Hull: Options, Futures, and Other Derivatives (9th edition)
+     * page 431, section 19.5, Example 19.2
+     */
     @Test
-    void analyticalCalculation_call_1() {
+    void theta_Hull_Ex19_2() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.25, 0.1, 0.05);
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
-        AnalyticalCalculation result = option.analyticalCalculation();
+        double result = option.theta();
 
         // Assert
-        assertThat(result.getPrice()).as("price").isEqualTo(11.73, withPrecision(this.pricePrecision));
-        assertThat(result.getDelta()).as("delta").isEqualTo(0.597, withPrecision(this.greekPrecision));
-        assertThat(result.getGamma()).as("gamma").isEqualTo(0.014, withPrecision(this.greekPrecision));
-        assertThat(result.getVega()).as("vega").isEqualTo(35.996, withPrecision(this.greekPrecision));
-        assertThat(result.getTheta()).as("theta").isEqualTo(-6.310, withPrecision(this.greekPrecision));
-        assertThat(result.getRho()).as("rho").isEqualTo(47.947, withPrecision(this.greekPrecision));
+        assertThat(result).isEqualTo(-4.31, withPrecision(0.01));
     }
 
-    @Test
-    void analyticalCalculation_put_1() {
-        // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.PUT, 100.0, 100.0, 1.0, 0.25, 0.1, 0.05);
-
-        // Act
-        AnalyticalCalculation result = option.analyticalCalculation();
-
-        // Assert
-        assertThat(result.getPrice()).as("price").isEqualTo(7.10, withPrecision(this.pricePrecision));
-        assertThat(result.getDelta()).as("delta").isEqualTo(-0.354, withPrecision(this.greekPrecision));
-        assertThat(result.getGamma()).as("gamma").isEqualTo(0.014, withPrecision(this.greekPrecision));
-        assertThat(result.getVega()).as("vega").isEqualTo(35.996, withPrecision(this.greekPrecision));
-        assertThat(result.getTheta()).as("theta").isEqualTo(-2.018, withPrecision(this.greekPrecision));
-        assertThat(result.getRho()).as("rho").isEqualTo(-42.537, withPrecision(this.greekPrecision));
-    }
+    // TODO put
 
     //----------------------------------------------------------------------
     //endregion

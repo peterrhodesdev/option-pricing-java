@@ -89,19 +89,47 @@ public class EuropeanOption implements IOption {
     //----------------------------------------------------------------------
     //endregion
 
-    private double gamma() {
+    public double gamma() {
         return 0.0;
     }
 
-    private double vega() {
+    public double vega() {
         return 0.0;
     }
 
-    private double theta() {
+    //region theta
+    //----------------------------------------------------------------------
+
+    public double theta() {
+        return this.optionType == OptionType.CALL ? this.callTheta() : this.putTheta();
+    }
+
+    private double callTheta() {
+        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.v) / (2d * Math.sqrt(this.T));
+        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d_i(2));
+        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d_i(1));
+        return term1 - term2 + term3;
+    }
+
+    private double putTheta() {
         return 0.0;
     }
 
-    private double rho() {
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region rho
+    //----------------------------------------------------------------------
+
+    public double rho() {
+        return this.optionType == OptionType.CALL ? this.callRho() : this.putRho();
+    }
+
+    private double callRho() {
+        return 0.0;
+    }
+
+    private double putRho() {
         return 0.0;
     }
 
