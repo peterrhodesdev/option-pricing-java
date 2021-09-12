@@ -59,26 +59,15 @@ public class EuropeanOption implements IOption {
 
     @Override
     public double analyticalPrice() {
-        if (this.optionType == OptionType.CALL) {
-            return this.analyticalCallPrice();
-        }
-        return this.analyticalPutPrice();
+        return this.optionType == OptionType.CALL ? this.analyticalCallPrice() : this.analyticalPutPrice();
     }
 
     private double analyticalCallPrice() {
-        return this.discountFactor() * (this.forwardPrice() * this.N.cumulativeProbability(this.d_i(1)) - this.K * this.N.cumulativeProbability(this.d_i(2)));
+        return this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d_i(1)) - this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d_i(2));
     }
 
     private double analyticalPutPrice() {
-        return this.discountFactor() * (this.K * this.N.cumulativeProbability(-this.d_i(2)) - this.forwardPrice() * this.N.cumulativeProbability(-this.d_i(1)));
-    }
-
-    private double discountFactor() {
-        return Math.exp(-this.r * this.T);
-    }
-
-    private double forwardPrice() {
-        return this.S * Math.exp((this.r - this.q) * this.T);
+        return this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d_i(2)) - this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
     }
 
     /* calculation model */
@@ -94,7 +83,15 @@ public class EuropeanOption implements IOption {
     }
 
     private double delta() {
-        return 0.0;
+        return this.optionType == OptionType.CALL ? this.callDelta() : this.putDelta();
+    }
+
+    private double callDelta() {
+        return Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d_i(1));
+    }
+
+    private double putDelta() {
+        return -Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
     }
 
     private double gamma() {
