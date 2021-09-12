@@ -3,6 +3,7 @@ package dev.peterrhodes.optionpricing.options;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculation;
 
 interface IOption {
-    double analyticalPrice();
+    double price();
+    double delta();
     AnalyticalCalculation analyticalCalculation();
 }

@@ -47,42 +47,34 @@ public class EuropeanOption implements IOption {
         return value;
     }
 
-    //region analytical
-    //----------------------------------------------------------------------
-
     private double d_i(int i) {
         double sign = i == 1 ? 1d : -1d;
         return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.v, 2d) / 2d) * this.T);
     }
 
-    /* price */
+    //region price
+    //----------------------------------------------------------------------
 
     @Override
-    public double analyticalPrice() {
-        return this.optionType == OptionType.CALL ? this.analyticalCallPrice() : this.analyticalPutPrice();
+    public double price() {
+        return this.optionType == OptionType.CALL ? this.callPrice() : this.putPrice();
     }
 
-    private double analyticalCallPrice() {
+    private double callPrice() {
         return this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d_i(1)) - this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d_i(2));
     }
 
-    private double analyticalPutPrice() {
+    private double putPrice() {
         return this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d_i(2)) - this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
     }
 
-    /* calculation model */
+    //----------------------------------------------------------------------
+    //endregion
 
-    public AnalyticalCalculation analyticalCalculation() {
-        double price = this.analyticalPrice();
-        double delta = this.delta();
-        double gamma = this.gamma();
-        double vega = this.vega();
-        double theta = this.theta();
-        double rho = this.rho();
-        return new AnalyticalCalculation(price, delta, gamma, vega, theta, rho);
-    }
+    //region delta
+    //----------------------------------------------------------------------
 
-    private double delta() {
+    public double delta() {
         return this.optionType == OptionType.CALL ? this.callDelta() : this.putDelta();
     }
 
@@ -93,6 +85,9 @@ public class EuropeanOption implements IOption {
     private double putDelta() {
         return -Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
     }
+
+    //----------------------------------------------------------------------
+    //endregion
 
     private double gamma() {
         return 0.0;
@@ -112,4 +107,14 @@ public class EuropeanOption implements IOption {
 
     //----------------------------------------------------------------------
     //endregion
+
+    public AnalyticalCalculation analyticalCalculation() {
+        double price = this.price();
+        double delta = this.delta();
+        double gamma = this.gamma();
+        double vega = this.vega();
+        double theta = this.theta();
+        double rho = this.rho();
+        return new AnalyticalCalculation(price, delta, gamma, vega, theta, rho);
+    }
 }
