@@ -1,6 +1,7 @@
 package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
@@ -12,10 +13,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
 
     /**
      * Creates a European option with the specified parameters.
-     * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionType optionType, double, double, double, double, double, double)
+     * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionStyle.EUROPEAN, OptionType, double, double, double, double, double, double)
      */
-    public EuropeanOption(OptionType optionType, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
-        super(optionType, S, K, T, v, r, q);
+    public EuropeanOption(OptionType type, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
+        super(OptionStyle.EUROPEAN, type, S, K, T, v, r, q);
         this.N = new NormalDistribution();
     }
 
@@ -32,7 +33,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double price() {
-        return this.optionType == OptionType.CALL ? this.callPrice() : this.putPrice();
+        return this.type == OptionType.CALL ? this.callPrice() : this.putPrice();
     }
 
     private double callPrice() {
@@ -54,7 +55,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double delta() {
-        return this.optionType == OptionType.CALL ? this.callDelta() : this.putDelta();
+        return this.type == OptionType.CALL ? this.callDelta() : this.putDelta();
     }
 
     private double callDelta() {
@@ -88,7 +89,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double theta() {
-        return this.optionType == OptionType.CALL ? this.callTheta() : this.putTheta();
+        return this.type == OptionType.CALL ? this.callTheta() : this.putTheta();
     }
 
     private double callTheta() {
@@ -116,7 +117,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double rho() {
-        return this.optionType == OptionType.CALL ? this.callRho() : this.putRho();
+        return this.type == OptionType.CALL ? this.callRho() : this.putRho();
     }
 
     private double callRho() {

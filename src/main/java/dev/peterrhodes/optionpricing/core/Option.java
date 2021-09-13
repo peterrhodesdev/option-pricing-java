@@ -1,14 +1,21 @@
 package dev.peterrhodes.optionpricing.core;
 
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
 public interface Option {
 
     /**
+     * Gets the style of the option (e.g. European, American, ...).
+     * @return option style
+     */
+    OptionStyle getStyle();
+
+    /**
      * Gets the type of the option (call or put).
      * @return option type
      */
-    OptionType getOptionType();
+    OptionType getType();
 
     /**
      * Gets the price of the underlying asset.

@@ -10,6 +10,9 @@ public interface AnalyticalOption extends Option {
      */
     double price();
 
+    /**
+     * TODO
+     */
     double delta();
     double gamma();
     double vega();

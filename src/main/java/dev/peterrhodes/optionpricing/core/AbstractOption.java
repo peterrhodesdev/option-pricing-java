@@ -1,5 +1,6 @@
 package dev.peterrhodes.optionpricing.core;
 
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
 import lombok.Getter;
@@ -7,7 +8,8 @@ import lombok.Getter;
 @Getter
 public abstract class AbstractOption implements Option {
 
-    protected OptionType optionType;
+    protected OptionStyle style;
+    protected OptionType type;
     protected double S;
     protected double K;
     protected double T;
@@ -17,7 +19,8 @@ public abstract class AbstractOption implements Option {
 
     /**
      * Creates an abstract option with the specified parameters.
-     * @param optionType type of the option (call or put)
+     * @param style style of the option, usually defined by the exercise rights, e.g. European, American
+     * @param type type of the option (call or put)
      * @param S price of the underlying asset (spot price)
      * @param K strike price of the option (exercise price)
      * @param T time until option expiration (time from the start of the contract until maturity)
@@ -26,8 +29,9 @@ public abstract class AbstractOption implements Option {
      * @param q continuous dividend yield
      * @throws IllegalArgumentException if S, K, T, or v are not greater than zero
      */
-    public AbstractOption(OptionType optionType, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
-        this.optionType = optionType;
+    public AbstractOption(OptionStyle style, OptionType type, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
+        this.style = style;
+        this.type = type;
         this.S = this.checkGreaterThanZero(S, "S");
         this.K = this.checkGreaterThanZero(K, "K");
         this.T = this.checkGreaterThanZero(T, "T");

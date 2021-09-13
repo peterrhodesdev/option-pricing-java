@@ -5,6 +5,9 @@ import lombok.Getter;
 @Getter
 public abstract class CalculationModel {
 
+    /**
+     * TODO
+     */
     private double price;
 
     /**

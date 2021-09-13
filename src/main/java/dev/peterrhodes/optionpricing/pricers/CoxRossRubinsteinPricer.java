@@ -63,7 +63,7 @@ public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
                 //double t = i == this.timeSteps ? option.getT() : i * Δt;
                 double V;
                 if (i == this.timeSteps) {
-                    V = Math.max(0.0, option.getOptionType() == OptionType.CALL ? S - option.getK() : option.getK() - S);
+                    V = Math.max(0.0, option.getType() == OptionType.CALL ? S - option.getK() : option.getK() - S);
                 } else {
                     V = 0.0;
                 }
