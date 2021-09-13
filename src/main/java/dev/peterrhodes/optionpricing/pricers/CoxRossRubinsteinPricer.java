@@ -2,6 +2,7 @@ package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.core.Pricer;
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import dev.peterrhodes.optionpricing.common.NotImplementedException;
@@ -65,7 +66,17 @@ public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
                 if (i == this.timeSteps) {
                     V = Math.max(0.0, option.getType() == OptionType.CALL ? S - option.getK() : option.getK() - S);
                 } else {
-                    V = 0.0;
+                    switch (option.getStyle()) {
+                        case EUROPEAN:
+                            V = 0.0;
+                            break;
+                        case AMERICAN:
+                            // Payoff from early exercise
+                            V = Math.max(0.0, option.getType() == OptionType.CALL ? S - option.getK() : option.getK() - S);
+                            break;
+                        default:
+                            V = 0.0;
+                    }
                 }
                 Node node = new Node(S, V);
                 nodes.add(node);
@@ -79,7 +90,8 @@ public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
                 int currentIndex = IntStream.rangeClosed(0, i).sum() + n;
                 int downIndex = currentIndex + (i + 1);
                 int upIndex = downIndex + 1;
-                nodes.get(currentIndex).V = (p * nodes.get(upIndex).V + (1 - p) * nodes.get(downIndex).V) * Math.exp(-option.getR() * Δt);
+                double optionCurrentValue = (p * nodes.get(upIndex).V + (1 - p) * nodes.get(downIndex).V) * Math.exp(-option.getR() * Δt);
+                nodes.get(currentIndex).V = Math.max(nodes.get(currentIndex).V, optionCurrentValue);
             }
         }
 
