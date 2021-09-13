@@ -47,7 +47,7 @@ public abstract class CoxRossRubinsteinPricer {
         // Work forwards creating the tree
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)
             for (int n = 0; n <= i; n++) { // nth node (from lowest underlying price to highest): underlying price = S₀uⁿdⁱ⁻ⁿ
-                CoxRossRubinsteinModel.Node node = createNode(option, i, n, u, d, timeSteps);
+                CoxRossRubinsteinModel.Node node = createNode(option.getS(), i, n, u, d);
                 nodes.add(node);
             }
         }
@@ -76,8 +76,8 @@ public abstract class CoxRossRubinsteinPricer {
         return model;
     }
 
-    private static CoxRossRubinsteinModel.Node createNode(Option option, int i, int n, double u, double d, int timeSteps) {
-        double S = option.getS() * Math.pow(u, n) * Math.pow(d, i - n);
+    private static CoxRossRubinsteinModel.Node createNode(double S_0, int i, int n, double u, double d) {
+        double S = S_0 * Math.pow(u, n) * Math.pow(d, i - n);
         //double t = i == this.timeSteps ? option.getT() : i * Δt;
         double V = 0; // Can't calculate yet
 

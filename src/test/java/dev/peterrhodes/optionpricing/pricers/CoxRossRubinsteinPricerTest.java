@@ -38,10 +38,18 @@ class CoxRossRubinsteinPricerTest {
 
     private static void assertCalculation(CoxRossRubinsteinModel result, CoxRossRubinsteinModel expected, double parameterPrecision, double outputPrecision) {
         // parameters
-        assertThat(result.getDeltat()).as("parameter Δt").isEqualTo(expected.getDeltat(), withPrecision(parameterPrecision));
-        assertThat(result.getU()).as("parameter u").isEqualTo(expected.getU(), withPrecision(parameterPrecision));
-        assertThat(result.getD()).as("parameter d").isEqualTo(expected.getD(), withPrecision(parameterPrecision));
-        assertThat(result.getP()).as("parameter p").isEqualTo(expected.getP(), withPrecision(parameterPrecision));
+        assertThat(result.getDeltat())
+            .as("parameter Δt")
+            .isEqualTo(expected.getDeltat(), withPrecision(parameterPrecision));
+        assertThat(result.getU())
+            .as("parameter u")
+            .isEqualTo(expected.getU(), withPrecision(parameterPrecision));
+        assertThat(result.getD())
+            .as("parameter d")
+            .isEqualTo(expected.getD(), withPrecision(parameterPrecision));
+        assertThat(result.getP())
+            .as("parameter p")
+            .isEqualTo(expected.getP(), withPrecision(parameterPrecision));
 
         // price
         assertThat(result.getPrice()).as("price").isEqualTo(expected.getPrice(), withPrecision(outputPrecision));
@@ -50,10 +58,12 @@ class CoxRossRubinsteinPricerTest {
         List<CoxRossRubinsteinModel.Node> expectedNodes = expected.getNodes();
         List<CoxRossRubinsteinModel.Node> resultNodes = result.getNodes();
 
+        // number of nodes
         int size = expectedNodes.size();
         assertThat(resultNodes.size()).as("nodes size").isEqualTo(size);
 
         for (CoxRossRubinsteinModel.Node expectedNode : expectedNodes) {
+            // node with same i and n exists
             int i = expectedNode.getI(), n = expectedNode.getN();
             CoxRossRubinsteinModel.Node resultNode = resultNodes.stream()
                 .filter(item -> item.getI() == i && item.getN() == n)
@@ -63,14 +73,16 @@ class CoxRossRubinsteinPricerTest {
                 .withFailMessage("node (%d, %d) not found", i, n)
                 .isNotNull();
 
-            /*System.out.println("expectedNode");
-            System.out.println("i = " + expectedNode.getI() + ", n = " + expectedNode.getN() + ", S = " + expectedNode.getS() + ", V = " + expectedNode.getV());
-            System.out.println("resultNode");
-            System.out.println("i = " + resultNode.getI() + ", n = " + resultNode.getN() + ", S = " + resultNode.getS() + ", V = " + resultNode.getV());*/
-
-            assertThat(resultNode.getS()).as(String.format("node (%d, %d) S", i, n)).isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
-            assertThat(resultNode.getV()).as(String.format("node (%d, %d) V", i, n)).isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
-            assertThat(resultNode.isExercised()).as(String.format("node (%d, %d) exercised", i, n)).isEqualTo(expectedNode.isExercised());
+            // node(i, n) values
+            assertThat(resultNode.getS())
+                .as(String.format("node (%d, %d) S", i, n))
+                .isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
+            assertThat(resultNode.getV())
+                .as(String.format("node (%d, %d) V", i, n))
+                .isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
+            assertThat(resultNode.isExercised())
+                .as(String.format("node (%d, %d) exercised", i, n))
+                .isEqualTo(expectedNode.isExercised());
         }
     }
 
@@ -208,7 +220,7 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         // option: style, type, S, K, T, v (σ), r, q
         double r = 0.05;
-        double q = r; // "in a risk-neutral world a futures price should have an expected growth rate of zero"
+        double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 31, 30, 0.75, 0.3, r, q);
         int timeSteps = 3;
 
@@ -307,6 +319,84 @@ class CoxRossRubinsteinPricerTest {
 
         CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
     }
+
+    /*
+     * Hull SSM (2014): page 143, Problem 13.18a
+     */
+    @Test
+    void price_HullSSM2014_P13_18a() {
+        // Arrange
+        // option: style, type, S, K, T, v (σ), r, q
+        double r = 0.03;
+        double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
+        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 90, 93, 0.75, 0.28, r, q);
+        int timeSteps = 3;
+
+        // Act
+        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+
+        // Assert
+        List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 90.00, 7.94, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 78.24, 2.24, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 103.52, 14.62, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 68.02, 0.00, false),
+            new CoxRossRubinsteinModel.Node(2, 1, 90.00, 4.86, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 119.08, 26.08, true),
+            new CoxRossRubinsteinModel.Node(3, 0, 59.13, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 1, 78.24, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 2, 103.52, 10.52, true),
+            new CoxRossRubinsteinModel.Node(3, 3, 136.98, 43.98, true),
+        });
+        CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
+            option, timeSteps, // inputs
+            0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
+            7.94, expectedNodes // outputs: price, nodes
+        );
+
+        CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
+    }
+
+    /*
+     * Hull SSM (2014): page 143, Problem 13.18b
+     */
+    @Test
+    void price_HullSSM2014_P13_18b() {
+        // Arrange
+        // option: style, type, S, K, T, v (σ), r, q
+        double r = 0.03;
+        double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
+        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 90, 93, 0.75, 0.28, r, q);
+        int timeSteps = 3;
+
+        // Act
+        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+
+        // Assert
+        List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 90.00, 10.88, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 78.24, 16.88, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 103.52, 4.16, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 68.02, 24.98, true),
+            new CoxRossRubinsteinModel.Node(2, 1, 90.00, 7.84, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 119.08, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 0, 59.13, 33.87, true),
+            new CoxRossRubinsteinModel.Node(3, 1, 78.24, 14.76, true),
+            new CoxRossRubinsteinModel.Node(3, 2, 103.52, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 3, 136.98, 0.00, false),
+        });
+        CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
+            option, timeSteps, // inputs
+            0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
+            10.88, expectedNodes // outputs: price, nodes
+        );
+
+        CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
+    }
+
+    // TODO Chapter 13 Further Questions
 
     //----------------------------------------------------------------------
     //endregion
