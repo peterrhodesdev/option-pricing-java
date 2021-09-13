@@ -4,7 +4,6 @@ import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
-import dev.peterrhodes.optionpricing.common.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,40 +11,38 @@ import java.util.stream.IntStream;
 
 public abstract class CoxRossRubinsteinPricer {
 
-    //region price
-    //----------------------------------------------------------------------
+    private static void checkParameters(int timeSteps) throws IllegalArgumentException {
+        if (timeSteps <= 0) {
+            throw new IllegalArgumentException("timeSteps must be greater than zero");
+        }
+    }
 
     /**
      * TODO
      * @throws IllegalArgumentException if timeSteps is not greater than zero
      */
     public static double price(Option option, int timeSteps) throws IllegalArgumentException {
-        if (timeSteps <= 0) {
-            throw new IllegalArgumentException("timeSteps must be greater than zero");
-        }
-
-        // Determine parameters
-        double Δt = option.getT() / timeSteps; // length of a single time interval/step
-        double u = Math.exp(option.getV() * Math.sqrt(Δt)); // proportional up movement
-        double d = Math.exp(-option.getV() * Math.sqrt(Δt)); // proportional down movement
-        double a = Math.exp((option.getR() - option.getQ()) * Δt); // growth factor
-        double p = (a - d) / (u - d); // probability of an up movement (probability of a down movement is 1 - p)
-        //System.out.println("Δt = " + Δt + ", u = " + u + ", d = " + d + ", p = " + p);
-
-        return CoxRossRubinsteinPricer.price(option, timeSteps, Δt, u, d, p);
+        CoxRossRubinsteinPricer.checkParameters(timeSteps);
+        CoxRossRubinsteinModel model = CoxRossRubinsteinPricer.performCalculation(option, timeSteps);
+        return model.getPrice();
     }
 
-    private static class Node {
-        public double S;
-        public double V;
-        public Node(double S, double V) {
-            this.S = S;
-            this.V = V;
-        }
+    //region calculation
+    //----------------------------------------------------------------------
+
+    /**
+     * TODO
+     */
+    public static CoxRossRubinsteinModel calculation(Option option, int timeSteps) {
+        CoxRossRubinsteinPricer.checkParameters(timeSteps);
+        return CoxRossRubinsteinPricer.performCalculation(option, timeSteps);
     }
 
-    private static double price(Option option, int timeSteps, double Δt, double u, double d, double p) {
-        List<Node> nodes = new ArrayList(); // key: ith time step, nth node
+    private static CoxRossRubinsteinModel performCalculation(Option option, int timeSteps) {
+        CoxRossRubinsteinModel model = CoxRossRubinsteinPricer.determineModelParameters(option, timeSteps);
+        double Δt = model.getDeltat(), u = model.getU(), d = model.getD(), p = model.getP();
+
+        List<CoxRossRubinsteinModel.Node> nodes = new ArrayList();
 
         // TODO calc underlying prices
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)
@@ -68,7 +65,7 @@ public abstract class CoxRossRubinsteinPricer {
                             V = 0.0;
                     }
                 }
-                Node node = new Node(S, V);
+                CoxRossRubinsteinModel.Node node = new CoxRossRubinsteinModel.Node(i, n, S, V);
                 nodes.add(node);
                 //System.out.println("i = " + i + ", n = " + n + ": S = " + S);
             }
@@ -85,16 +82,25 @@ public abstract class CoxRossRubinsteinPricer {
             }
         }
 
-        return nodes.get(0).V;
+        model.setOutputs(nodes.get(0).V, nodes);
+
+        return model;
+    }
+
+    private static CoxRossRubinsteinModel determineModelParameters(Option option, int timeSteps) {
+        CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(option, timeSteps);
+        
+        double Δt = option.getT() / timeSteps; // length of a single time interval/step
+        double u = Math.exp(option.getV() * Math.sqrt(Δt)); // proportional up movement
+        double d = Math.exp(-option.getV() * Math.sqrt(Δt)); // proportional down movement
+        double a = Math.exp((option.getR() - option.getQ()) * Δt); // growth factor
+        double p = (a - d) / (u - d); // probability of an up movement (probability of a down movement is 1 - p)
+
+        model.setParameters(Δt, u, d, p);
+
+        return model;
     }
 
     //----------------------------------------------------------------------
     //endregion
-
-    /**
-     * TODO
-     */
-    public static CoxRossRubinsteinModel calculation(Option option) throws NotImplementedException {
-        throw new NotImplementedException();
-    }
 }
