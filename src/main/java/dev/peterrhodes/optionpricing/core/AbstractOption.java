@@ -5,6 +5,10 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 
 import lombok.Getter;
 
+/**
+ * Base class for all concrete option classes that don't have an analytical solution.
+ * If the specific option has an analytical solution then it should extend {@link AbstractAnalyticalOption}.
+ */
 @Getter
 public abstract class AbstractOption implements Option {
 

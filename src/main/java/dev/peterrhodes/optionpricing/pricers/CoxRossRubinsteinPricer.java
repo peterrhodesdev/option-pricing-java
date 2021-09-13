@@ -1,5 +1,6 @@
 package dev.peterrhodes.optionpricing.pricers;
 
+import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
@@ -18,7 +19,10 @@ public abstract class CoxRossRubinsteinPricer {
     }
 
     /**
-     * TODO
+     * Calculates the price of the given option.
+     * @param option the option to perform the calculation for
+     * @param timeSteps number of time steps in the tree
+     * @return the calculated price of the option
      * @throws IllegalArgumentException if timeSteps is not greater than zero
      */
     public static double price(Option option, int timeSteps) throws IllegalArgumentException {
@@ -31,9 +35,13 @@ public abstract class CoxRossRubinsteinPricer {
     //----------------------------------------------------------------------
 
     /**
-     * TODO
+     * Performs all of the calculations necessary to populate a {@link dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel CoxRossRubinsteinModel}, i.e. calculates the option price along with a list of the tree nodes.
+     * @param option the option to perform the calculation for
+     * @param timeSteps number of time steps in the tree
+     * @return model object populated with the results of the calculations
+     * @throws IllegalArgumentException if timeSteps is not greater than zero
      */
-    public static CoxRossRubinsteinModel calculation(Option option, int timeSteps) {
+    public static CoxRossRubinsteinModel calculation(Option option, int timeSteps) throws IllegalArgumentException {
         checkParameters(timeSteps);
         return performCalculation(option, timeSteps);
     }
@@ -42,17 +50,17 @@ public abstract class CoxRossRubinsteinPricer {
         CoxRossRubinsteinModel model = determineModelParameters(option, timeSteps);
         double Δt = model.getDeltat(), u = model.getU(), d = model.getD(), p = model.getP();
 
-        List<CoxRossRubinsteinModel.Node> nodes = new ArrayList();
+        List<LatticeNode> nodes = new ArrayList();
 
-        // Work forwards creating the tree
+        // Create the tree
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)
-            for (int n = 0; n <= i; n++) { // nth node (from lowest underlying price to highest): underlying price = S₀uⁿdⁱ⁻ⁿ
-                CoxRossRubinsteinModel.Node node = createNode(option.getS(), i, n, u, d);
+            for (int n = 0; n <= i; n++) { // nth node at the ith time step (from lowest underlying price to highest)
+                LatticeNode node = createNode(option.getS(), i, n, u, d);
                 nodes.add(node);
             }
         }
 
-        // Work backwards calculating the option values
+        // Working backwards through the tree calculating the option values
         for (int i = timeSteps; i >= 0; i--) {
             for (int n = 0; n <= i; n++) {
                 calculateNodeOptionValue(option, timeSteps, nodes, i, n, Δt, p);
@@ -76,18 +84,19 @@ public abstract class CoxRossRubinsteinPricer {
         return model;
     }
 
-    private static CoxRossRubinsteinModel.Node createNode(double S_0, int i, int n, double u, double d) {
+    private static LatticeNode createNode(double S_0, int i, int n, double u, double d) {
+        // underlying price = S₀uⁿdⁱ⁻ⁿ
         double S = S_0 * Math.pow(u, n) * Math.pow(d, i - n);
         //double t = i == this.timeSteps ? option.getT() : i * Δt;
         double V = 0; // Can't calculate yet
 
-        CoxRossRubinsteinModel.Node node = new CoxRossRubinsteinModel.Node(i, n, S, V, false);
+        LatticeNode node = new LatticeNode(i, n, S, V, false);
         return node;
     }
 
-    private static void calculateNodeOptionValue(Option option, int timeSteps, List<CoxRossRubinsteinModel.Node> nodes, int i, int n, double Δt, double p) {
-        int currentIndex = IntStream.rangeClosed(0, i).sum() + n;
-        CoxRossRubinsteinModel.Node currentNode = nodes.get(currentIndex);
+    private static void calculateNodeOptionValue(Option option, int timeSteps, List<LatticeNode> nodes, int i, int n, double Δt, double p) {
+        int currentIndex = calculateNodeIndex(i, n);
+        LatticeNode currentNode = nodes.get(currentIndex);
         double S = currentNode.getS();
 
         double V;
@@ -114,6 +123,27 @@ public abstract class CoxRossRubinsteinPricer {
         }
 
         currentNode.setV(V);
+    }
+
+    /**
+     * The values of n (left) and the list index (right) for a 3-step binomial tree:
+     *           3              9
+     *          /              /
+     *         2              5
+     *        / \            / \
+     *       1   2          2   8
+     *      / \ /          / \ /
+     *     0   1          0   4
+     *      \ / \          \ / \
+     *       0   1          1   7
+     *        \ /            \ /
+     *         0              3
+     *          \              \
+     *           0              6
+     * i = 0 1 2 3   Σi = 0 1 3 6
+     */
+    private static int calculateNodeIndex(int i, int n) {
+        return IntStream.rangeClosed(0, i).sum() + n;
     }
 
     private static double calculateOptionExerciseValue(Option option, double S) {

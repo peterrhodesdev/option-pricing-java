@@ -1,12 +1,14 @@
 package dev.peterrhodes.optionpricing.models;
 
-import dev.peterrhodes.optionpricing.core.CalculationModel;
-
 import lombok.Getter;
 
+/**
+ * Model for the results of an analytical option calculation, i.e. the value of the option and its greeks.
+ */
 @Getter
-public class AnalyticalCalculationModel extends CalculationModel {
+public class AnalyticalCalculationModel {
 
+    private double price;
     private double delta;
     private double gamma;
     private double vega;
@@ -14,16 +16,16 @@ public class AnalyticalCalculationModel extends CalculationModel {
     private double rho;
 
     /**
-     * Creates a model for the results of an analytical calculation.
+     * Creates a model for the results of an analytical option calculation.
      * @param price theoretical option value
-     * @param delta (Δ) first derivative of the option price with respect to the underlying asset price
-     * @param gamma (Γ) second derivative of the option price with respect to the underlying asset price
-     * @param vega first derivative of the option price with respect to the underlying asset volatility
-     * @param theta (Θ) negative first derivative of the option value with respect to the time to maturity
-     * @param rho (Ρ) first derivative of the option value with respect to the risk free interest rate
+     * @param delta option delta (Δ), measures sensitivity to the underlying asset price
+     * @param gamma option gamma (Γ), measures sensitivity to the delta
+     * @param vega option vega (ν), measures sensitivity to the volatility
+     * @param theta option theta (Θ), measures sensitivity to the passage of time
+     * @param rho option rho (ρ), measures sensitivity to the risk free interest rate
      */
     public AnalyticalCalculationModel(double price, double delta, double gamma, double vega, double theta, double rho) {
-        super(price);
+        this.price = price;
         this.delta = delta;
         this.gamma = gamma;
         this.vega = vega;

@@ -3,6 +3,10 @@ package dev.peterrhodes.optionpricing.core;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
+/**
+ * Interface for an option that doesn't have an analytical solution.
+ * If the specific option has an analytical solution then it will extend {@link AnalyticalOption}.
+ */
 public interface Option {
 
     /**

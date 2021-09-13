@@ -7,12 +7,15 @@ import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+/**
+ * Vanilla European option.
+ */
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
 
     /**
-     * Creates a European option with the specified parameters.
+     * Creates a vanilla European option with the specified parameters.
      * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionStyle.EUROPEAN, OptionType, double, double, double, double, double, double)
      */
     public EuropeanOption(OptionType type, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
@@ -77,6 +80,10 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) / (this.S * this.v * Math.sqrt(this.T));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double vega() {
         return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) * Math.sqrt(this.T);
     }

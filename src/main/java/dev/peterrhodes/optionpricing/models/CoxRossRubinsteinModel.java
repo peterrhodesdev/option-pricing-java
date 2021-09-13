@@ -1,52 +1,36 @@
 package dev.peterrhodes.optionpricing.models;
 
+import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
 
 import java.util.List;
 
 import lombok.Getter;
-import lombok.Setter;
 
+/**
+ * Model for the results of calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
+ */
 @Getter
 public class CoxRossRubinsteinModel {
-
-    @Getter
-    @Setter
-    public static class Node {
-        private int i;
-        private int n;
-        private double S;
-        private double V;
-        private boolean exercised;
-        
-        /**
-         * TODO
-         */
-        public Node(int i, int n, double S, double V, boolean exercised) {
-            this.i = i;
-            this.n = n;
-            this.S = S;
-            this.V = V;
-            this.exercised = exercised;
-        }
-    }
 
     // Inputs
     private Option option;
     private int timeSteps;
 
     // Parameters
-    private double deltat; // length of a single time interval/step
-    private double u; // proportional up movement
-    private double d; // proportional down movement
-    private double p; // probability of an up movement (probability of a down movement is 1 - p)
+    private double deltat;
+    private double u;
+    private double d;
+    private double p;
 
     // Outputs
     private double price;
-    private List<Node> nodes;
+    private List<LatticeNode> nodes;
 
     /**
-     * TODO
+     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}
+     * @param option the option that the calculation was performed for
+     * @param timeSteps number of time steps in the calculation
      */
     public CoxRossRubinsteinModel(Option option, int timeSteps) {
         this.option = option;
@@ -54,19 +38,25 @@ public class CoxRossRubinsteinModel {
     }
 
     /**
-     * TODO
+     * Set the parameters of the model.
+     * @param deltat (Δt) length of a single time interval/step
+     * @param u proportional up movement
+     * @param d proportional down movement
+     * @param p probability of an up movement (the corresponding probability of a down movement is 1 - p)
      */
-    public void setParameters(double Δt, double u, double d, double p) {
-        this.deltat = Δt;
+    public void setParameters(double deltat, double u, double d, double p) {
+        this.deltat = deltat;
         this.u = u;
         this.d = d;
         this.p = p;
     }
 
     /**
-     * TODO
+     * Set the outputs of the model.
+     * @param price calculated price of the option
+     * @param nodes list of the lattice nodes used to perform the calculation
      */
-    public void setOutputs(double price, List<Node> nodes) {
+    public void setOutputs(double price, List<LatticeNode> nodes) {
         this.price = price;
         this.nodes = nodes;
     }

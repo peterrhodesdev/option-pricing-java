@@ -9,17 +9,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
+/**
+ * Test class for {@link EuropeanOption}.
+ * References:
+ * - Hull (2014): Hull, J. (2014) Options, Futures and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
+ * - Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
+ */
 class EuropeanOptionTest {
 
-    /*
-     * References:
-     * - Hull (2014): Hull, J. (2014) Options, Futures and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
-     * - Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
-     */
-
     private final String greaterThanZeroMessage = "must be greater than zero";
-    private final double pricePrecision = 0.01;
-    private final double greekPrecision = 0.001;
 
     //region throws IllegalArgumentException tests
     //----------------------------------------------------------------------
@@ -66,7 +64,7 @@ class EuropeanOptionTest {
     //region price tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 360, section 15.9, Example 15.6
      */
     @Test
@@ -85,7 +83,7 @@ class EuropeanOptionTest {
         assertThat(put_result).isEqualTo(0.81, withPrecision(0.01));
     }
 
-    /*
+    /**
      * Hull (2014): page 363, section 15.10, Example 15.7
      */
     @Test
@@ -103,7 +101,7 @@ class EuropeanOptionTest {
     // TODO: Hull (2014) Chapter 15 Practice Questions
     // TODO: Hull (2014) Chapter 16
 
-    /*
+    /**
      * Hull (2014): page 396, section 17.4, Example 17.1
      */
     @Test
@@ -118,7 +116,7 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(51.83, withPrecision(0.01));
     }
 
-    /*
+    /**
      * Hull (2014): page 399, section 17.5, Example 17.2
      */
     @Test
@@ -144,7 +142,7 @@ class EuropeanOptionTest {
     //region delta tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 427, section 19.4, Example 19.1
      */
     @Test
@@ -159,7 +157,7 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(0.522, withPrecision(0.001));
     }
 
-    /*
+    /**
      * Hull (2014): page 445, section 19.13, Example 19.9
      */
     @Test
@@ -180,7 +178,7 @@ class EuropeanOptionTest {
     //region gamma tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 436, section 19.6, Example 19.4
      */
     @Test
@@ -201,7 +199,7 @@ class EuropeanOptionTest {
     //region vega tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 438, section 19.8, Example 19.6
      */
     @Test
@@ -222,7 +220,7 @@ class EuropeanOptionTest {
     //region theta tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 431, section 19.5, Example 19.2
      */
     @Test
@@ -245,7 +243,7 @@ class EuropeanOptionTest {
     //region rho tests
     //----------------------------------------------------------------------
 
-    /*
+    /**
      * Hull (2014): page 439, section 19.9, Example 19.7
      */
     @Test
