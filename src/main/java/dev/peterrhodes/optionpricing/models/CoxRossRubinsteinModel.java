@@ -5,25 +5,29 @@ import dev.peterrhodes.optionpricing.core.Option;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class CoxRossRubinsteinModel {
 
     @Getter
+    @Setter
     public static class Node {
-        public int i;
-        public int n;
-        public double S;
-        public double V;
+        private int i;
+        private int n;
+        private double S;
+        private double V;
+        private boolean exercised;
         
         /**
          * TODO
          */
-        public Node(int i, int n, double S, double V) {
+        public Node(int i, int n, double S, double V, boolean exercised) {
             this.i = i;
             this.n = n;
             this.S = S;
             this.V = V;
+            this.exercised = exercised;
         }
     }
 

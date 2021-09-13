@@ -70,6 +70,7 @@ class CoxRossRubinsteinPricerTest {
 
             assertThat(resultNode.getS()).as(String.format("node (%d, %d) S", i, n)).isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
             assertThat(resultNode.getV()).as(String.format("node (%d, %d) V", i, n)).isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
+            assertThat(resultNode.isExercised()).as(String.format("node (%d, %d) exercised", i, n)).isEqualTo(expectedNode.isExercised());
         }
     }
 
@@ -96,7 +97,7 @@ class CoxRossRubinsteinPricerTest {
     //----------------------------------------------------------------------
     //endregion
 
-    //region calculation tests
+    //region calculation tests, Hull (2014)
     //----------------------------------------------------------------------
 
     /*
@@ -114,13 +115,13 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
-            // node: i, n, S, V
-            new CoxRossRubinsteinModel.Node(0, 0, 50, 7.43),
-            new CoxRossRubinsteinModel.Node(1, 0, 37.04, 14.96),
-            new CoxRossRubinsteinModel.Node(1, 1, 67.49, 0.93),
-            new CoxRossRubinsteinModel.Node(2, 0, 27.44, 24.56),
-            new CoxRossRubinsteinModel.Node(2, 1, 50, 2),
-            new CoxRossRubinsteinModel.Node(2, 2, 91.11, 0),
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 50, 7.43, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 37.04, 14.96, true),
+            new CoxRossRubinsteinModel.Node(1, 1, 67.49, 0.93, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 27.44, 24.56, true),
+            new CoxRossRubinsteinModel.Node(2, 1, 50, 2, true),
+            new CoxRossRubinsteinModel.Node(2, 2, 91.11, 0, false),
         });
         CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
             option, timeSteps, // inputs
@@ -146,13 +147,13 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
-            // node: i, n, S, V
-            new CoxRossRubinsteinModel.Node(0, 0, 810.00, 53.39),
-            new CoxRossRubinsteinModel.Node(1, 0, 732.92, 5.06),
-            new CoxRossRubinsteinModel.Node(1, 1, 895.19, 100.66),
-            new CoxRossRubinsteinModel.Node(2, 0, 663.17, 0),
-            new CoxRossRubinsteinModel.Node(2, 1, 810.00, 10.00),
-            new CoxRossRubinsteinModel.Node(2, 2, 989.34, 189.34),
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 810.00, 53.39, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 732.92, 5.06, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 895.19, 100.66, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 663.17, 0, false),
+            new CoxRossRubinsteinModel.Node(2, 1, 810.00, 10.00, true),
+            new CoxRossRubinsteinModel.Node(2, 2, 989.34, 189.34, true),
         });
         CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
             option, timeSteps, // inputs
@@ -178,17 +179,17 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
-            // node: i, n, S, V
-            new CoxRossRubinsteinModel.Node(0, 0, 0.610, 0.019),
-            new CoxRossRubinsteinModel.Node(1, 0, 0.589, 0.007),
-            new CoxRossRubinsteinModel.Node(1, 1, 0.632, 0.033),
-            new CoxRossRubinsteinModel.Node(2, 0, 0.569, 0.000),
-            new CoxRossRubinsteinModel.Node(2, 1, 0.610, 0.015),
-            new CoxRossRubinsteinModel.Node(2, 2, 0.654, 0.054),
-            new CoxRossRubinsteinModel.Node(3, 0, 0.550, 0.000),
-            new CoxRossRubinsteinModel.Node(3, 1, 0.589, 0.000),
-            new CoxRossRubinsteinModel.Node(3, 2, 0.632, 0.032),
-            new CoxRossRubinsteinModel.Node(3, 3, 0.677, 0.077),
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 0.610, 0.019, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 0.589, 0.007, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 0.632, 0.033, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 0.569, 0.000, false),
+            new CoxRossRubinsteinModel.Node(2, 1, 0.610, 0.015, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 0.654, 0.054, true),
+            new CoxRossRubinsteinModel.Node(3, 0, 0.550, 0.000, false),
+            new CoxRossRubinsteinModel.Node(3, 1, 0.589, 0.000, false),
+            new CoxRossRubinsteinModel.Node(3, 2, 0.632, 0.032, true),
+            new CoxRossRubinsteinModel.Node(3, 3, 0.677, 0.077, true),
         });
         CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
             option, timeSteps, // inputs
@@ -216,17 +217,17 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
-            // node: i, n, S, V
-            new CoxRossRubinsteinModel.Node(0, 0, 31.00, 2.84),
-            new CoxRossRubinsteinModel.Node(1, 0, 26.68, 4.54),
-            new CoxRossRubinsteinModel.Node(1, 1, 36.02, 0.93),
-            new CoxRossRubinsteinModel.Node(2, 0, 22.97, 7.03),
-            new CoxRossRubinsteinModel.Node(2, 1, 31.00, 1.76),
-            new CoxRossRubinsteinModel.Node(2, 2, 41.85, 0.00),
-            new CoxRossRubinsteinModel.Node(3, 0, 19.77, 10.23),
-            new CoxRossRubinsteinModel.Node(3, 1, 26.68, 3.32),
-            new CoxRossRubinsteinModel.Node(3, 2, 36.02, 0.00),
-            new CoxRossRubinsteinModel.Node(3, 3, 48.62, 0.00),
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 31.00, 2.84, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 26.68, 4.54, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 36.02, 0.93, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 22.97, 7.03, true),
+            new CoxRossRubinsteinModel.Node(2, 1, 31.00, 1.76, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 41.85, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 0, 19.77, 10.23, true),
+            new CoxRossRubinsteinModel.Node(3, 1, 26.68, 3.32, true),
+            new CoxRossRubinsteinModel.Node(3, 2, 36.02, 0.00, false),
+            new CoxRossRubinsteinModel.Node(3, 3, 48.62, 0.00, false),
         });
         CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
             option, timeSteps, // inputs
@@ -236,6 +237,12 @@ class CoxRossRubinsteinPricerTest {
 
         CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
     }
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region calculation tests, Hull SSM (2014)
+    //----------------------------------------------------------------------
 
     /*
      * Hull SSM (2014): page 142, Problem 13.16
@@ -252,18 +259,50 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
-            // node: i, n, S, V
-            new CoxRossRubinsteinModel.Node(0, 0, 78.00, 4.67),
-            new CoxRossRubinsteinModel.Node(1, 0, 69.01, 0.00),
-            new CoxRossRubinsteinModel.Node(1, 1, 88.16, 9.58),
-            new CoxRossRubinsteinModel.Node(2, 0, 61.05, 0.00),
-            new CoxRossRubinsteinModel.Node(2, 1, 78.00, 0.00),
-            new CoxRossRubinsteinModel.Node(2, 2, 99.65, 19.65),
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 78.00, 4.67, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 69.01, 0.00, false),
+            new CoxRossRubinsteinModel.Node(1, 1, 88.16, 9.58, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 61.05, 0.00, false),
+            new CoxRossRubinsteinModel.Node(2, 1, 78.00, 0.00, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 99.65, 19.65, true),
         });
         CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
             option, timeSteps, // inputs
             0.1667, 1.1303, 0.8847, 0.4898, // parameters: deltat (Δt), u, d, p
             4.67, expectedNodes // outputs: price, nodes
+        );
+
+        CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
+    }
+
+    /*
+     * Hull SSM (2014): page 142, Problem 13.17
+     */
+    @Test
+    void price_HullSSM2014_P13_17() {
+        // Arrange
+        // option: style, type, S, K, T, v (σ), r, q
+        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025);
+        int timeSteps = 2;
+
+        // Act
+        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+
+        // Assert
+        List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
+            // node: i, n, S, V, exercised
+            new CoxRossRubinsteinModel.Node(0, 0, 1500.00, 78.41, false),
+            new CoxRossRubinsteinModel.Node(1, 0, 1320.73, 159.27, true),
+            new CoxRossRubinsteinModel.Node(1, 1, 1703.60, 0.00, false),
+            new CoxRossRubinsteinModel.Node(2, 0, 1162.89, 317.11, true),
+            new CoxRossRubinsteinModel.Node(2, 1, 1500.00, 0.00, false),
+            new CoxRossRubinsteinModel.Node(2, 2, 1934.84, 0.00, false),
+        });
+        CoxRossRubinsteinModel expected = CoxRossRubinsteinPricerTest.createModel(
+            option, timeSteps, // inputs
+            0.5, 1.1357, 0.8805, 0.4977, // parameters: deltat (Δt), u, d, p
+            78.41, expectedNodes // outputs: price, nodes
         );
 
         CoxRossRubinsteinPricerTest.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
