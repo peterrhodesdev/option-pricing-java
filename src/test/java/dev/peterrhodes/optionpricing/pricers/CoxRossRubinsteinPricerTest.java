@@ -2,8 +2,12 @@ package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import dev.peterrhodes.optionpricing.options.EuropeanOption;
 import dev.peterrhodes.optionpricing.options.ExoticOption;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,10 +49,40 @@ class CoxRossRubinsteinPricerTest {
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
 
         // Act
-        double result = CoxRossRubinsteinPricer.price(option, 2);
+        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, 2);
 
         // Assert
-        assertThat(result).isEqualTo(7.43, withPrecision(0.01));
+        double precision = 0.01;
+        assertThat(result.getPrice()).isEqualTo(7.43, withPrecision(precision));
+
+        List<CoxRossRubinsteinModel.Node> expectedNodes = Arrays.asList(new CoxRossRubinsteinModel.Node[] {
+            new CoxRossRubinsteinModel.Node(0, 0, 50, 7.43),
+            new CoxRossRubinsteinModel.Node(1, 0, 37.04, 14.96),
+            new CoxRossRubinsteinModel.Node(1, 1, 67.49, 0.93),
+            new CoxRossRubinsteinModel.Node(2, 0, 27.44, 24.56),
+            new CoxRossRubinsteinModel.Node(2, 1, 50, 2),
+            new CoxRossRubinsteinModel.Node(2, 2, 91.11, 0),
+        });
+
+        List<CoxRossRubinsteinModel.Node> resultNodes = result.getNodes();
+
+        int size = expectedNodes.size();
+        assertThat(resultNodes.size()).isEqualTo(size);
+
+        for (CoxRossRubinsteinModel.Node expectedNode : expectedNodes) {
+            CoxRossRubinsteinModel.Node resultNode = resultNodes.stream()
+                .filter(item -> item.getI() == expectedNode.getI() && item.getN() == expectedNode.getN())
+                .findAny()
+                .orElse(null);
+            assertThat(resultNode).isNotNull();
+
+            System.out.println("expectedNode");
+            System.out.println("i = " + expectedNode.getI() + ", n = " + expectedNode.getN() + ", S = " + expectedNode.getS() + ", V = " + expectedNode.getV());
+            System.out.println("resultNode");
+            System.out.println("i = " + resultNode.getI() + ", n = " + resultNode.getN() + ", S = " + resultNode.getS() + ", V = " + resultNode.getV());
+            assertThat(resultNode.getS()).isEqualTo(expectedNode.getS(), withPrecision(precision));
+            assertThat(resultNode.getV()).isEqualTo(expectedNode.getV(), withPrecision(precision));
+        }
     }
 
     /*

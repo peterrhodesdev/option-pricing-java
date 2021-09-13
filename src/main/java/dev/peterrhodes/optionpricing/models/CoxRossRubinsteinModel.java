@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public class CoxRossRubinsteinModel {
 
+    @Getter
     public static class Node {
         public int i;
         public int n;
