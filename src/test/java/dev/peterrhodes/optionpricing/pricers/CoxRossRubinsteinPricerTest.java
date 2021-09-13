@@ -1,7 +1,9 @@
 package dev.peterrhodes.optionpricing.pricers;
 
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.options.EuropeanOption;
+import dev.peterrhodes.optionpricing.options.ExoticOption;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +47,22 @@ class CoxRossRubinsteinPricerTest {
 
         // Assert
         assertThat(result).isEqualTo(53.39, withPrecision(0.01));
+    }
+
+    /*
+     * Hull: page 311, section 13.9, Figure 13.10
+     */
+    @Test
+    void price_Hull_Fig13_10() {
+        // Arrange
+        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
+        CoxRossRubinsteinPricer crrPricer = new CoxRossRubinsteinPricer(2);
+
+        // Act
+        double result = crrPricer.price(option);
+
+        // Assert
+        assertThat(result).isEqualTo(7.43, withPrecision(0.01));
     }
 
     //----------------------------------------------------------------------
