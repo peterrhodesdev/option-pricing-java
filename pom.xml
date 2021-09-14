@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>dev.peterrhodes.optionpricing</groupId>
-  <artifactId>optionpricing</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>option-pricing</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
 
-  <name>optionpricing</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <!-- https://central.sonatype.org/publish/requirements/#project-name-description-and-url -->
+  <name>Option Pricing</name>
+  <description>
+    Financial option price calculator that also provides details on the analytical or numerical pricing method used.
+  </description>
+  <url>https://github.com/peterrhodesdev/option-pricing-java</url>
+
+  <!-- https://central.sonatype.org/publish/requirements/#license-information -->
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <!-- https://central.sonatype.org/publish/requirements/#developer-information -->
+  <developers>
+    <developer>
+      <name>Peter Rhodes</name>
+      <email>peter@peterrhodes.dev</email>
+      <organization>Peter Rhodes dev</organization>
+      <organizationUrl>https://peterrhodes.dev</organizationUrl>
+    </developer>
+  </developers>
+
+  <!-- https://central.sonatype.org/publish/requirements/#scm-information -->
+  <scm>
+    <connection>scm:git:git://github.com/peterrhodesdev/option-pricing-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com:peterrhodesdev/option-pricing-java.git</developerConnection>
+    <url>http://github.com/peterrhodesdev/option-pricing-java/tree/main</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
