@@ -3,6 +3,7 @@ package dev.peterrhodes.optionpricing.models;
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -23,6 +24,7 @@ public class CoxRossRubinsteinModel {
 
     // Outputs
     private double price;
+    //@Getter(value = AccessLevel.NONE)
     private List<LatticeNode> nodes;
 
     /**

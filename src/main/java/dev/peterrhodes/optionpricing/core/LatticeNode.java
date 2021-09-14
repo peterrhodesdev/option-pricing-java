@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class LatticeNode {
+public class LatticeNode implements Cloneable {
 
     private int i;
     private int j;
@@ -31,5 +31,17 @@ public class LatticeNode {
         this.S = S;
         this.V = V;
         this.exercised = exercised;
+    }
+
+    /**
+     * Clone the object.
+     */
+    @Override
+    public Object clone() {
+        try {
+            return (LatticeNode) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return new LatticeNode(this.i, this.j, this.S, this.V, this.exercised);
+        }
     }
 }
