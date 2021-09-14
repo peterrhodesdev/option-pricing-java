@@ -125,7 +125,7 @@
           <failsOnError>false</failsOnError>
           <violationSeverity>warning</violationSeverity>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <!--<consoleOutput>true</consoleOutput>-->
+          <!--<consoleOutput>true</consoleOutput>-->
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
@@ -172,6 +172,7 @@
             <phase>verify</phase>
             <goals>
               <goal>check</goal>
+              <goal>cpd-check</goal>
             </goals>
           </execution>
         </executions>
@@ -180,6 +181,7 @@
           <linkXRef>false</linkXRef>
           <failOnViolation>true</failOnViolation>
           <printFailingErrors>true</printFailingErrors>
+          <minimumTokens>80</minimumTokens>
         </configuration>
       </plugin>
     </plugins>
