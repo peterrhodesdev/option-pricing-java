@@ -85,7 +85,7 @@
         </configuration>
       </plugin>
 
-      <!-- lint -->
+      <!-- checkstyle -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -99,7 +99,7 @@
         </dependencies>
         <executions>
           <execution>
-            <id>google-checks</id>
+            <id>checkstyle-google-checks</id>
             <phase>validate</phase>
             <goals>
               <goal>check</goal>
@@ -111,7 +111,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>custom-checks</id>
+            <id>checkstyle-custom-checks</id>
             <phase>validate</phase>
             <goals>
               <goal>check</goal>
@@ -128,6 +128,29 @@
             <!--<consoleOutput>true</consoleOutput>-->
           <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+
+      <!-- spotbugs -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.2.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs</artifactId>
+            <version>4.4.1</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>spotbugs</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
