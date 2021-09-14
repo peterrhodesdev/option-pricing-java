@@ -2,6 +2,7 @@ package dev.peterrhodes.optionpricing.models;
 
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class CoxRossRubinsteinModel {
 
     // Outputs
     private double price;
-    //@Getter(value = AccessLevel.NONE)
+    @Getter(value = AccessLevel.NONE)
     private List<LatticeNode> nodes;
 
     /**
@@ -61,6 +62,24 @@ public class CoxRossRubinsteinModel {
      */
     public void setOutputs(double price, List<LatticeNode> nodes) {
         this.price = price;
-        this.nodes = nodes;
+
+        // Deep copy nodes
+        this.nodes = new ArrayList();
+        for (LatticeNode node : nodes) {
+            this.nodes.add((LatticeNode) node.clone());
+        }
+    }
+
+    /**
+     * Returns a deep copy of the lattice nodes list.
+     *
+     * @return lattice nodes
+     */
+    public List<LatticeNode> getNodes() {
+        List<LatticeNode> clone = new ArrayList();
+        for (LatticeNode node : this.nodes) {
+            clone.add((LatticeNode) node.clone());
+        }
+        return clone;
     }
 }
