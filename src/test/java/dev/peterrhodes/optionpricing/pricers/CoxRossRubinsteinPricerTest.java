@@ -66,24 +66,24 @@ class CoxRossRubinsteinPricerTest {
 
         for (LatticeNode expectedNode : expectedNodes) {
             // node with same i and n exists
-            int i = expectedNode.getI(), n = expectedNode.getN();
+            int i = expectedNode.getI(), j = expectedNode.getJ();
             LatticeNode resultNode = resultNodes.stream()
-                .filter(item -> item.getI() == i && item.getN() == n)
+                .filter(item -> item.getI() == i && item.getJ() == j)
                 .findAny()
                 .orElse(null);
             assertThat(resultNode)
-                .withFailMessage("node (%d, %d) not found", i, n)
+                .withFailMessage("node (%d, %d) not found", i, j)
                 .isNotNull();
 
             // node(i, n) values
             assertThat(resultNode.getS())
-                .as(String.format("node (%d, %d) S", i, n))
+                .as(String.format("node (%d, %d) S", i, j))
                 .isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
             assertThat(resultNode.getV())
-                .as(String.format("node (%d, %d) V", i, n))
+                .as(String.format("node (%d, %d) V", i, j))
                 .isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
             assertThat(resultNode.isExercised())
-                .as(String.format("node (%d, %d) exercised", i, n))
+                .as(String.format("node (%d, %d) exercised", i, j))
                 .isEqualTo(expectedNode.isExercised());
         }
     }
