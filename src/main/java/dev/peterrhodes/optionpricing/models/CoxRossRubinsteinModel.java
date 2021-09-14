@@ -56,6 +56,7 @@ public class CoxRossRubinsteinModel {
 
     /**
      * Set the outputs of the model.
+     * Note: a deep copy of the nodes list is made, i.e. making changes to the original object won't affect this copy.
      *
      * @param price calculated price of the option
      * @param nodes list of the lattice nodes used to perform the calculation
