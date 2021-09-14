@@ -10,6 +10,7 @@ public interface AnalyticalOption extends Option {
 
     /**
      * Calculates the fair value of the option.
+     *
      * @return option price
      */
     double price();
@@ -17,6 +18,7 @@ public interface AnalyticalOption extends Option {
     /**
      * Calculates the delta (Δ) of the option.
      * First derivative of the option value with respect to the underlying asset price.
+     *
      * @return option delta
      */
     double delta();
@@ -24,6 +26,7 @@ public interface AnalyticalOption extends Option {
     /**
      * Calculates the gamma (Γ) of the option.
      * Second derivative of the option value with respect to the underlying asset price.
+     *
      * @return option gamma
      */
     double gamma();
@@ -31,6 +34,7 @@ public interface AnalyticalOption extends Option {
     /**
      * Calculates the vega (ν) of the option.
      * First derivative of the option value with respect to the underlying asset volatility.
+     *
      * @return option vega
      */
     double vega();
@@ -38,6 +42,7 @@ public interface AnalyticalOption extends Option {
     /**
      * Calculates the theta (Θ) of the option.
      * Negative first derivative of the option value with respect to the time to maturity.
+     *
      * @return option theta
      */
     double theta();
@@ -45,12 +50,14 @@ public interface AnalyticalOption extends Option {
     /**
      * Calculates the rho (ρ) of the option.
      * First derivative of the option value with respect to the risk free interest rate.
+     *
      * @return option rho
      */
     double rho();
 
     /**
      * Performs all of the calculations necessary to populate an {@link AnalyticalCalculationModel}.
+     *
      * @return model object populated with the results of the calculations
      */
     AnalyticalCalculationModel calculation();

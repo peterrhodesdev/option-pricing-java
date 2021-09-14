@@ -2,7 +2,6 @@ package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-
 import lombok.Getter;
 
 /**
@@ -23,6 +22,7 @@ public abstract class AbstractOption implements Option {
 
     /**
      * Creates an abstract option with the specified parameters.
+     *
      * @param style style of the option, usually defined by the exercise rights, e.g. European, American
      * @param type type of the option (call or put)
      * @param S price of the underlying asset (spot price)

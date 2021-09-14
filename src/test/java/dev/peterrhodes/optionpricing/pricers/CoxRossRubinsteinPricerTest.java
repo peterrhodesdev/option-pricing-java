@@ -1,5 +1,9 @@
 package dev.peterrhodes.optionpricing.pricers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.withPrecision;
+
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
@@ -7,15 +11,9 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import dev.peterrhodes.optionpricing.options.EuropeanOption;
 import dev.peterrhodes.optionpricing.options.ExoticOption;
-
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.withPrecision;
 
 /**
  * Test class for {@link CoxRossRubinsteinPricer}.
@@ -31,13 +29,14 @@ class CoxRossRubinsteinPricerTest {
 
     private final String greaterThanZeroMessage = "must be greater than zero";
 
-    private CoxRossRubinsteinModel createModel(Option option, int timeSteps, double Δt, double u, double d, double p, double price, List<LatticeNode> nodes) {
+    private CoxRossRubinsteinModel createModel(Option option, int timeSteps, double deltat, double u, double d, double p, double price, List<LatticeNode> nodes) {
         CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(option, timeSteps);
-        model.setParameters(Δt, u, d, p);
+        model.setParameters(deltat, u, d, p);
         model.setOutputs(price, nodes);
         return model;
     }
 
+    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     private void assertCalculation(CoxRossRubinsteinModel result, CoxRossRubinsteinModel expected, double parameterPrecision, double outputPrecision) {
         // parameters
         assertThat(result.getDeltat())
@@ -95,7 +94,7 @@ class CoxRossRubinsteinPricerTest {
     //----------------------------------------------------------------------
 
     @Test
-    void throws_zeroTimeSteps() {
+    void throwsZeroTimeSteps() {
         // Arrange
         // option: style, type, S, K, T, vol (σ), r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
@@ -118,9 +117,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 311, section 13.9, Figure 13.10
      */
     @Test
-    void calculation_Hull2014_Fig13_10() {
+    void calculationHull2014Fig1310() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
         int timeSteps = 2;
 
@@ -150,9 +148,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 313, section 13.11, Figure 13.11
      */
     @Test
-    void calculation_Hull2014_Fig13_11() {
+    void calculationHull2014Fig1311() {
         // Arrange
-        // European option: type, S, K, T, vol (σ), r, q
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 810, 800, 0.5, 0.2, 0.05, 0.02);
         int timeSteps = 2;
 
@@ -182,9 +179,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 314, section 13.11, Figure 13.12
      */
     @Test
-    void calculation_Hull2014_Fig13_12() {
+    void calculationHull2014Fig1312() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07);
         int timeSteps = 3;
 
@@ -218,9 +214,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 316, section 13.11, Figure 13.13
      */
     @Test
-    void calculation_Hull2014_Fig13_13() {
+    void calculationHull2014Fig1313() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         double r = 0.05;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 31, 30, 0.75, 0.3, r, q);
@@ -262,10 +257,9 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 142, Problem 13.16
      */
     @Test
-    void price_HullSSM2014_P13_16() {
+    void priceHullSsm2014P1316() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
-        ExoticOption option = new ExoticOption(OptionStyle.EUROPEAN, OptionType.CALL, 78, 80, 4/12d, 0.3, 0.03, 0);
+        ExoticOption option = new ExoticOption(OptionStyle.EUROPEAN, OptionType.CALL, 78, 80, 4 / 12d, 0.3, 0.03, 0);
         int timeSteps = 2;
 
         // Act
@@ -294,9 +288,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 142, Problem 13.17
      */
     @Test
-    void price_HullSSM2014_P13_17() {
+    void priceHullSsm2014P1317() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025);
         int timeSteps = 2;
 
@@ -326,9 +319,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 143, Problem 13.18a
      */
     @Test
-    void price_HullSSM2014_P13_18a() {
+    void priceHullSsm2014P1318a() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 90, 93, 0.75, 0.28, r, q);
@@ -364,9 +356,8 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 143, Problem 13.18b
      */
     @Test
-    void price_HullSSM2014_P13_18b() {
+    void priceHullSsm2014P1318b() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 90, 93, 0.75, 0.28, r, q);

@@ -17,6 +17,7 @@ public class AnalyticalCalculationModel {
 
     /**
      * Creates a model for the results of an analytical option calculation.
+     *
      * @param price theoretical option value
      * @param delta option delta (Δ), measures sensitivity to the underlying asset price
      * @param gamma option gamma (Γ), measures sensitivity to the delta

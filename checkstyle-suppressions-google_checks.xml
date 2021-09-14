@@ -7,4 +7,9 @@
 <suppressions>
   <suppress checks="IndentationCheck" files="."/>
   <suppress checks="LineLengthCheck" files="."/>
+  <suppress checks="MemberNameCheck" files="."/>
+  <suppress checks="ParameterNameCheck" files="."/>
+  <suppress checks="LocalVariableNameCheck" files="."/>
+  <suppress checks="MethodNameCheck" files="."/>
+  <suppress checks="MultipleVariableDeclarationsCheck" files="."/>
 </suppressions>

@@ -2,9 +2,7 @@ package dev.peterrhodes.optionpricing.models;
 
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
-
 import java.util.List;
-
 import lombok.Getter;
 
 /**
@@ -28,7 +26,8 @@ public class CoxRossRubinsteinModel {
     private List<LatticeNode> nodes;
 
     /**
-     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}
+     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
+     *
      * @param option the option that the calculation was performed for
      * @param timeSteps number of time steps in the calculation
      */
@@ -39,6 +38,7 @@ public class CoxRossRubinsteinModel {
 
     /**
      * Set the parameters of the model.
+     *
      * @param deltat (Δt) length of a single time interval/step
      * @param u proportional up movement
      * @param d proportional down movement
@@ -53,6 +53,7 @@ public class CoxRossRubinsteinModel {
 
     /**
      * Set the outputs of the model.
+     *
      * @param price calculated price of the option
      * @param nodes list of the lattice nodes used to perform the calculation
      */

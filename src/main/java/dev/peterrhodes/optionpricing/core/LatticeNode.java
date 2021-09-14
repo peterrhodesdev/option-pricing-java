@@ -18,6 +18,7 @@ public class LatticeNode {
 
     /**
      * Creates a node in the pricing model lattice.
+     *
      * @param i time step position (starts from zero at t = 0)
      * @param j asset price position for the given time step (starts from zero, goes from lowest to highest asset price)
      * @param S asset price

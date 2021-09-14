@@ -5,7 +5,6 @@ import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -23,6 +22,7 @@ public abstract class CoxRossRubinsteinPricer {
 
     /**
      * Calculates the price of the given option.
+     *
      * @param option the option to perform the calculation for
      * @param timeSteps number of time steps in the tree
      * @return the calculated price of the option
@@ -39,6 +39,7 @@ public abstract class CoxRossRubinsteinPricer {
 
     /**
      * Performs all of the calculations necessary to populate a {@link dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel CoxRossRubinsteinModel}, i.e. calculates the option price along with a list of the tree nodes.
+     *
      * @param option the option to perform the calculation for
      * @param timeSteps number of time steps in the tree
      * @return model object populated with the results of the calculations
@@ -51,14 +52,13 @@ public abstract class CoxRossRubinsteinPricer {
 
     private static CoxRossRubinsteinModel performCalculation(Option option, int timeSteps) {
         CoxRossRubinsteinModel model = determineModelParameters(option, timeSteps);
-        double Δt = model.getDeltat(), u = model.getU(), d = model.getD(), p = model.getP();
 
         List<LatticeNode> nodes = new ArrayList();
 
         // Create the tree
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)
             for (int j = 0; j <= i; j++) { // jth node at the ith time step (from lowest underlying price to highest)
-                LatticeNode node = createNode(option.getS(), i, j, u, d);
+                LatticeNode node = createNode(option.getS(), i, j, model.getU(), model.getD());
                 nodes.add(node);
             }
         }
@@ -66,7 +66,7 @@ public abstract class CoxRossRubinsteinPricer {
         // Working backwards through the tree calculating the option values
         for (int i = timeSteps; i >= 0; i--) {
             for (int j = 0; j <= i; j++) {
-                calculateNodeOptionValue(option, timeSteps, nodes, i, j, Δt, p);
+                calculateNodeOptionValue(option, timeSteps, nodes, i, j, model.getDeltat(), model.getP());
             }
         }
 
@@ -77,18 +77,18 @@ public abstract class CoxRossRubinsteinPricer {
     private static CoxRossRubinsteinModel determineModelParameters(Option option, int timeSteps) {
         CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(option, timeSteps);
         
-        double Δt = option.getT() / timeSteps; // length of a single time interval/step
-        double u = Math.exp(option.getVol() * Math.sqrt(Δt)); // proportional up movement
-        double d = Math.exp(-option.getVol() * Math.sqrt(Δt)); // proportional down movement
-        double a = Math.exp((option.getR() - option.getQ()) * Δt); // growth factor
+        double deltat = option.getT() / timeSteps; // (Δt) length of a single time interval/step
+        double u = Math.exp(option.getVol() * Math.sqrt(deltat)); // proportional up movement
+        double d = Math.exp(-option.getVol() * Math.sqrt(deltat)); // proportional down movement
+        double a = Math.exp((option.getR() - option.getQ()) * deltat); // growth factor
         double p = (a - d) / (u - d); // probability of an up movement (probability of a down movement is 1 - p)
 
-        model.setParameters(Δt, u, d, p);
+        model.setParameters(deltat, u, d, p);
         return model;
     }
 
-    private static LatticeNode createNode(double S_0, int i, int j, double u, double d) {
-        double S = S_0 * Math.pow(u, j) * Math.pow(d, i - j);
+    private static LatticeNode createNode(double initialSpotPrice, int i, int j, double u, double d) {
+        double S = initialSpotPrice * Math.pow(u, j) * Math.pow(d, i - j); // S_ij = S_0 u^j d^(i-j)
         //double t = i == this.timeSteps ? option.getT() : i * Δt;
         double V = 0; // Can't calculate yet
 
@@ -96,7 +96,7 @@ public abstract class CoxRossRubinsteinPricer {
         return node;
     }
 
-    private static void calculateNodeOptionValue(Option option, int timeSteps, List<LatticeNode> nodes, int i, int j, double Δt, double p) {
+    private static void calculateNodeOptionValue(Option option, int timeSteps, List<LatticeNode> nodes, int i, int j, double deltat, double p) {
         int currentIndex = calculateNodeIndex(i, j);
         LatticeNode currentNode = nodes.get(currentIndex);
         double S = currentNode.getS();
@@ -110,7 +110,7 @@ public abstract class CoxRossRubinsteinPricer {
         } else {
             int downIndex = currentIndex + (i + 1);
             int upIndex = downIndex + 1;
-            double optionCurrentValue = (p * nodes.get(upIndex).getV() + (1 - p) * nodes.get(downIndex).getV()) * Math.exp(-option.getR() * Δt);
+            double optionCurrentValue = (p * nodes.get(upIndex).getV() + (1 - p) * nodes.get(downIndex).getV()) * Math.exp(-option.getR() * deltat);
             double earlyExerciseValue;
             switch (option.getStyle()) {
                 case AMERICAN:
@@ -128,7 +128,9 @@ public abstract class CoxRossRubinsteinPricer {
     }
 
     /**
-     * The values of j (left) and the list index (right) for a 3-step binomial tree:
+     * The tree is flattened into a one-dimensional list, so we need to determine the corresponding list index for a given node (i, j).
+     * The list index is calculated as the sum of the i's plus j.
+     * Below shows the values of j (left) and the list index (right) for a 3-step binomial tree.
      *           3              9
      *          /              /
      *         2              5

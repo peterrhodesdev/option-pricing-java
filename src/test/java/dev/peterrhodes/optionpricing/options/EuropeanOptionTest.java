@@ -1,13 +1,11 @@
 package dev.peterrhodes.optionpricing.options;
 
-import dev.peterrhodes.optionpricing.enums.OptionType;
-//import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
-
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
+
+import dev.peterrhodes.optionpricing.enums.OptionType;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link EuropeanOption}.
@@ -23,7 +21,7 @@ class EuropeanOptionTest {
     //----------------------------------------------------------------------
 
     @Test
-    void throws_zeroSpotPrice() {
+    void throwsZeroSpotPrice() {
         // Arrange Act Assert
         assertThatThrownBy(() -> {
             EuropeanOption ex = new EuropeanOption(OptionType.CALL, 0.0, 100.0, 1.0, 0.25, 0.1, 0.05);
@@ -32,7 +30,7 @@ class EuropeanOptionTest {
     }
 
     @Test
-    void throws_zeroStrikePrice() {
+    void throwsZeroStrikePrice() {
         // Arrange Act Assert
         assertThatThrownBy(() -> {
             EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 0.0, 1.0, 0.25, 0.1, 0.05);
@@ -41,7 +39,7 @@ class EuropeanOptionTest {
     }
 
     @Test
-    void throws_zeroTimeToExpiration() {
+    void throwsZeroTimeToExpiration() {
         // Arrange Act Assert
         assertThatThrownBy(() -> {
             EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 0.0, 0.25, 0.1, 0.05);
@@ -50,7 +48,7 @@ class EuropeanOptionTest {
     }
 
     @Test
-    void throws_zeroVolatility() {
+    void throwsZeroVolatility() {
         // Arrange Act Assert
         assertThatThrownBy(() -> {
             EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.0, 0.1, 0.05);
@@ -67,27 +65,28 @@ class EuropeanOptionTest {
     /**
      * Hull (2014): page 360, section 15.9, Example 15.6
      */
+    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     @Test
-    void price_Hull2014_Ex15_6() {
+    void priceHull2014Ex156() {
         // Arrange
-        double S = 42, K = 40, T = 0.5, σ = 0.2, r = 0.1, q = 0;
-        EuropeanOption call = new EuropeanOption(OptionType.CALL, S, K, T, σ, r, q);
-        EuropeanOption put = new EuropeanOption(OptionType.PUT, S, K, T, σ, r, q);
+        double S = 42, K = 40, T = 0.5, vol = 0.2, r = 0.1, q = 0;
+        EuropeanOption call = new EuropeanOption(OptionType.CALL, S, K, T, vol, r, q);
+        EuropeanOption put = new EuropeanOption(OptionType.PUT, S, K, T, vol, r, q);
 
         // Act
-        double call_result = call.price();
-        double put_result = put.price();
+        double callResult = call.price();
+        double putResult = put.price();
 
         // Assert
-        assertThat(call_result).isEqualTo(4.76, withPrecision(0.01));
-        assertThat(put_result).isEqualTo(0.81, withPrecision(0.01));
+        assertThat(callResult).isEqualTo(4.76, withPrecision(0.01));
+        assertThat(putResult).isEqualTo(0.81, withPrecision(0.01));
     }
 
     /**
      * Hull (2014): page 363, section 15.10, Example 15.7
      */
     @Test
-    void price_Hull2014_Ex15_7() {
+    void priceHull2014Ex157() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 40, 60, 5, 0.3, 0.03, 0);
 
@@ -105,9 +104,9 @@ class EuropeanOptionTest {
      * Hull (2014): page 396, section 17.4, Example 17.1
      */
     @Test
-    void price_Hull2014_Ex17_1() {
+    void priceHull2014Ex171() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 930, 900, 2d/12d, 0.2, 0.08, 0.03);
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, 930, 900, 2 / 12d, 0.2, 0.08, 0.03);
 
         // Act
         double result = option.price();
@@ -120,18 +119,18 @@ class EuropeanOptionTest {
      * Hull (2014): page 399, section 17.5, Example 17.2
      */
     @Test
-    void price_Hull2014_Ex17_2() {
+    void priceHull2014Ex172() {
         // Arrange
-        EuropeanOption option_volatilty10 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.1, 0.08, 0.11);
-        EuropeanOption option_volatilty20 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.2, 0.08, 0.11);
+        EuropeanOption optionVolatilty10 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.1, 0.08, 0.11);
+        EuropeanOption optionVolatilty20 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.2, 0.08, 0.11);
 
         // Act
-        double result_volatilty10 = option_volatilty10.price();
-        double result_volatilty20 = option_volatilty20.price();
+        double resultVolatilty10 = optionVolatilty10.price();
+        double resultVolatilty20 = optionVolatilty20.price();
 
         // Assert
-        assertThat(result_volatilty10).isEqualTo(0.0285, withPrecision(0.0001));
-        assertThat(result_volatilty20).isEqualTo(0.0639, withPrecision(0.0001));
+        assertThat(resultVolatilty10).isEqualTo(0.0285, withPrecision(0.0001));
+        assertThat(resultVolatilty20).isEqualTo(0.0639, withPrecision(0.0001));
     }
 
     // TODO: Hull (2014) Chapter 17 Practice Questions
@@ -146,7 +145,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 427, section 19.4, Example 19.1
      */
     @Test
-    void delta_Hull2014_Ex19_1() {
+    void deltaHull2014Ex191() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -161,7 +160,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 445, section 19.13, Example 19.9
      */
     @Test
-    void delta_Hull2014_Ex19_9() {
+    void deltaHull2014Ex199() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.PUT, 90, 87, 0.5, 0.25, 0.09, 0.03);
 
@@ -182,7 +181,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 436, section 19.6, Example 19.4
      */
     @Test
-    void gamma_Hull2014_Ex19_4() {
+    void gammaHull2014Ex194() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -203,7 +202,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 438, section 19.8, Example 19.6
      */
     @Test
-    void gamma_Hull2014_Ex19_6() {
+    void gammaHull2014Ex196() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -224,7 +223,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 431, section 19.5, Example 19.2
      */
     @Test
-    void theta_Hull2014_Ex19_2() {
+    void thetaHull2014Ex192() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -247,7 +246,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 439, section 19.9, Example 19.7
      */
     @Test
-    void rho_Hull2014_Ex19_7() {
+    void rhoHull2014Ex197() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
