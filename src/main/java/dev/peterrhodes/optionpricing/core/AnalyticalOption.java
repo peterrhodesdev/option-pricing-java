@@ -8,7 +8,7 @@ import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
  */
 public interface AnalyticalOption extends Option {
 
-    //region calculations
+    //region price
     //----------------------------------------------------------------------
 
     /**
@@ -19,12 +19,52 @@ public interface AnalyticalOption extends Option {
     double price();
 
     /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] priceLatexFormula();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] priceLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region delta
+    //----------------------------------------------------------------------
+
+    /**
      * Calculates the delta (Δ) of the option.
      * First derivative of the option value with respect to the underlying asset price.
      *
      * @return option delta
      */
     double delta();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] deltaLatexFormula();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] deltaLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region gamma
+    //----------------------------------------------------------------------
 
     /**
      * Calculates the gamma (Γ) of the option.
@@ -35,12 +75,52 @@ public interface AnalyticalOption extends Option {
     double gamma();
 
     /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] gammaLatexFormula();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] gammaLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region vega
+    //----------------------------------------------------------------------
+
+    /**
      * Calculates the vega (ν) of the option.
      * First derivative of the option value with respect to the underlying asset volatility.
      *
      * @return option vega
      */
     double vega();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] vegaLatexFormula();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] vegaLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region theta
+    //----------------------------------------------------------------------
 
     /**
      * Calculates the theta (Θ) of the option.
@@ -51,6 +131,26 @@ public interface AnalyticalOption extends Option {
     double theta();
 
     /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] thetaLatexFormula();
+
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] thetaLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region rho
+    //----------------------------------------------------------------------
+
+    /**
      * Calculates the rho (ρ) of the option.
      * First derivative of the option value with respect to the risk free interest rate.
      *
@@ -58,27 +158,19 @@ public interface AnalyticalOption extends Option {
      */
     double rho();
 
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region LaTex formulas
-    //----------------------------------------------------------------------
+    /**
+     * TODO.
+     *
+     * @return TODO
+     */
+    String[] rhoLatexFormula();
 
     /**
      * TODO.
+     *
+     * @return TODO
      */
-    String deltaLatexFormula();
-
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region LaTex calculations
-    //----------------------------------------------------------------------
-
-    /**
-     * TODO.
-     */
-    String deltaLatexCalculation();
+    String[] rhoLatexCalculation();
 
     //----------------------------------------------------------------------
     //endregion

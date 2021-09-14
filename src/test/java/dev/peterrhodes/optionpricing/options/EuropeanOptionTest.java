@@ -154,8 +154,6 @@ class EuropeanOptionTest {
 
         // Assert
         assertThat(result).isEqualTo(0.522, withPrecision(0.001));
-        System.out.println(option.deltaLatexFormula());
-        System.out.println(option.deltaLatexCalculation());
     }
 
     /**

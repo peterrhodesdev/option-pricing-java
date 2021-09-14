@@ -1,12 +1,12 @@
 package dev.peterrhodes.optionpricing.options;
 
-//import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
+import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
-import java.util.HashMap;
-import java.util.Map;
+//import java.util.HashMap;
+//import java.util.Map;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -26,116 +26,27 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         this.N = new NormalDistribution();
     }
 
-    //region calculations
-    //======================================================================
+    //region private helpers
+    //----------------------------------------------------------------------
 
     /**
      * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
+     *
+     * @return d_i
      */
     private double d(int i) {
         return 1 / (this.vol * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T);
     }
 
-    //region price
-    //----------------------------------------------------------------------
-
     /**
-     * {@inheritDoc}
+     * Returns 1 for a call option, -1 for a put option.
+     *
+     * @return type factor
      */
-    @Override
-    public double price() {
-        return this.type == OptionType.CALL ? this.callPrice() : this.putPrice();
+    private double typeFactor() {
+        return this.type == OptionType.CALL ? 1 : -1;
     }
-
-    private double callPrice() {
-        return this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d(1)) - this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d(2));
-    }
-
-    private double putPrice() {
-        return this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d(2)) - this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d(1));
-    }
-
-    //----------------------------------------------------------------------
-    //endregion price
-
-    //region delta
-    //----------------------------------------------------------------------
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double delta() {
-        return this.type == OptionType.CALL ? this.callDelta() : this.putDelta();
-    }
-
-    private double callDelta() {
-        return Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d(1));
-    }
-
-    private double putDelta() {
-        return -Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d(1));
-    }
-
-    //----------------------------------------------------------------------
-    //endregion delta
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double gamma() {
-        return Math.exp(-this.q * this.T) * this.N.density(this.d(1)) / (this.S * this.vol * Math.sqrt(this.T));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double vega() {
-        return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d(1)) * Math.sqrt(this.T);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double theta() {
-        double typeFactor = this.type == OptionType.CALL ? 1 : -1;
-        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
-        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(typeFactor * this.d(2));
-        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(typeFactor * this.d(1));
-        return term1 - (typeFactor *  term2) + (typeFactor * term3);
-    }
-
-    //region rho
-    //----------------------------------------------------------------------
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double rho() {
-        return this.type == OptionType.CALL ? this.callRho() : this.putRho();
-    }
-
-    private double callRho() {
-        return this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d(2));
-    }
-
-    private double putRho() {
-        return -this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d(2));
-    }
-
-    //----------------------------------------------------------------------
-    //endregion rho
-
-    //======================================================================
-    //endregion calculations
-
-    //region LaTex formulas
-    //======================================================================
-
+/*
     private String substituteValuesIntoFormula(String formula) {
         String decimalPlaces = "2";
         String wordBoundaryReGex = "\\b";
@@ -157,15 +68,67 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         
         return substitutedValues;
     }
+*/
+    //----------------------------------------------------------------------
+    //endregion private helpers
+
+    //region price
+    //----------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String deltaLatexFormula() {
-        return this.deltaLatexFormulaLhs() + " = " + this.deltaLatexFormulaRhs(false);
+    public double price() {
+        return this.type == OptionType.CALL ? this.priceCall() : this.pricePut();
     }
 
+    private double priceCall() {
+        return this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d(1)) - this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d(2));
+    }
+
+    private double pricePut() {
+        return this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d(2)) - this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d(1));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] priceLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] priceLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion price
+
+    //region delta
+    //----------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double delta() {
+        return this.typeFactor() * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(1));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] deltaLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+/*
     private String deltaLatexFormulaLhs() {
         return "d_1";
     }
@@ -177,23 +140,140 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         }
         return latex;
     }
+*/
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] deltaLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
 
-    //======================================================================
-    //endregion LaTex formulas
+    //----------------------------------------------------------------------
+    //endregion delta
 
-    //region LaTex calculations
-    //======================================================================
+    //region gamma
+    //----------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String deltaLatexCalculation() {
-        return this.deltaLatexFormula() + " = " + this.deltaLatexFormulaRhs(true) + " = " + String.format("%.3f", this.delta());
+    public double gamma() {
+        return Math.exp(-this.q * this.T) * this.N.density(this.d(1)) / (this.S * this.vol * Math.sqrt(this.T));
     }
 
-    //======================================================================
-    //endregion LaTex calculations
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] gammaLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] gammaLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion gamma
+
+    //region vega
+    //----------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double vega() {
+        return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d(1)) * Math.sqrt(this.T);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] vegaLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] vegaLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion vega
+
+    //region theta
+    //----------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double theta() {
+        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
+        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(2));
+        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(1));
+        return term1 - (this.typeFactor() *  term2) + (this.typeFactor() * term3);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] thetaLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] thetaLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion theta
+
+    //region rho
+    //----------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double rho() {
+        return this.typeFactor() * this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(2));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] rhoLatexFormula() {
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] rhoLatexCalculation() {
+        throw new NotYetImplementedException();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion rho
 
     /**
      * {@inheritDoc}
