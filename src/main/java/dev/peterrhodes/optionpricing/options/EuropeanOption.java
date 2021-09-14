@@ -98,21 +98,11 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double theta() {
-        return this.type == OptionType.CALL ? this.callTheta() : this.putTheta();
-    }
-
-    private double callTheta() {
+        double typeFactor = this.type == OptionType.CALL ? 1 : -1;
         double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
-        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d(2));
-        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d(1));
-        return term1 - term2 + term3;
-    }
-
-    private double putTheta() {
-        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
-        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d(2));
-        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d(1));
-        return term1 + term2 - term3;
+        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(typeFactor * this.d(2));
+        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(typeFactor * this.d(1));
+        return term1 - (typeFactor *  term2) + (typeFactor * term3);
     }
 
     //----------------------------------------------------------------------
