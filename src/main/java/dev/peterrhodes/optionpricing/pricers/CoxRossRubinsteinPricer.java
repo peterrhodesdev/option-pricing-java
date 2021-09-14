@@ -2,7 +2,6 @@ package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
-import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import java.util.ArrayList;
