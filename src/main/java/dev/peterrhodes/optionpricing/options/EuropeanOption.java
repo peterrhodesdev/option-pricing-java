@@ -18,14 +18,14 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * Creates a vanilla European option with the specified parameters.
      * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionStyle.EUROPEAN, OptionType, double, double, double, double, double, double)
      */
-    public EuropeanOption(OptionType type, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
-        super(OptionStyle.EUROPEAN, type, S, K, T, v, r, q);
+    public EuropeanOption(OptionType type, double S, double K, double T, double vol, double r, double q) throws IllegalArgumentException {
+        super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
         this.N = new NormalDistribution();
     }
 
     private double d_i(int i) {
         double sign = i == 1 ? 1d : -1d;
-        return 1d / (this.v * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.v, 2d) / 2d) * this.T);
+        return 1d / (this.vol * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + sign * Math.pow(this.vol, 2d) / 2d) * this.T);
     }
 
     //region price
@@ -77,7 +77,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      */
     @Override
     public double gamma() {
-        return Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) / (this.S * this.v * Math.sqrt(this.T));
+        return Math.exp(-this.q * this.T) * this.N.density(this.d_i(1)) / (this.S * this.vol * Math.sqrt(this.T));
     }
 
     /**
@@ -100,14 +100,14 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     private double callTheta() {
-        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.v) / (2d * Math.sqrt(this.T));
+        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.vol) / (2d * Math.sqrt(this.T));
         double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d_i(2));
         double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d_i(1));
         return term1 - term2 + term3;
     }
 
     private double putTheta() {
-        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.v) / (2d * Math.sqrt(this.T));
+        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d_i(1)) * this.vol) / (2d * Math.sqrt(this.T));
         double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d_i(2));
         double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d_i(1));
         return term1 + term2 - term3;

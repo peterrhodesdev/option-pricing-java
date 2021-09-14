@@ -17,7 +17,7 @@ public abstract class AbstractOption implements Option {
     protected double S;
     protected double K;
     protected double T;
-    protected double v;
+    protected double vol;
     protected double r;
     protected double q;
 
@@ -28,18 +28,18 @@ public abstract class AbstractOption implements Option {
      * @param S price of the underlying asset (spot price)
      * @param K strike price of the option (exercise price)
      * @param T time until option expiration (time from the start of the contract until maturity)
-     * @param v (σ) underlying volatility (standard deviation of log returns)
+     * @param vol (σ) underlying volatility (standard deviation of log returns)
      * @param r annualized risk-free interest rate, continuously compounded
      * @param q continuous dividend yield
      * @throws IllegalArgumentException if S, K, T, or v are not greater than zero
      */
-    public AbstractOption(OptionStyle style, OptionType type, double S, double K, double T, double v, double r, double q) throws IllegalArgumentException {
+    public AbstractOption(OptionStyle style, OptionType type, double S, double K, double T, double vol, double r, double q) throws IllegalArgumentException {
         this.style = style;
         this.type = type;
         this.S = this.checkGreaterThanZero(S, "S");
         this.K = this.checkGreaterThanZero(K, "K");
         this.T = this.checkGreaterThanZero(T, "T");
-        this.v = this.checkGreaterThanZero(v, "v");
+        this.vol = this.checkGreaterThanZero(vol, "vol (σ)");
         this.r = r;
         this.q = q;
     }

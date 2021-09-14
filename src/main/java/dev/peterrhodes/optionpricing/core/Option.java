@@ -41,9 +41,9 @@ public interface Option {
 
     /**
      * Gets the volatility of the option.
-     * @return volatility (v)
+     * @return volatility (σ)
      */
-    double getV();
+    double getVol();
 
     /**
      * Gets the annualized risk-free interest rate.

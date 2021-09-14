@@ -78,8 +78,8 @@ public abstract class CoxRossRubinsteinPricer {
         CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(option, timeSteps);
         
         double Δt = option.getT() / timeSteps; // length of a single time interval/step
-        double u = Math.exp(option.getV() * Math.sqrt(Δt)); // proportional up movement
-        double d = Math.exp(-option.getV() * Math.sqrt(Δt)); // proportional down movement
+        double u = Math.exp(option.getVol() * Math.sqrt(Δt)); // proportional up movement
+        double d = Math.exp(-option.getVol() * Math.sqrt(Δt)); // proportional down movement
         double a = Math.exp((option.getR() - option.getQ()) * Δt); // growth factor
         double p = (a - d) / (u - d); // probability of an up movement (probability of a down movement is 1 - p)
 

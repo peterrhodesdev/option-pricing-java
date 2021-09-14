@@ -70,9 +70,9 @@ class EuropeanOptionTest {
     @Test
     void price_Hull2014_Ex15_6() {
         // Arrange
-        double S = 42, K = 40, T = 0.5, v = 0.2, r = 0.1, q = 0;
-        EuropeanOption call = new EuropeanOption(OptionType.CALL, S, K, T, v, r, q);
-        EuropeanOption put = new EuropeanOption(OptionType.PUT, S, K, T, v, r, q);
+        double S = 42, K = 40, T = 0.5, σ = 0.2, r = 0.1, q = 0;
+        EuropeanOption call = new EuropeanOption(OptionType.CALL, S, K, T, σ, r, q);
+        EuropeanOption put = new EuropeanOption(OptionType.PUT, S, K, T, σ, r, q);
 
         // Act
         double call_result = call.price();
