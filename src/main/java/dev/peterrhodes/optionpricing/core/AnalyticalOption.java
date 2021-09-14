@@ -8,6 +8,9 @@ import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
  */
 public interface AnalyticalOption extends Option {
 
+    //region calculations
+    //----------------------------------------------------------------------
+
     /**
      * Calculates the fair value of the option.
      *
@@ -54,6 +57,31 @@ public interface AnalyticalOption extends Option {
      * @return option rho
      */
     double rho();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region LaTex formulas
+    //----------------------------------------------------------------------
+
+    /**
+     * TODO.
+     */
+    String deltaLatexFormula();
+
+    //----------------------------------------------------------------------
+    //endregion
+
+    //region LaTex calculations
+    //----------------------------------------------------------------------
+
+    /**
+     * TODO.
+     */
+    String deltaLatexCalculation();
+
+    //----------------------------------------------------------------------
+    //endregion
 
     /**
      * Performs all of the calculations necessary to populate an {@link AnalyticalCalculationModel}.

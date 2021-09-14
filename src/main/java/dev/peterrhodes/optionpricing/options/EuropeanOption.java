@@ -1,9 +1,12 @@
 package dev.peterrhodes.optionpricing.options;
 
+//import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -22,6 +25,9 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
         this.N = new NormalDistribution();
     }
+
+    //region calculations
+    //======================================================================
 
     /**
      * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
@@ -50,7 +56,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     //----------------------------------------------------------------------
-    //endregion
+    //endregion price
 
     //region delta
     //----------------------------------------------------------------------
@@ -72,7 +78,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     //----------------------------------------------------------------------
-    //endregion
+    //endregion delta
 
     /**
      * {@inheritDoc}
@@ -90,9 +96,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d(1)) * Math.sqrt(this.T);
     }
 
-    //region theta
-    //----------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -104,9 +107,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(typeFactor * this.d(1));
         return term1 - (typeFactor *  term2) + (typeFactor * term3);
     }
-
-    //----------------------------------------------------------------------
-    //endregion
 
     //region rho
     //----------------------------------------------------------------------
@@ -128,7 +128,72 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     //----------------------------------------------------------------------
-    //endregion
+    //endregion rho
+
+    //======================================================================
+    //endregion calculations
+
+    //region LaTex formulas
+    //======================================================================
+
+    private String substituteValuesIntoFormula(String formula) {
+        String decimalPlaces = "2";
+        String wordBoundaryReGex = "\\b";
+        String substitutedValues = formula;
+
+        Map<String, Double> parameters = new HashMap();
+        parameters.put("S_0", this.S);
+        parameters.put("K", this.K);
+        parameters.put("T", this.T);
+        parameters.put("r", this.r);
+        parameters.put("q", this.q);
+
+        for (Map.Entry param : parameters.entrySet()) {
+            String regEx = wordBoundaryReGex + param.getKey() + wordBoundaryReGex;
+            String value = String.format("%." + decimalPlaces + "f", param.getValue());
+            substitutedValues = substitutedValues.replaceAll(regEx, value);
+        }
+        substitutedValues = substitutedValues.replaceAll("\\\\sigma", String.format("%." + decimalPlaces + "f", this.vol));
+        
+        return substitutedValues;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String deltaLatexFormula() {
+        return this.deltaLatexFormulaLhs() + " = " + this.deltaLatexFormulaRhs(false);
+    }
+
+    private String deltaLatexFormulaLhs() {
+        return "d_1";
+    }
+
+    private String deltaLatexFormulaRhs(boolean substituteValues) {
+        String latex = "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r + \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
+        if (substituteValues) {
+            latex = this.substituteValuesIntoFormula(latex);
+        }
+        return latex;
+    }
+
+    //======================================================================
+    //endregion LaTex formulas
+
+    //region LaTex calculations
+    //======================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String deltaLatexCalculation() {
+        return this.deltaLatexFormula() + " = " + this.deltaLatexFormulaRhs(true) + " = " + String.format("%.3f", this.delta());
+    }
+
+    //======================================================================
+    //endregion LaTex calculations
 
     /**
      * {@inheritDoc}
