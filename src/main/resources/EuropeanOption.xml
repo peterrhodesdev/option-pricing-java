@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <components>
+    <component name="d1">
+      <lhs>d_1</lhs>
+      <rhs>\frac{\ln{\left(\frac{S_0}{K}\right)} + \left(r - q + \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}}</rhs>
+    </component>
+    <component name="d2">
+      <lhs>d_2</lhs>
+      <rhs>\frac{\ln{\left(\frac{S_0}{K}\right)} + \left(r - q - \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}}</rhs>
+      <alt>d_1 - \sigma \sqrt{T}</alt>
+      <useAlt>false</useAlt>
+    </component>
+  </components>
+  <parameters>
+    <parameter name="C" type="word">
+      <notation>C</notation>
+      <definition>call option price</definition>
+    </parameter>
+    <parameter name="P">
+      <notation>P</notation>
+      <definition>put option price</definition>
+    </parameter>
+    <parameter name="S0">
+      <notation>S_0</notation>
+      <definition>price of the underlying asset at time 0</definition>
+    </parameter>
+    <parameter name="K">
+      <notation>K</notation>
+      <definition>strike price of the option (exercise price)</definition>
+    </parameter>
+    <parameter name="T">
+      <notation>T</notation>
+      <definition>time until option expiration (time from the start of the contract until maturity)</definition>
+    </parameter>
+    <parameter name="vol" type="">
+      <notation>\sigma</notation>
+      <definition>underlying volatility (standard deviation of log returns)</definition>
+    </parameter>
+    <parameter name="r">
+      <notation>r</notation>
+      <definition>annualized risk-free interest rate, continuously compounded</definition>
+    </parameter>
+    <parameter name="q">
+      <notation>q</notation>
+      <definition>continuous dividend yield</definition>
+    </parameter>
+  </parameters>
+  <functions>
+    <function name="N">
+      <notation>\mathrm N(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-\frac{z^2}{2}} dz</notation>
+      <definition>standard normal cumulative distribution function</definition>
+    </function>
+    <function name="Nprime">
+      <notation>\mathrm N'(x) = \frac{d{\mathrm N(x)}}{dx} = \frac{1}{\sqrt{2\pi}} e^{-\frac{x^2}{2}}</notation>
+      <definition>standard normal probability density function</definition>
+    </function>
+  </functions>
+  <calculations>
+    <price>TODO</price>
+    <delta>
+      <call>
+        <formula>
+          <lhs>\frac{\partial C}{\partial S}</lhs>
+          <rhs>\mathrm N(d_1)</rhs>
+        </formula>
+        <components>
+          <componentName>C</componentName>
+        </components>
+        <steps>
+          <stepComponent>d1</stepName>
+          <step>
+            <part>TODO</part>
+          </step>
+        </step>
+      </call>
+      <put>
+        <formula>
+          <lhs>\frac{\partial P}{\partial S}</lhs>
+          <rhs>-\mathrm N(-d_1)</rhs>
+          <alt>\mathrm N(d_1) - 1</alt>
+        </formula>
+        <components>
+          <componentName>P</componentName>
+        </components>
+      </put>
+      </formula>
+      <components>
+        <componentName>d1</componentName>
+      </components>
+      <parameters>
+        <parameterName>N</parameterName>
+        <parameterName>S0</parameterName>
+        <parameterName>K</parameterName>
+        <parameterName>T</parameterName>
+        <parameterName>vol</parameterName>
+        <parameterName>r</parameterName>
+        <parameterName>q</parameterName>
+      </parameters>
+    </delta>
+  </calculations>
+</root>

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
+import dev.peterrhodes.optionpricing.core.Formula;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import org.junit.jupiter.api.Test;
 
@@ -150,10 +151,26 @@ class EuropeanOptionTest {
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
-        double result = option.delta();
+        double value = option.delta();
+        Formula formula = option.deltaFormula();
 
         // Assert
-        assertThat(result).isEqualTo(0.522, withPrecision(0.001));
+        assertThat(value).isEqualTo(0.522, withPrecision(0.001));
+        System.out.println("LHS = " + formula.getLhs());
+        System.out.println("RHS = " + formula.getRhs());
+        System.out.println("ALT = " + formula.getAlt());
+        System.out.println("where: ");
+        for (String whereComponent : formula.getWhereComponents()) {
+            System.out.println("    " + whereComponent);
+        }
+        System.out.println("functions: ");
+        for (Formula.Function function : formula.getFunctions()) {
+            System.out.println("    equation: " + function.getEquation() + ", definition: " + function.getDefinition());
+        }
+        System.out.println("parameters: ");
+        for (Formula.Parameter parameter : formula.getParameters()) {
+            System.out.println("    notation: " + parameter.getNotation() + ", definition: " + parameter.getDefinition());
+        }
     }
 
     /**

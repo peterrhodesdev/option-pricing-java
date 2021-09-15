@@ -2,11 +2,13 @@ package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
+import dev.peterrhodes.optionpricing.core.Formula;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
-//import java.util.HashMap;
-//import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -15,6 +17,14 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
+    private Formula.Function cdf = new Formula.Function(
+        "\\mathrm N(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^{x} e^{-\\frac{z^2}{2}} dz",
+        "standard normal cumulative distribution function"
+    );
+    private Formula.Function pdf = new Formula.Function(
+        "\\mathrm N'(x) = \\frac{d{\\mathrm N(x)}}{dx} = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}",
+        "standard normal probability density function"
+    );
 
     /**
      * Creates a vanilla European option with the specified parameters.
@@ -30,6 +40,49 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //----------------------------------------------------------------------
 
     /**
+     * Returns 1 for a call option, -1 for a put option.
+     *
+     * @return type factor
+     */
+    private double typeFactor() {
+        return this.type == OptionType.CALL ? 1 : -1;
+    }
+
+    /**
+     * Returns "C" for a call option, "P" for a put option.
+     *
+     * @return type parameter
+     */
+    private String typeParameter() {
+        return this.type == OptionType.CALL ? "C" : "P";
+    }
+
+    private List<Formula.Parameter> allParameters() {
+        List<Formula.Parameter> params = new ArrayList<Formula.Parameter>();
+
+        if (this.type == OptionType.CALL) {
+            params.add(new Formula.Parameter("C", "call option price"));
+        } else {
+            params.add(new Formula.Parameter("P", "put option price"));
+        }
+
+        params.add(new Formula.Parameter("S_0", "price of the underlying asset at time 0"));
+        params.add(new Formula.Parameter("K", "strike price of the option (exercise price)"));
+        params.add(new Formula.Parameter("T", "time until option expiration (time from the start of the contract until maturity)"));
+        params.add(new Formula.Parameter("\\sigma", "underlying volatility (standard deviation of log returns)"));
+        params.add(new Formula.Parameter("r", "annualized risk-free interest rate, continuously compounded"));
+        params.add(new Formula.Parameter("q", "continuous dividend yield"));
+
+        return params;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion private helpers
+
+    //region d₁, d₂
+    //----------------------------------------------------------------------
+
+    /**
      * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
      *
      * @return d_i
@@ -38,39 +91,20 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return 1 / (this.vol * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T);
     }
 
-    /**
-     * Returns 1 for a call option, -1 for a put option.
-     *
-     * @return type factor
-     */
-    private double typeFactor() {
-        return this.type == OptionType.CALL ? 1 : -1;
+    private String d1Formula() {
+        return this.d1FormulaLhs() + " = " + this.d1FormulaRhs();
     }
-/*
-    private String substituteValuesIntoFormula(String formula) {
-        String decimalPlaces = "2";
-        String wordBoundaryReGex = "\\b";
-        String substitutedValues = formula;
 
-        Map<String, Double> parameters = new HashMap();
-        parameters.put("S_0", this.S);
-        parameters.put("K", this.K);
-        parameters.put("T", this.T);
-        parameters.put("r", this.r);
-        parameters.put("q", this.q);
-
-        for (Map.Entry param : parameters.entrySet()) {
-            String regEx = wordBoundaryReGex + param.getKey() + wordBoundaryReGex;
-            String value = String.format("%." + decimalPlaces + "f", param.getValue());
-            substitutedValues = substitutedValues.replaceAll(regEx, value);
-        }
-        substitutedValues = substitutedValues.replaceAll("\\\\sigma", String.format("%." + decimalPlaces + "f", this.vol));
-        
-        return substitutedValues;
+    private String d1FormulaLhs() {
+        return "d_1";
     }
-*/
+
+    private String d1FormulaRhs() {
+        return "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r + \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
+    }
+
     //----------------------------------------------------------------------
-    //endregion private helpers
+    //endregion d₁, d₂
 
     //region price
     //----------------------------------------------------------------------
@@ -95,7 +129,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] priceLatexFormula() {
+    public String[] priceFormula() {
         throw new NotYetImplementedException();
     }
 
@@ -103,7 +137,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] priceLatexCalculation() {
+    public String[] priceCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -125,27 +159,25 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] deltaLatexFormula() {
-        throw new NotYetImplementedException();
-    }
-/*
-    private String deltaLatexFormulaLhs() {
-        return "d_1";
+    public Formula deltaFormula() {
+        String lhs = "\\frac{\\partial " + this.typeParameter() + "}{\\partial S}";
+        String rhs = this.type == OptionType.CALL ? "\\mathrm N(d_1)" : "-\\mathrm N(-d_1)";
+        Optional<String> alt = this.type == OptionType.CALL ? null : Optional.of("\\mathrm N(d_1) - 1");
+
+        List<String> whereComponents = new ArrayList();
+        whereComponents.add(this.d1Formula());
+
+        List<Formula.Function> functions = new ArrayList();
+        functions.add(this.cdf);
+
+        return new Formula(lhs, rhs, alt, whereComponents, functions, this.allParameters());
     }
 
-    private String deltaLatexFormulaRhs(boolean substituteValues) {
-        String latex = "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r + \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
-        if (substituteValues) {
-            latex = this.substituteValuesIntoFormula(latex);
-        }
-        return latex;
-    }
-*/
     /**
      * {@inheritDoc}
      */
     @Override
-    public String[] deltaLatexCalculation() {
+    public String[] deltaCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -167,7 +199,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] gammaLatexFormula() {
+    public String[] gammaFormula() {
         throw new NotYetImplementedException();
     }
 
@@ -175,7 +207,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] gammaLatexCalculation() {
+    public String[] gammaCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -197,7 +229,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] vegaLatexFormula() {
+    public String[] vegaFormula() {
         throw new NotYetImplementedException();
     }
 
@@ -205,7 +237,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] vegaLatexCalculation() {
+    public String[] vegaCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -230,7 +262,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] thetaLatexFormula() {
+    public String[] thetaFormula() {
         throw new NotYetImplementedException();
     }
 
@@ -238,7 +270,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] thetaLatexCalculation() {
+    public String[] thetaCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -260,7 +292,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] rhoLatexFormula() {
+    public String[] rhoFormula() {
         throw new NotYetImplementedException();
     }
 
@@ -268,7 +300,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * {@inheritDoc}
      */
     @Override
-    public String[] rhoLatexCalculation() {
+    public String[] rhoCalculation() {
         throw new NotYetImplementedException();
     }
 
@@ -288,4 +320,50 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         double rho = this.rho();
         return new AnalyticalCalculationModel(price, delta, gamma, vega, theta, rho);
     }
+
+    // TODO extract strings out to xml or delete
+
+/*
+    private void readXml() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/EuropeanOption.xml");
+        if (inputStream == null) {
+            System.out.println("file not found");
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            String xml = sb.toString();
+            //XmlMapper xmlMapper = new XmlMapper();
+        } catch (IOException e) {
+            System.out.println("IOException");
+        }
+    }
+
+    private String substituteValuesIntoFormula(String formula) {
+        String decimalPlaces = "2";
+        String wordBoundaryReGex = "\\b";
+        String substitutedValues = formula;
+
+        Map<String, Double> parameters = new HashMap();
+        parameters.put("S_0", this.S);
+        parameters.put("K", this.K);
+        parameters.put("T", this.T);
+        parameters.put("r", this.r);
+        parameters.put("q", this.q);
+
+        for (Map.Entry param : parameters.entrySet()) {
+            String regEx = wordBoundaryReGex + param.getKey() + wordBoundaryReGex;
+            String value = String.format("%." + decimalPlaces + "f", param.getValue());
+            substitutedValues = substitutedValues.replaceAll(regEx, value);
+        }
+        substitutedValues = substitutedValues.replaceAll("\\\\sigma", String.format("%." + decimalPlaces + "f", this.vol));
+        
+        return substitutedValues;
+    }
+*/
 }

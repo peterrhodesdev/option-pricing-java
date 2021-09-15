@@ -23,14 +23,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] priceLatexFormula();
+    String[] priceFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] priceLatexCalculation();
+    String[] priceCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -51,14 +51,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] deltaLatexFormula();
+    Formula deltaFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] deltaLatexCalculation();
+    String[] deltaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -79,14 +79,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] gammaLatexFormula();
+    String[] gammaFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] gammaLatexCalculation();
+    String[] gammaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -107,14 +107,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] vegaLatexFormula();
+    String[] vegaFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] vegaLatexCalculation();
+    String[] vegaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -135,14 +135,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] thetaLatexFormula();
+    String[] thetaFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] thetaLatexCalculation();
+    String[] thetaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -163,14 +163,14 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] rhoLatexFormula();
+    String[] rhoFormula();
 
     /**
      * TODO.
      *
      * @return TODO
      */
-    String[] rhoLatexCalculation();
+    String[] rhoCalculation();
 
     //----------------------------------------------------------------------
     //endregion
