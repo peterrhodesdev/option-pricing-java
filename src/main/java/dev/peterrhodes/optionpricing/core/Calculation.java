@@ -1,7 +1,8 @@
 package dev.peterrhodes.optionpricing.core;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -13,11 +14,13 @@ public class Calculation {
     /**
      * The inputs used to solve the equations used in the calculation.
      */
+    @Getter(value = AccessLevel.NONE)
     private List<EquationInput> inputs;
 
     /**
      * Calculation steps written in LaTeX.
      */
+    @Getter(value = AccessLevel.NONE)
     private List<String> steps;
 
     /**
@@ -33,8 +36,40 @@ public class Calculation {
      * @param answer Final answer of the calculation.
      */
     public Calculation(List<EquationInput> inputs, List<String> steps, String answer) {
-        this.inputs = inputs;
-        this.steps = steps;
+        // Deep copy inputs
+        this.inputs = new ArrayList();
+        for (EquationInput input : inputs) {
+            this.inputs.add((EquationInput) input.clone());
+        }
+
+        // Deep copy steps
+        this.steps = new ArrayList();
+        this.steps.addAll(steps);
+
         this.answer = answer;
+    }
+
+    /**
+     * Returns a deep copy of the equation inputs list.
+     *
+     * @return equation inputs
+     */
+    public List<EquationInput> getInputs() {
+        List<EquationInput> clone = new ArrayList();
+        for (EquationInput input : this.inputs) {
+            clone.add((EquationInput) input.clone());
+        }
+        return clone;
+    }
+
+    /**
+     * Returns a deep copy of the steps list.
+     *
+     * @return steps
+     */
+    public List<String> getSteps() {
+        List<String> deepCopy = new ArrayList();
+        deepCopy.addAll(this.steps);
+        return deepCopy;
     }
 }

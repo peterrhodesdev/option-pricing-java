@@ -11,9 +11,7 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.helpers.CalculationHelper;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -31,13 +29,13 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         "standard normal cumulative distribution function"
     );
 
-    /**
+    /*
      * Parameter containing the LaTeX equation and description for the standard normal probability density function.
-     */
+     *
     private Parameter pdf = new Parameter(
         "\\mathrm N'(x) = \\frac{d{\\mathrm N(x)}}{dx} = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}",
         "standard normal probability density function"
-    );
+    );*/
 
     /**
      * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.

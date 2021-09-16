@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -29,11 +29,13 @@ public class Formula {
     /**
      * LaTeX for each component in the "where" clause of the formula, e.g.&nbsp;for the Black-Scholes formula this would include {@code d₁} and {@code d₂}.
      */
+    @Getter(value = AccessLevel.NONE)
     private List<String> whereComponents;
 
     /**
      * List of the parameters/variables used in the formula, e.g.&nbsp;spot price ({@code S}), strike price ({@code K}), ...
      */
+    @Getter(value = AccessLevel.NONE)
     private List<Parameter> parameters;
 
     //region constructors
@@ -52,8 +54,16 @@ public class Formula {
         this.lhs = lhs;
         this.rhs = rhs;
         this.rhsSimplified = rhsSimplified;
-        this.whereComponents = whereComponents;
-        this.parameters = parameters;
+
+        // Deep copy whereComponents
+        this.whereComponents = new ArrayList();
+        this.whereComponents.addAll(whereComponents);
+
+        // Deep copy parameters
+        this.parameters = new ArrayList();
+        for (Parameter parameter : parameters) {
+            this.parameters.add((Parameter) parameter.clone());
+        }
     }
 
     /**
@@ -84,5 +94,29 @@ public class Formula {
      */
     public String build() {
         return this.lhs + " = " + this.rhs + (this.rhsSimplified != null ? " = " + this.rhsSimplified : "");
+    }
+
+    /**
+     * Returns a deep copy of the equation inputs list.
+     *
+     * @return equation inputs
+     */
+    public List<Parameter> getParameters() {
+        List<Parameter> clone = new ArrayList();
+        for (Parameter parameter : this.parameters) {
+            clone.add((Parameter) parameter.clone());
+        }
+        return clone;
+    }
+
+    /**
+     * Returns a deep copy of the steps list.
+     *
+     * @return steps
+     */
+    public List<String> getWhereComponents() {
+        List<String> deepCopy = new ArrayList();
+        deepCopy.addAll(this.whereComponents);
+        return deepCopy;
     }
 }

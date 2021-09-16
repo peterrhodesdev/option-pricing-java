@@ -67,7 +67,7 @@ public class CalculationHelper {
      * @return LaTeX equation representing the solution to the formula
      */
     public static String solveFormula(Formula formula, List<EquationInput> inputs, String answer) {
-        String rhsEquation = (formula.getRhsSimplified() != null ? formula.getRhsSimplified() : formula.getRhs());
+        String rhsEquation = formula.getRhsSimplified() != null ? formula.getRhsSimplified() : formula.getRhs();
         String substituted = substituteValuesIntoEquation(rhsEquation, inputs);
 
         // TODO refactor " = "

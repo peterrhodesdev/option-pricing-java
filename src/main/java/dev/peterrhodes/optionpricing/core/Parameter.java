@@ -6,7 +6,7 @@ import lombok.Getter;
  * Represents a parameter in a formula.
  */
 @Getter
-public class Parameter {
+public class Parameter implements Cloneable {
 
     /**
      * LaTeX representation of the parameter/variable, e.g.&nbsp; {@code d_1} for the parameter d₁.
@@ -27,5 +27,19 @@ public class Parameter {
     public Parameter(String notation, String definition) {
         this.notation = notation;
         this.definition = definition;
+    }
+
+    /**
+     * Clone the object.
+     *
+     * @return the cloned object
+     */
+    @Override
+    public Object clone() {
+        try {
+            return (Parameter) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return new Parameter(this.notation, this.definition);
+        }
     }
 }

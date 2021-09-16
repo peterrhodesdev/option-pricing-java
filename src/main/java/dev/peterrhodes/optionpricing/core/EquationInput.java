@@ -7,7 +7,7 @@ import lombok.Getter;
  * Holds the details of an input that is to be substituted into a mathemtical equation.
  */
 @Getter
-public class EquationInput {
+public class EquationInput implements Cloneable {
 
     /**
      * Key for identifying the input variable name in an equation.
@@ -44,5 +44,19 @@ public class EquationInput {
      */
     public EquationInput(String key, String value) {
         this(key, value, BracketType.NONE);
+    }
+
+    /**
+     * Clone the object.
+     *
+     * @return the cloned object
+     */
+    @Override
+    public Object clone() {
+        try {
+            return (EquationInput) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return new EquationInput(this.key, this.value, this.bracketType);
+        }
     }
 }
