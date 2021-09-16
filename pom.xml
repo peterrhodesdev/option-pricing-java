@@ -59,6 +59,12 @@
       <artifactId>commons-math3</artifactId>
       <version>3.6.1</version>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>3.3.1</version>
+    </dependency>-->
 
     <!-- scope provided -->
     <dependency>
@@ -135,6 +141,32 @@
           <argLine>
             --illegal-access=permit
           </argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <defaultVersion>${project.version}</defaultVersion>
+          <sourcepath>target/generated-sources/delombok</sourcepath>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-maven-plugin</artifactId>
+        <version>${lombok.version}.0</version>
+        <executions>
+        <execution>
+        <phase>generate-sources</phase>
+        <goals>
+        <goal>delombok</goal>
+        </goals>
+        </execution>
+        </executions>
+        <configuration>
+        <addOutputDirectory>false</addOutputDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
         </configuration>
       </plugin>
 

@@ -1,8 +1,7 @@
 package dev.peterrhodes.optionpricing.enums;
 
 /**
- * Option styles that can be used.
- * An option's style is usually defined by the exercise rights.
+ * Option styles available for calculation.&nbsp;An option's style is usually defined by the exercise rights.
  */
 public enum OptionStyle {
 

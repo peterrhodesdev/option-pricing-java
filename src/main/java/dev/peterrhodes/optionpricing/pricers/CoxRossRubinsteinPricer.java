@@ -11,7 +11,9 @@ import java.util.stream.IntStream;
 /**
  * Implements the binomial options pricing model described by <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a>.
  */
-public abstract class CoxRossRubinsteinPricer {
+public class CoxRossRubinsteinPricer {
+
+    private CoxRossRubinsteinPricer() {}
 
     private static void checkParameters(int timeSteps) throws IllegalArgumentException {
         if (timeSteps <= 0) {
@@ -37,7 +39,7 @@ public abstract class CoxRossRubinsteinPricer {
     //----------------------------------------------------------------------
 
     /**
-     * Performs all of the calculations necessary to populate a {@link dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel CoxRossRubinsteinModel}, i.e. calculates the option price along with a list of the tree nodes.
+     * Performs all of the calculations necessary to populate a {@link dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel CoxRossRubinsteinModel}, i.e.&nbsp;calculates the option price along with a list of the tree nodes.
      *
      * @param option the option to perform the calculation for
      * @param timeSteps number of time steps in the tree
@@ -127,9 +129,7 @@ public abstract class CoxRossRubinsteinPricer {
     }
 
     /**
-     * The tree is flattened into a one-dimensional list, so we need to determine the corresponding list index for a given node (i, j).
-     * The list index is calculated as the sum of the i's plus j.
-     * Below shows the values of j (left) and the list index (right) for a 3-step binomial tree.
+     * The tree is flattened into a one-dimensional list, so we need to determine the corresponding list index for a given node (i, j).&nbsp;The list index is calculated as the sum of the i's plus j.&nbsp;Below shows the values of j (left) and the list index (right) for a 3-step binomial tree.
      *           3              9
      *          /              /
      *         2              5

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for {@link Formula}.
+ * Test class for {@link #Formula}.
  */
 class FormulaTest {
 

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for {@link CalculationHelper}.
+ * Test class for {@link #CalculationHelper}.
  */
 class CalculationHelperTest {
 
@@ -143,21 +143,6 @@ class CalculationHelperTest {
         assertThat(result).isEqualTo(" \\left( 1 \\right)   \\left[ 2 \\right]   \\left{ 3 \\right} ");
     }
 
-/*
-    @Test
-    void solveSingleInputNoAnswerRhsSimplified() {
-        // Arrange
-        Formula formula = new Formula("x", "y + y", "2 y");
-        Map<String, Double> inputs = new HashMap();
-        inputs.put("y", 1.0);
-
-        // Act
-        String result = formula.solve(inputs, null);
-
-        // Assert
-        assertThat(result).isEqualTo("x = 2 y = 2 (1.0)");
-    }
-*/
     //----------------------------------------------------------------------
     //endregion substitution tests
 
@@ -241,5 +226,4 @@ class CalculationHelperTest {
 
     //----------------------------------------------------------------------
     //endregion substitution tests
-
 }

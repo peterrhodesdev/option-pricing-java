@@ -1,27 +1,27 @@
 package dev.peterrhodes.optionpricing.enums;
 
 /**
- * Bracket types that can be used in LaTex equations.
+ * Bracket types used in LaTex equations.
  */
 public enum BracketType {
 
     /**
-     * Brackets not allowed.
+     * No brackets.
      */
     NONE,
 
     /**
-     * Round brackets (parentheses), e.g. (x + y).
+     * Round brackets (parentheses), e.g.&nbsp;(x + y).
      */
     ROUND,
 
     /**
-     * Square brackets, e.g. [x + y].
+     * Square brackets, e.g.&nbsp;[x + y].
      */
     SQUARE,
 
     /**
-     * Curly brackets, e.g. {x + y}.
+     * Curly brackets, e.g.&nbsp;{x + y}.
      */
     CURLY
 }

@@ -8,31 +8,63 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Model for the results of calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
+ * Model that represents a calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
  */
 @Getter
 public class CoxRossRubinsteinModel {
 
     // Inputs
+
+    /**
+     * The option that the calculation was performed for.
+     */
     private Option option;
+
+    /**
+     * Number of time steps in the calculation.
+     */
     private int timeSteps;
 
     // Parameters
+
+    /**
+     * (Δt) length of a single time interval/step.
+     */
     private double deltat;
+
+    /**
+     * Proportional up movement.
+     */
     private double u;
+
+    /**
+     * Proportional down movement.
+     */
     private double d;
+
+    /**
+     * Probability of an up movement (the corresponding probability of a down movement is {@code 1 - p}).
+     */
     private double p;
 
     // Outputs
+
+    /**
+     * Calculated price of the option.
+     */
     private double price;
+
+    /**
+     * List of the lattice nodes used to perform the calculation.
+     */
     @Getter(value = AccessLevel.NONE)
     private List<LatticeNode> nodes;
 
     /**
      * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
      *
-     * @param option the option that the calculation was performed for
-     * @param timeSteps number of time steps in the calculation
+     * @param option The option that the calculation was performed for.
+     * @param timeSteps Number of time steps in the calculation.
      */
     public CoxRossRubinsteinModel(Option option, int timeSteps) {
         this.option = option;
@@ -42,10 +74,10 @@ public class CoxRossRubinsteinModel {
     /**
      * Set the parameters of the model.
      *
-     * @param deltat (Δt) length of a single time interval/step
-     * @param u proportional up movement
-     * @param d proportional down movement
-     * @param p probability of an up movement (the corresponding probability of a down movement is 1 - p)
+     * @param deltat (Δt) length of a single time interval/step.
+     * @param u Proportional up movement.
+     * @param d Proportional down movement.
+     * @param p Probability of an up movement (the corresponding probability of a down movement is {@code 1 - p}).
      */
     public void setParameters(double deltat, double u, double d, double p) {
         this.deltat = deltat;
@@ -55,11 +87,10 @@ public class CoxRossRubinsteinModel {
     }
 
     /**
-     * Set the outputs of the model.
-     * Note: a deep copy of the nodes list is made, i.e. making changes to the original object won't affect this copy.
+     * Set the outputs of the model.&nbsp;Note: a deep copy of the nodes list is made, i.e. making changes to the original object won't affect this copy.
      *
-     * @param price calculated price of the option
-     * @param nodes list of the lattice nodes used to perform the calculation
+     * @param price Calculated price of the option.
+     * @param nodes List of the lattice nodes used to perform the calculation.
      */
     public void setOutputs(double price, List<LatticeNode> nodes) {
         this.price = price;

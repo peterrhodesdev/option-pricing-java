@@ -16,13 +16,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for {@link CoxRossRubinsteinPricer}.
- * References:
- * - Hull (2014): Hull, J. (2014) Options, Futures and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
- * - Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.
+ * Test class for {@link #CoxRossRubinsteinPricer}.
+ * <ul>
+ *   <li>Hull (2014): Hull, J. (2014) Options, Futures and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.</li>
+ *   <li>Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.</li>
+ * </ul>
  */
 class CoxRossRubinsteinPricerTest {
-
     
     //region helpers
     //----------------------------------------------------------------------
@@ -94,7 +94,7 @@ class CoxRossRubinsteinPricerTest {
     //----------------------------------------------------------------------
 
     @Test
-    void throwsZeroTimeSteps() {
+    void Zero_time_steps_should_throw() {
         // Arrange
         // option: style, type, S, K, T, vol (σ), r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
@@ -110,14 +110,14 @@ class CoxRossRubinsteinPricerTest {
     //----------------------------------------------------------------------
     //endregion
 
-    //region calculation tests, Hull (2014)
+    //region calculation tests
     //----------------------------------------------------------------------
 
     /**
-     * Hull (2014): page 311, section 13.9, Figure 13.10
+     * Hull (2014): page 311, section 13.9, Figure 13.10.
      */
     @Test
-    void calculationHull2014Fig1310() {
+    void American_put_calculation_Hull2014Fig1310() {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
         int timeSteps = 2;
@@ -145,10 +145,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull (2014): page 313, section 13.11, Figure 13.11
+     * Hull (2014): page 313, section 13.11, Figure 13.11.
      */
     @Test
-    void calculationHull2014Fig1311() {
+    void European_call_calculation_Hull2014Fig1311() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 810, 800, 0.5, 0.2, 0.05, 0.02);
         int timeSteps = 2;
@@ -176,10 +176,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull (2014): page 314, section 13.11, Figure 13.12
+     * Hull (2014): page 314, section 13.11, Figure 13.12.
      */
     @Test
-    void calculationHull2014Fig1312() {
+    void American_call_calculation_Hull2014Fig1312() {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07);
         int timeSteps = 3;
@@ -211,10 +211,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull (2014): page 316, section 13.11, Figure 13.13
+     * Hull (2014): page 316, section 13.11, Figure 13.13.
      */
     @Test
-    void calculationHull2014Fig1313() {
+    void American_put_futures_calculation_Hull2014Fig1313() {
         // Arrange
         double r = 0.05;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
@@ -247,17 +247,11 @@ class CoxRossRubinsteinPricerTest {
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
     }
 
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region calculation tests, Hull SSM (2014)
-    //----------------------------------------------------------------------
-
     /**
-     * Hull SSM (2014): page 142, Problem 13.16
+     * Hull SSM (2014): page 142, Problem 13.16.
      */
     @Test
-    void priceHullSsm2014P1316() {
+    void European_call_calculation_HullSsm2014P1316() {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.EUROPEAN, OptionType.CALL, 78, 80, 4 / 12d, 0.3, 0.03, 0);
         int timeSteps = 2;
@@ -285,10 +279,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull SSM (2014): page 142, Problem 13.17
+     * Hull SSM (2014): page 142, Problem 13.17.
      */
     @Test
-    void priceHullSsm2014P1317() {
+    void American_put_calculation_HullSsm2014P1317() {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025);
         int timeSteps = 2;
@@ -316,10 +310,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull SSM (2014): page 143, Problem 13.18a
+     * Hull SSM (2014): page 143, Problem 13.18a.
      */
     @Test
-    void priceHullSsm2014P1318a() {
+    void American_call_futures_calculation_HullSsm2014P1318a() {
         // Arrange
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
@@ -353,10 +347,10 @@ class CoxRossRubinsteinPricerTest {
     }
 
     /**
-     * Hull SSM (2014): page 143, Problem 13.18b
+     * Hull SSM (2014): page 143, Problem 13.18b.
      */
     @Test
-    void priceHullSsm2014P1318b() {
+    void American_put_futures_calculation_HullSsm2014P1318b() {
         // Arrange
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
@@ -390,13 +384,6 @@ class CoxRossRubinsteinPricerTest {
     }
 
     // TODO Chapter 13 Further Questions
-
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region price tests
-    //----------------------------------------------------------------------
-
 
     //----------------------------------------------------------------------
     //endregion

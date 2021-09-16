@@ -22,19 +22,34 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
+
+    /**
+     * Parameter containing the LaTeX equation and description for the standard normal cumulative distribution function.
+     */
     private Parameter cdf = new Parameter(
         "\\mathrm N(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^{x} e^{-\\frac{z^2}{2}} dz",
         "standard normal cumulative distribution function"
     );
+
+    /**
+     * Parameter containing the LaTeX equation and description for the standard normal probability density function.
+     */
     private Parameter pdf = new Parameter(
         "\\mathrm N'(x) = \\frac{d{\\mathrm N(x)}}{dx} = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}",
         "standard normal probability density function"
     );
 
     /**
-     * Creates a vanilla European option with the specified parameters.
+     * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.
      *
-     * @see AbstractAnalyticalOption#AbstractAnalyticalOption(OptionStyle.EUROPEAN, OptionType, double, double, double, double, double, double)
+     * @param type {@link dev.peterrhodes.optionpricing.core.AbstractOption#type}
+     * @param S {@link dev.peterrhodes.optionpricing.core.AbstractOption#S}
+     * @param K {@link dev.peterrhodes.optionpricing.core.AbstractOption#K}
+     * @param T {@link dev.peterrhodes.optionpricing.core.AbstractOption#T}
+     * @param vol {@link dev.peterrhodes.optionpricing.core.AbstractOption#vol}
+     * @param r {@link dev.peterrhodes.optionpricing.core.AbstractOption#r}
+     * @param q {@link dev.peterrhodes.optionpricing.core.AbstractOption#q}
+     * @throws IllegalArgumentException from {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
      */
     public EuropeanOption(OptionType type, double S, double K, double T, double vol, double r, double q) throws IllegalArgumentException {
         super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
@@ -123,9 +138,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region price
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double price() {
         return this.type == OptionType.CALL ? this.priceCall() : this.pricePut();
@@ -161,9 +173,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region delta
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double delta() {
         return this.typeFactor() * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(1));
@@ -214,25 +223,13 @@ public class EuropeanOption extends AbstractAnalyticalOption {
 
         return new Calculation(inputs, steps, answer);
     }
-/*
-    private Calculation.Step deltaCalculationStep() {
-        String description = "calculate the value of delta";
-        
-        List<String> parts = new ArrayList();
-        //parts.add(this.deltaFormula().solveFormula());
 
-        return new Calculation.Step(description, parts);
-    }
-*/
     //----------------------------------------------------------------------
     //endregion delta
 
     //region gamma
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double gamma() {
         return Math.exp(-this.q * this.T) * this.N.density(this.d(1)) / (this.S * this.vol * Math.sqrt(this.T));
@@ -260,9 +257,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region vega
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double vega() {
         return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d(1)) * Math.sqrt(this.T);
@@ -290,9 +284,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region theta
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double theta() {
         double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
@@ -323,9 +314,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //region rho
     //----------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double rho() {
         return this.typeFactor() * this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(2));
@@ -350,9 +338,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //----------------------------------------------------------------------
     //endregion rho
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AnalyticalCalculationModel calculation() {
         double price = this.price();
@@ -363,50 +348,4 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         double rho = this.rho();
         return new AnalyticalCalculationModel(price, delta, gamma, vega, theta, rho);
     }
-
-    // TODO extract strings out to xml or delete
-
-/*
-    private void readXml() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/EuropeanOption.xml");
-        if (inputStream == null) {
-            System.out.println("file not found");
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            String xml = sb.toString();
-            //XmlMapper xmlMapper = new XmlMapper();
-        } catch (IOException e) {
-            System.out.println("IOException");
-        }
-    }
-
-    private String substituteValuesIntoFormula(String formula) {
-        String decimalPlaces = "2";
-        String wordBoundaryReGex = "\\b";
-        String substitutedValues = formula;
-
-        Map<String, Double> parameters = new HashMap();
-        parameters.put("S_0", this.S);
-        parameters.put("K", this.K);
-        parameters.put("T", this.T);
-        parameters.put("r", this.r);
-        parameters.put("q", this.q);
-
-        for (Map.Entry param : parameters.entrySet()) {
-            String regEx = wordBoundaryReGex + param.getKey() + wordBoundaryReGex;
-            String value = String.format("%." + decimalPlaces + "f", param.getValue());
-            substitutedValues = substitutedValues.replaceAll(regEx, value);
-        }
-        substitutedValues = substitutedValues.replaceAll("\\\\sigma", String.format("%." + decimalPlaces + "f", this.vol));
-        
-        return substitutedValues;
-    }
-*/
 }

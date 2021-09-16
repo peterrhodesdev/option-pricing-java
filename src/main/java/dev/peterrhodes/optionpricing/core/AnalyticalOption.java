@@ -3,8 +3,7 @@ package dev.peterrhodes.optionpricing.core;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 
 /**
- * Interface for an option that has an analytical solution, i.e. can analytically calculate the option's value and its greeks.
- * If the specific option doesn't have an analytical solution then it will extend {@link Option}.
+ * Interface for an option that has an analytical solution, i.e. can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
  */
 public interface AnalyticalOption extends Option {
 
@@ -39,8 +38,7 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the delta (Δ) of the option.
-     * First derivative of the option value with respect to the underlying asset price.
+     * Calculates the delta (Δ) of the option (first derivative of the option value with respect to the underlying asset price).
      *
      * @return option delta
      */
@@ -67,8 +65,7 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the gamma (Γ) of the option.
-     * Second derivative of the option value with respect to the underlying asset price.
+     * Calculates the gamma (Γ) of the option (second derivative of the option value with respect to the underlying asset price).
      *
      * @return option gamma
      */
@@ -95,8 +92,7 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the vega (ν) of the option.
-     * First derivative of the option value with respect to the underlying asset volatility.
+     * Calculates the vega (ν) of the option (first derivative of the option value with respect to the underlying asset volatility).
      *
      * @return option vega
      */
@@ -123,8 +119,7 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the theta (Θ) of the option.
-     * Negative first derivative of the option value with respect to the time to maturity.
+     * Calculates the theta (Θ) of the option (negative first derivative of the option value with respect to the time to maturity).
      *
      * @return option theta
      */
@@ -151,8 +146,7 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the rho (ρ) of the option.
-     * First derivative of the option value with respect to the risk free interest rate.
+     * Calculates the rho (ρ) of the option (first derivative of the option value with respect to the risk free interest rate).
      *
      * @return option rho
      */

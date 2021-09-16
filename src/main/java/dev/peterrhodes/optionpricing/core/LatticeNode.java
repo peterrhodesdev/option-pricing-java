@@ -10,20 +10,39 @@ import lombok.Setter;
 @Setter
 public class LatticeNode implements Cloneable {
 
+    /**
+     * Time step position (starts from zero at t = 0).
+     */
     private int i;
+
+    /**
+     * Asset price position for the given time step (starts from zero, goes from lowest to highest asset price).
+     */
     private int j;
+
+    /**
+     * Asset price at the node.
+     */
     private double S;
+
+    /**
+     * Value of the option at the node.
+     */
     private double V;
+
+    /**
+     * Flag indicating whether the option was exercised at the node or not.
+     */
     private boolean exercised;
 
     /**
-     * Creates a node in the pricing model lattice.
+     * Creates a node in a pricing model lattice.
      *
-     * @param i time step position (starts from zero at t = 0)
-     * @param j asset price position for the given time step (starts from zero, goes from lowest to highest asset price)
-     * @param S asset price
-     * @param V value of the option
-     * @param exercised flag indicating whether the option was exercised or not
+     * @param i Time step position (starts from zero at t = 0).
+     * @param j Asset price position for the given time step (starts from zero, goes from lowest to highest asset price).
+     * @param S Asset price at the node.
+     * @param V Value of the option at the node.
+     * @param exercised Flag indicating whether the option was exercised at the node or not.
      */
     public LatticeNode(int i, int j, double S, double V, boolean exercised) {
         this.i = i;
@@ -35,6 +54,8 @@ public class LatticeNode implements Cloneable {
 
     /**
      * Clone the object.
+     *
+     * @return the cloned object
      */
     @Override
     public Object clone() {
