@@ -4,8 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
+import dev.peterrhodes.optionpricing.core.Calculation;
+import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
+import dev.peterrhodes.optionpricing.core.Parameter;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -152,25 +156,37 @@ class EuropeanOptionTest {
 
         // Act
         double value = option.delta();
-        Formula formula = option.deltaFormula();
 
         // Assert
         assertThat(value).isEqualTo(0.522, withPrecision(0.001));
+
+        // Formula
+        Formula formula = option.deltaFormula();
+        System.out.println("*****\nFORMULA\n*****");
         System.out.println("LHS = " + formula.getLhs());
         System.out.println("RHS = " + formula.getRhs());
-        System.out.println("ALT = " + formula.getAlt());
+        System.out.println("ALT = " + formula.getRhsSimplified());
         System.out.println("where: ");
         for (String whereComponent : formula.getWhereComponents()) {
             System.out.println("    " + whereComponent);
         }
-        System.out.println("functions: ");
-        for (Formula.Function function : formula.getFunctions()) {
-            System.out.println("    equation: " + function.getEquation() + ", definition: " + function.getDefinition());
-        }
         System.out.println("parameters: ");
-        for (Formula.Parameter parameter : formula.getParameters()) {
+        for (Parameter parameter : formula.getParameters()) {
             System.out.println("    notation: " + parameter.getNotation() + ", definition: " + parameter.getDefinition());
         }
+
+        // Calculation
+        Calculation calculation = option.deltaCalculation();
+        System.out.println("*****\nCALCULATION\n*****");
+        System.out.println("inputs: ");
+        for (EquationInput input : calculation.getInputs()) {
+            System.out.println("    Key : " + input.getKey() + ", Value : " + input.getValue());
+        }
+        System.out.println("steps: ");
+        for (String step : calculation.getSteps()) {
+            System.out.println("    " + step);
+        }
+        System.out.println("answer: " + calculation.getAnswer());
     }
 
     /**

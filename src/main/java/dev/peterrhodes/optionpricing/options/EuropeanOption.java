@@ -2,13 +2,18 @@ package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
+import dev.peterrhodes.optionpricing.core.Calculation;
+import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
+import dev.peterrhodes.optionpricing.core.Parameter;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.helpers.CalculationHelper;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -17,11 +22,11 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
-    private Formula.Function cdf = new Formula.Function(
+    private Parameter cdf = new Parameter(
         "\\mathrm N(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^{x} e^{-\\frac{z^2}{2}} dz",
         "standard normal cumulative distribution function"
     );
-    private Formula.Function pdf = new Formula.Function(
+    private Parameter pdf = new Parameter(
         "\\mathrm N'(x) = \\frac{d{\\mathrm N(x)}}{dx} = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}",
         "standard normal probability density function"
     );
@@ -57,23 +62,36 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return this.type == OptionType.CALL ? "C" : "P";
     }
 
-    private List<Formula.Parameter> allParameters() {
-        List<Formula.Parameter> params = new ArrayList<Formula.Parameter>();
+    private List<Parameter> baseFormulaParameters() {
+        List<Parameter> params = new ArrayList<Parameter>();
 
         if (this.type == OptionType.CALL) {
-            params.add(new Formula.Parameter("C", "call option price"));
+            params.add(new Parameter("C", "call option price"));
         } else {
-            params.add(new Formula.Parameter("P", "put option price"));
+            params.add(new Parameter("P", "put option price"));
         }
 
-        params.add(new Formula.Parameter("S_0", "price of the underlying asset at time 0"));
-        params.add(new Formula.Parameter("K", "strike price of the option (exercise price)"));
-        params.add(new Formula.Parameter("T", "time until option expiration (time from the start of the contract until maturity)"));
-        params.add(new Formula.Parameter("\\sigma", "underlying volatility (standard deviation of log returns)"));
-        params.add(new Formula.Parameter("r", "annualized risk-free interest rate, continuously compounded"));
-        params.add(new Formula.Parameter("q", "continuous dividend yield"));
+        params.add(new Parameter("S_0", "price of the underlying asset at time 0"));
+        params.add(new Parameter("K", "strike price of the option (exercise price)"));
+        params.add(new Parameter("T", "time until option expiration (time from the start of the contract until maturity)"));
+        params.add(new Parameter("\\sigma", "underlying volatility (standard deviation of log returns)"));
+        params.add(new Parameter("r", "annualized risk-free interest rate, continuously compounded"));
+        params.add(new Parameter("q", "continuous dividend yield"));
 
         return params;
+    }
+
+    private List<EquationInput> baseCalculationInputs() {
+        List<EquationInput> inputs = new ArrayList();
+
+        inputs.add(new EquationInput("S_0", Double.toString(this.S)));
+        inputs.add(new EquationInput("K", Double.toString(this.K)));
+        inputs.add(new EquationInput("T", Double.toString(this.T)));
+        inputs.add(new EquationInput("\\sigma", Double.toString(this.vol)));
+        inputs.add(new EquationInput("r", Double.toString(this.r)));
+        inputs.add(new EquationInput("q", Double.toString(this.q)));
+
+        return inputs;
     }
 
     //----------------------------------------------------------------------
@@ -91,16 +109,12 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return 1 / (this.vol * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T);
     }
 
-    private String d1Formula() {
-        return this.d1FormulaLhs() + " = " + this.d1FormulaRhs();
-    }
-
-    private String d1FormulaLhs() {
-        return "d_1";
-    }
-
-    private String d1FormulaRhs() {
-        return "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r + \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
+    private Formula dFormula(int i) {
+        String lhs = String.format("d_%d", i);
+        String iFactor = i == 1 ? "+" : "-";
+        String rhs = "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r " + iFactor + " \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
+        String alt = i == 2 ? "d_1 - \\sigma \\sqrt{T}" : null;
+        return new Formula(lhs, rhs, alt);
     }
 
     //----------------------------------------------------------------------
@@ -162,25 +176,54 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     public Formula deltaFormula() {
         String lhs = "\\frac{\\partial " + this.typeParameter() + "}{\\partial S}";
         String rhs = this.type == OptionType.CALL ? "\\mathrm N(d_1)" : "-\\mathrm N(-d_1)";
-        Optional<String> alt = this.type == OptionType.CALL ? null : Optional.of("\\mathrm N(d_1) - 1");
+        String alt = this.type == OptionType.CALL ? null : "\\mathrm N(d_1) - 1";
 
         List<String> whereComponents = new ArrayList();
-        whereComponents.add(this.d1Formula());
+        whereComponents.add(this.dFormula(1).build());
 
-        List<Formula.Function> functions = new ArrayList();
-        functions.add(this.cdf);
+        List<Parameter> parameters = this.baseFormulaParameters();
+        parameters.add(this.cdf);
 
-        return new Formula(lhs, rhs, alt, whereComponents, functions, this.allParameters());
+        return new Formula(lhs, rhs, alt, whereComponents, parameters);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String[] deltaCalculation() {
-        throw new NotYetImplementedException();
-    }
+    public Calculation deltaCalculation() {
+        List<EquationInput> inputs = this.baseCalculationInputs();
 
+        List<String> steps = new ArrayList();
+
+        // d_1
+        String d1Value = Double.toString(this.d(1));
+        String d1CalculationStep = CalculationHelper.solveFormula(this.dFormula(1), inputs, d1Value);
+        steps.add(d1CalculationStep);
+        
+        // TODO N
+
+        // delta
+        List<EquationInput> deltaInputs = new ArrayList();
+        deltaInputs.add(new EquationInput("d_1", d1Value));
+        String deltaValue = Double.toString(this.delta());
+        String deltaCalculationStep = CalculationHelper.solveFormula(this.deltaFormula(), deltaInputs, deltaValue);
+        steps.add(deltaCalculationStep);
+
+        String answer = deltaValue;
+
+        return new Calculation(inputs, steps, answer);
+    }
+/*
+    private Calculation.Step deltaCalculationStep() {
+        String description = "calculate the value of delta";
+        
+        List<String> parts = new ArrayList();
+        //parts.add(this.deltaFormula().solveFormula());
+
+        return new Calculation.Step(description, parts);
+    }
+*/
     //----------------------------------------------------------------------
     //endregion delta
 

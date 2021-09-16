@@ -58,7 +58,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] deltaCalculation();
+    Calculation deltaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
