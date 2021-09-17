@@ -2,6 +2,8 @@ package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 
 /**
@@ -74,10 +76,46 @@ public abstract class AbstractOption implements Option {
         this.q = q;
     }
 
+    protected final List<Parameter> baseParameters() {
+        List<Parameter> params = new ArrayList<Parameter>();
+
+        params.add(new Parameter(this.typeParameterNotation(), (this.type == OptionType.CALL ? "call" : "put") + " option price"));
+        params.add(new Parameter(NOTATION_S, "price of the underlying asset at time 0"));
+        params.add(new Parameter(NOTATION_K, "strike price of the option (exercise price)"));
+        params.add(new Parameter(NOTATION_T, "time until option expiration (time from the start of the contract until maturity)"));
+        params.add(new Parameter(NOTATION_VOL, "underlying volatility (standard deviation of log returns)"));
+        params.add(new Parameter(NOTATION_R, "annualized risk-free interest rate, continuously compounded"));
+        params.add(new Parameter(NOTATION_Q, "continuous dividend yield"));
+
+        return params;
+    }
+
+    /**
+     * Returns "C" for a call option, "P" for a put option.
+     *
+     * @return type parameter
+     */
+    protected String typeParameterNotation() {
+        return this.type == OptionType.CALL ? "C" : "P";
+    }
+
     private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
         if (value <= 0) {
             throw new IllegalArgumentException(name + " must be greater than zero");
         }
         return value;
     }
+
+    //region constants
+    //----------------------------------------------------------------------
+
+    protected static final String NOTATION_S = "S_0";
+    protected static final String NOTATION_K = "K";
+    protected static final String NOTATION_T = "T";
+    protected static final String NOTATION_VOL = "\\sigma";
+    protected static final String NOTATION_R = "r";
+    protected static final String NOTATION_Q = "q";
+
+    //----------------------------------------------------------------------
+    //endregion constants
 }

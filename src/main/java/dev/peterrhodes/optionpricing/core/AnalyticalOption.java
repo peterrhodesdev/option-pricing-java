@@ -1,6 +1,7 @@
 package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
+import java.util.List;
 
 /**
  * Interface for an option that has an analytical solution, i.e. can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
@@ -168,6 +169,13 @@ public interface AnalyticalOption extends Option {
 
     //----------------------------------------------------------------------
     //endregion
+
+    /**
+     * Returns a list of the functions (e.g.&nbsp;the standard normal CDF) used in the calculation formulas.
+     *
+     * @return calculation functions
+     */
+    List<Parameter> calculationFunctions();
 
     /**
      * Performs all of the calculations necessary to populate an {@link AnalyticalCalculationModel}.

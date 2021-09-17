@@ -6,36 +6,22 @@ import dev.peterrhodes.optionpricing.core.Calculation;
 import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
 import dev.peterrhodes.optionpricing.core.Parameter;
+import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.helpers.CalculationHelper;
+import dev.peterrhodes.optionpricing.helpers.LatexHelper;
 import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
- * Vanilla European option.
+ * Vanilla European option.&nbsp;The value of the option and it's greeks can be calculated analytically using the <a href="https://www.jstor.org/stable/1831029?origin=JSTOR-pdf">Black-Scholes model</a>
  */
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
-
-    /**
-     * Parameter containing the LaTeX equation and description for the standard normal cumulative distribution function.
-     */
-    private Parameter cdf = new Parameter(
-        "\\mathrm N(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^{x} e^{-\\frac{z^2}{2}} dz",
-        "standard normal cumulative distribution function"
-    );
-
-    /*
-     * Parameter containing the LaTeX equation and description for the standard normal probability density function.
-     *
-    private Parameter pdf = new Parameter(
-        "\\mathrm N'(x) = \\frac{d{\\mathrm N(x)}}{dx} = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}",
-        "standard normal probability density function"
-    );*/
 
     /**
      * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.
@@ -54,62 +40,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         this.N = new NormalDistribution();
     }
 
-    //region private helpers
-    //----------------------------------------------------------------------
-
-    /**
-     * Returns 1 for a call option, -1 for a put option.
-     *
-     * @return type factor
-     */
-    private double typeFactor() {
-        return this.type == OptionType.CALL ? 1 : -1;
-    }
-
-    /**
-     * Returns "C" for a call option, "P" for a put option.
-     *
-     * @return type parameter
-     */
-    private String typeParameter() {
-        return this.type == OptionType.CALL ? "C" : "P";
-    }
-
-    private List<Parameter> baseFormulaParameters() {
-        List<Parameter> params = new ArrayList<Parameter>();
-
-        if (this.type == OptionType.CALL) {
-            params.add(new Parameter("C", "call option price"));
-        } else {
-            params.add(new Parameter("P", "put option price"));
-        }
-
-        params.add(new Parameter("S_0", "price of the underlying asset at time 0"));
-        params.add(new Parameter("K", "strike price of the option (exercise price)"));
-        params.add(new Parameter("T", "time until option expiration (time from the start of the contract until maturity)"));
-        params.add(new Parameter("\\sigma", "underlying volatility (standard deviation of log returns)"));
-        params.add(new Parameter("r", "annualized risk-free interest rate, continuously compounded"));
-        params.add(new Parameter("q", "continuous dividend yield"));
-
-        return params;
-    }
-
-    private List<EquationInput> baseCalculationInputs() {
-        List<EquationInput> inputs = new ArrayList();
-
-        inputs.add(new EquationInput("S_0", Double.toString(this.S)));
-        inputs.add(new EquationInput("K", Double.toString(this.K)));
-        inputs.add(new EquationInput("T", Double.toString(this.T)));
-        inputs.add(new EquationInput("\\sigma", Double.toString(this.vol)));
-        inputs.add(new EquationInput("r", Double.toString(this.r)));
-        inputs.add(new EquationInput("q", Double.toString(this.q)));
-
-        return inputs;
-    }
-
-    //----------------------------------------------------------------------
-    //endregion private helpers
-
     //region d₁, d₂
     //----------------------------------------------------------------------
 
@@ -123,11 +53,27 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     private Formula dFormula(int i) {
-        String lhs = String.format("d_%d", i);
-        String iFactor = i == 1 ? "+" : "-";
-        String rhs = "\\frac{\\ln{\\left(\\frac{S_0}{K}\\right)} + \\left(r " + iFactor + " \\frac{\\sigma^2}{2} \\right) T}{\\sigma \\sqrt{T}}";
-        String alt = i == 2 ? "d_1 - \\sigma \\sqrt{T}" : null;
-        return new Formula(lhs, rhs, alt);
+        String lhs = this.dParameterNotation(i);
+        String iFactor = i == 1 ? " + " : " - ";
+        String rhsNumerator = LatexHelper.naturalLogarithm(LatexHelper.fraction(NOTATION_S, NOTATION_K))
+            + LatexHelper.subFormula(NOTATION_R + iFactor + LatexHelper.half(LatexHelper.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
+        String rhsDenominator = LatexHelper.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexHelper.squareRoot(NOTATION_T);
+        String rhs = LatexHelper.fraction(rhsNumerator, rhsDenominator);
+
+        List<String> steps = new ArrayList();
+        if (i == 2) {
+            steps.add(this.dParameterNotation(1) + " - " + NOTATION_VOL + LatexHelper.squareRoot(NOTATION_T));
+        }
+        
+        return new Formula(lhs, rhs, steps);
+    }
+
+    private String dParameterNotation(int i) {
+        return String.format("d_%d", i);
+    }
+
+    private double dStandardNormalCdf(int i, double dFactor) {
+        return this.N.cumulativeProbability(dFactor * this.d(i));
     }
 
     //----------------------------------------------------------------------
@@ -173,29 +119,44 @@ public class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double delta() {
-        return this.typeFactor() * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(1));
+        return this.typeFactor() * Math.exp(-this.q * this.T) * this.dStandardNormalCdf(1, this.typeFactor());
     }
 
     /**
-     * {@inheritDoc}
+     * Formula for the delta (Δ) of a European option.&nbsp;For a list of parameters used in the formula see {@link #optionParameters}, and for a list of the functions see {@link #calculationFunctions}.
+     * <p>The "where" components include the formulas for:</p>
+     * <ol start="0">
+     *   <li>d₁</li>
+     * </ol>
      */
+    @SuppressWarnings("checkstyle:variabledeclarationusagedistance")
     @Override
     public Formula deltaFormula() {
-        String lhs = "\\frac{\\partial " + this.typeParameter() + "}{\\partial S}";
-        String rhs = this.type == OptionType.CALL ? "\\mathrm N(d_1)" : "-\\mathrm N(-d_1)";
-        String alt = this.type == OptionType.CALL ? null : "\\mathrm N(d_1) - 1";
+        String lhs = LatexHelper.partialDerivative(this.typeParameterNotation(), NOTATION_S);
+        String factor = LatexHelper.exponential("-" + NOTATION_Q + NOTATION_T);
+        String rhs = this.type == OptionType.CALL
+            ? factor + notationStandardNormalCdf(this.dParameterNotation(1))
+            : "-" + factor + notationStandardNormalCdf("-" + this.dParameterNotation(1));
+
+        List<String> steps = new ArrayList();
+        if (this.type == OptionType.PUT) {
+            steps.add(notationStandardNormalCdf(this.dParameterNotation(1)) + " - 1");
+        }
 
         List<String> whereComponents = new ArrayList();
         whereComponents.add(this.dFormula(1).build());
 
-        List<Parameter> parameters = this.baseFormulaParameters();
-        parameters.add(this.cdf);
-
-        return new Formula(lhs, rhs, alt, whereComponents, parameters);
+        return new Formula(lhs, rhs, steps, whereComponents);
     }
 
     /**
-     * {@inheritDoc}
+     * Calculation for the delta (Δ) of a European option.
+     * <p>The calculation steps are:</p>
+     * <ol start="0">
+     *   <li>d₁</li>
+     *   <li>call: N(d₁), put: N(-d₁)</li>
+     *   <li>Δ</li>
+     * </ol>
      */
     @Override
     public Calculation deltaCalculation() {
@@ -208,11 +169,18 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         String d1CalculationStep = CalculationHelper.solveFormula(this.dFormula(1), inputs, d1Value);
         steps.add(d1CalculationStep);
         
-        // TODO N
+        List<EquationInput> deltaInputs = new ArrayList(); // 
+        deltaInputs.add(new EquationInput(this.dParameterNotation(1), d1Value));
+
+        // N (TODO refactor)
+        String nLhs = this.type == OptionType.CALL
+            ? notationStandardNormalCdf(this.dParameterNotation(1))
+            : notationStandardNormalCdf("-" + this.dParameterNotation(1));
+        String nSubstituted = nLhs + CalculationHelper.substituteValuesIntoEquation(nLhs, deltaInputs);
+        String nValue = Double.toString(this.dStandardNormalCdf(1, this.typeFactor()));
+        steps.add(nLhs + " = " + nSubstituted + " = " + nValue);
 
         // delta
-        List<EquationInput> deltaInputs = new ArrayList();
-        deltaInputs.add(new EquationInput("d_1", d1Value));
         String deltaValue = Double.toString(this.delta());
         String deltaCalculationStep = CalculationHelper.solveFormula(this.deltaFormula(), deltaInputs, deltaValue);
         steps.add(deltaCalculationStep);
@@ -336,6 +304,37 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     //----------------------------------------------------------------------
     //endregion rho
 
+    /**
+     * Returns a list of the functions used in the calculation formulas.
+     *
+     * @return calculation functions list
+     * <ol start="0">
+     *   <li>standard normal CDF</li>
+     *   <li>standard normal PDF</li>
+     * </ol>
+     */
+    public List<Parameter> calculationFunctions() {
+        return this.baseFunctions();
+    }
+
+    /**
+     * Returns a list of the parameters/variables used to define the option.
+     *
+     * @return option parameters list
+     * <ol start="0">
+     *   <li>call or put</li>
+     *   <li>spot price</li>
+     *   <li>exercise price</li>
+     *   <li>time to maturity</li>
+     *   <li>volatility</li>
+     *   <li>risk-free rate</li>
+     *   <li>dividend yield</li>
+     * </ol>
+     */
+    public List<Parameter> optionParameters() {
+        return this.baseParameters();
+    }
+
     @Override
     public AnalyticalCalculationModel calculation() {
         double price = this.price();
@@ -346,4 +345,19 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         double rho = this.rho();
         return new AnalyticalCalculationModel(price, delta, gamma, vega, theta, rho);
     }
+
+    //region private methods
+    //----------------------------------------------------------------------
+
+    /**
+     * Returns 1 for a call option, -1 for a put option.
+     *
+     * @return type factor
+     */
+    private double typeFactor() {
+        return this.type == OptionType.CALL ? 1 : -1;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion private methods
 }

@@ -2,15 +2,14 @@ package dev.peterrhodes.optionpricing.helpers;
 
 import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
-import dev.peterrhodes.optionpricing.enums.BracketType;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Collection of helper methods for building calculations.
+ * Collection of static methods for building calculations.
  */
-public class CalculationHelper {
-
-    private CalculationHelper() {}
+public interface CalculationHelper {
 
     /**
      * Substitutes the given inputs into the equation, i.e.&nbsp;replaces the variables with their values.
@@ -19,7 +18,7 @@ public class CalculationHelper {
      * @param inputs list of inputs identifying the variable and the value to be substituted in for it
      * @return LaTeX equation with the variables substituted in
      */
-    public static String substituteValuesIntoEquation(String equation, List<EquationInput> inputs) {
+    static String substituteValuesIntoEquation(String equation, List<EquationInput> inputs) {
         String substitutedValues = equation;
 
         for (EquationInput input : inputs) {
@@ -30,32 +29,12 @@ public class CalculationHelper {
             } else {
                 regEx = key.replaceAll("[\\W]", "\\\\$0"); // escape all non-word characters for the regex
             }
-            String value = addBrackets(input.getValue(), input.getBracketType());
+            String value = LatexHelper.subFormula(input.getValue(), input.getLatexDelimeterType());
+            value = value.replaceAll("\\\\", "\\\\\\\\");
             substitutedValues = substitutedValues.replaceAll(regEx, value);
         }
         
         return substitutedValues;
-    }
-
-    private static String addBrackets(String value, BracketType bracketType) {
-        String bracketedValue;
-
-        switch (bracketType) {
-            case ROUND:
-                bracketedValue = " \\\\left( " + value + " \\\\right) ";
-                break;
-            case SQUARE:
-                bracketedValue = " \\\\left[ " + value + " \\\\right] ";
-                break;
-            case CURLY:
-                bracketedValue = " \\\\left{ " + value + " \\\\right} ";
-                break;
-            case NONE:
-            default:
-                bracketedValue = value;
-        }
-
-        return bracketedValue;
     }
 
     /**
@@ -66,11 +45,18 @@ public class CalculationHelper {
      * @param answer solution to the formula with values substituted in, or {@code null} if not required (for the case when the formulas RHS consists of a single term)
      * @return LaTeX equation representing the solution to the formula
      */
-    public static String solveFormula(Formula formula, List<EquationInput> inputs, String answer) {
-        String rhsEquation = formula.getRhsSimplified() != null ? formula.getRhsSimplified() : formula.getRhs();
-        String substituted = substituteValuesIntoEquation(rhsEquation, inputs);
+    static String solveFormula(Formula formula, List<EquationInput> inputs, String answer) {
+        String rhsSubstituted = substituteValuesIntoEquation(formula.getRhs(), inputs);
 
-        // TODO refactor " = "
-        return formula.getLhs() + " = " + rhsEquation + " = " + substituted + (answer != null ? " = " + answer : "");
+        List<String> solutionParts = new ArrayList();
+        solutionParts.add(formula.getLhs());
+        solutionParts.add(formula.getRhs());
+        solutionParts.add(rhsSubstituted);
+        if (answer != null) {
+            solutionParts.add(answer);
+        }
+
+        return solutionParts.stream()
+            .collect(Collectors.joining(" = "));
     }
 }

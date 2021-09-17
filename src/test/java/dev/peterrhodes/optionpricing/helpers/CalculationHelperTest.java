@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
-import dev.peterrhodes.optionpricing.enums.BracketType;
+import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
  * Test class for {@link #CalculationHelper}.
  */
 class CalculationHelperTest {
-
-    private final String greaterThanZeroMessage = "must be greater than zero";
 
     //region substitution tests
     //----------------------------------------------------------------------
@@ -132,15 +130,15 @@ class CalculationHelperTest {
         // Arrange
         String equation = "a b c";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("a", "1", BracketType.ROUND));
-        inputs.add(new EquationInput("b", "2", BracketType.SQUARE));
-        inputs.add(new EquationInput("c", "3", BracketType.CURLY));
+        inputs.add(new EquationInput("a", "1", LatexDelimeterType.PARENTHESIS));
+        inputs.add(new EquationInput("b", "2", LatexDelimeterType.BRACKET));
+        inputs.add(new EquationInput("c", "3", LatexDelimeterType.BRACE));
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
 
         // Assert
-        assertThat(result).isEqualTo(" \\left( 1 \\right)   \\left[ 2 \\right]   \\left{ 3 \\right} ");
+        assertThat(result).isEqualTo("\\left( 1 \\right) \\left[ 2 \\right] \\left\\{ 3 \\right\\}");
     }
 
     //----------------------------------------------------------------------
@@ -150,9 +148,9 @@ class CalculationHelperTest {
     //----------------------------------------------------------------------
 
     @Test
-    void Solve_formula_without_a_simplified_rhs_and_null_answer() {
+    void Solve_formula_with_null_answer() {
         // Arrange
-        Formula formula = new Formula("x", "y + y");
+        Formula formula = new Formula("x", "y");
         List<EquationInput> inputs = new ArrayList();
         inputs.add(new EquationInput("y", "1"));
         String answer = null;
@@ -161,26 +159,11 @@ class CalculationHelperTest {
         String result = CalculationHelper.solveFormula(formula, inputs, answer);
 
         // Assert
-        assertThat(result).isEqualTo("x = y + y = 1 + 1");
+        assertThat(result).isEqualTo("x = y = 1");
     }
 
     @Test
-    void Solve_formula_with_a_null_simplified_rhs_and_null_answer() {
-        // Arrange
-        Formula formula = new Formula("x", "y + y", null);
-        List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1"));
-        String answer = null;
-
-        // Act
-        String result = CalculationHelper.solveFormula(formula, inputs, answer);
-
-        // Assert
-        assertThat(result).isEqualTo("x = y + y = 1 + 1");
-    }
-
-    @Test
-    void Solve_formula_without_a_simplified_rhs_with_an_answer() {
+    void Solve_formula_with_an_answer() {
         // Arrange
         Formula formula = new Formula("x", "y + y");
         List<EquationInput> inputs = new ArrayList();
@@ -195,33 +178,18 @@ class CalculationHelperTest {
     }
 
     @Test
-    void Solve_formula_with_a_simplified_rhs_and_an_answer() {
+    void Solve_formula_with_an_answer_using_brackets() {
         // Arrange
-        Formula formula = new Formula("x", "y + y", "2 y");
+        Formula formula = new Formula("x", "2 y");
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1"));
+        inputs.add(new EquationInput("y", "1", LatexDelimeterType.PARENTHESIS));
         String answer = "2";
 
         // Act
         String result = CalculationHelper.solveFormula(formula, inputs, answer);
 
         // Assert
-        assertThat(result).isEqualTo("x = 2 y = 2 1 = 2");
-    }
-
-    @Test
-    void Solve_formula_with_a_simplified_rhs_brackets_and_an_answer() {
-        // Arrange
-        Formula formula = new Formula("x", "y + y", "2 y");
-        List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1", BracketType.ROUND));
-        String answer = "2";
-
-        // Act
-        String result = CalculationHelper.solveFormula(formula, inputs, answer);
-
-        // Assert
-        assertThat(result).isEqualTo("x = 2 y = 2  \\left( 1 \\right)  = 2");
+        assertThat(result).isEqualTo("x = 2 y = 2 \\left( 1 \\right) = 2");
     }
 
     //----------------------------------------------------------------------
