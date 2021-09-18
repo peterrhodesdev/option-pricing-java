@@ -9,7 +9,7 @@ import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
 import dev.peterrhodes.optionpricing.core.Parameter;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import java.util.Map;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -148,6 +148,7 @@ class EuropeanOptionTest {
     //region delta tests
     //----------------------------------------------------------------------
 
+    // TODO make calc answer double then check that instead
     /**
      * Hull (2014): page 427, section 19.4, Example 19.1.
      */
@@ -157,10 +158,26 @@ class EuropeanOptionTest {
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
-        double value = option.delta();
+        Calculation calculation = option.deltaCalculation();
 
         // Assert
-        assertThat(value).isEqualTo(0.522, withPrecision(0.001));
+        List<String> steps = calculation.getSteps();
+        String[] expectedStepAnswers = new String[] {
+            "0.0542", // d₁
+            "0.522", // N(d₁)
+            "0.522", // Δ
+        };
+        int expectedStepsSize = expectedStepAnswers.length;
+        assertThat(steps.size()).isEqualTo(expectedStepsSize);
+        for (int i = 0; i < expectedStepsSize; i++) {
+            String exp = expectedStepAnswers[i];
+            String act = steps.get(i);
+            String actMessage = act.substring(act.length() - exp.length(), act.length());
+            assertThat(act.endsWith(exp))
+                .as(String.format("step %d end: expected = '%s', actual = '...%s'", i, exp, actMessage))
+                .isTrue();
+        }
+        assertThat(calculation.getAnswer()).isEqualTo(0.522, withPrecision(0.001));
     }
 
     /**

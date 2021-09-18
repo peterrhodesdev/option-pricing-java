@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Describes the details of a mathematical calculation, including the input values used, intermediate calculation steps, and the final answer.
+ * Describes the details of a mathematical calculation.
  */
 @Getter
 public class Calculation {
@@ -26,7 +26,7 @@ public class Calculation {
     /**
      * Final answer of the calculation.
      */
-    private String answer;
+    private double answer;
 
     /**
      * Creates an object that represents a mathematical calculation.
@@ -35,7 +35,7 @@ public class Calculation {
      * @param steps Calculation steps written in LaTeX.
      * @param answer Final answer of the calculation.
      */
-    public Calculation(List<EquationInput> inputs, List<String> steps, String answer) {
+    public Calculation(List<EquationInput> inputs, List<String> steps, double answer) {
         // Deep copy inputs
         this.inputs = new ArrayList();
         for (EquationInput input : inputs) {

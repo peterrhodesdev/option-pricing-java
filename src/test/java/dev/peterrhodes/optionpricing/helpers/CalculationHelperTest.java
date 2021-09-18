@@ -37,7 +37,7 @@ class CalculationHelperTest {
         // Arrange
         String equation = "x";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "123"));
+        inputs.add(new EquationInput.Builder("y").withNumberValue(1.23).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
@@ -51,7 +51,7 @@ class CalculationHelperTest {
         // Arrange
         String equation = "xx ax xa 2x x2 x_ _x x_x";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("x", "123"));
+        inputs.add(new EquationInput.Builder("x").withNumberValue(1.23).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
@@ -66,7 +66,7 @@ class CalculationHelperTest {
         // Arrange
         String equation = "\\x \\x \\x";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("x", "123"));
+        inputs.add(new EquationInput.Builder("x").withNumberValue(1.23).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
@@ -80,18 +80,18 @@ class CalculationHelperTest {
         // Arrange
         String equation = "a 2 ab (abc) [d] {de} def^2 2^a ab+abc-d=de def";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("a", "0.00"));
-        inputs.add(new EquationInput("ab", "1"));
-        inputs.add(new EquationInput("abc", "230"));
-        inputs.add(new EquationInput("d", "045"));
-        inputs.add(new EquationInput("de", "6.7"));
-        inputs.add(new EquationInput("def", "89"));
+        inputs.add(new EquationInput.Builder("a").withStringValue("0.00").build());
+        inputs.add(new EquationInput.Builder("ab").withNumberValue(1).build());
+        inputs.add(new EquationInput.Builder("abc").withNumberValue(230).build());
+        inputs.add(new EquationInput.Builder("d").withNumberValue(45).build());
+        inputs.add(new EquationInput.Builder("de").withNumberValue(6.7).build());
+        inputs.add(new EquationInput.Builder("def").withNumberValue(89).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
 
         // Assert
-        assertThat(result).isEqualTo("0.00 2 1 (230) [045] {6.7} 89^2 2^0.00 1+230-045=6.7 89");
+        assertThat(result).isEqualTo("0.00 2 1 (230) [45] {6.7} 89^2 2^0.00 1+230-45=6.7 89");
     }
 
     @Test
@@ -99,13 +99,13 @@ class CalculationHelperTest {
         // Arrange
         String equation = "\\sigma 2 \\sigma (\\sigma) [\\sigma] {\\sigma} \\sigma^2 2^\\sigma \\sigma+\\sigma-\\sigma=\\sigma \\sigma";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("\\sigma", "123"));
+        inputs.add(new EquationInput.Builder("\\sigma").withNumberValue(1.23).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
 
         // Assert
-        assertThat(result).isEqualTo("123 2 123 (123) [123] {123} 123^2 2^123 123+123-123=123 123");
+        assertThat(result).isEqualTo("1.23 2 1.23 (1.23) [1.23] {1.23} 1.23^2 2^1.23 1.23+1.23-1.23=1.23 1.23");
     }
 
     @Test
@@ -113,10 +113,10 @@ class CalculationHelperTest {
         // Arrange
         String equation = "f(a) \\left( b \\right) \\frac{c}{d} e+f-g^h=i";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("f(a)", "1"));
-        inputs.add(new EquationInput("\\left( b \\right)", "2"));
-        inputs.add(new EquationInput("\\frac{c}{d}", "3"));
-        inputs.add(new EquationInput("e+f-g^h=i", "4"));
+        inputs.add(new EquationInput.Builder("f(a)").withNumberValue(1).build());
+        inputs.add(new EquationInput.Builder("\\left( b \\right)").withNumberValue(2).build());
+        inputs.add(new EquationInput.Builder("\\frac{c}{d}").withNumberValue(3).build());
+        inputs.add(new EquationInput.Builder("e+f-g^h=i").withNumberValue(4).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
@@ -130,9 +130,9 @@ class CalculationHelperTest {
         // Arrange
         String equation = "a b c";
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("a", "1", LatexDelimeterType.PARENTHESIS));
-        inputs.add(new EquationInput("b", "2", LatexDelimeterType.BRACKET));
-        inputs.add(new EquationInput("c", "3", LatexDelimeterType.BRACE));
+        inputs.add(new EquationInput.Builder("a").withNumberValue(1).withDelimeter(LatexDelimeterType.PARENTHESIS).build());
+        inputs.add(new EquationInput.Builder("b").withNumberValue(2).withDelimeter(LatexDelimeterType.BRACKET).build());
+        inputs.add(new EquationInput.Builder("c").withNumberValue(3).withDelimeter(LatexDelimeterType.BRACE).build());
 
         // Act
         String result = CalculationHelper.substituteValuesIntoEquation(equation, inputs);
@@ -152,7 +152,7 @@ class CalculationHelperTest {
         // Arrange
         Formula formula = new Formula("x", "y");
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1"));
+        inputs.add(new EquationInput.Builder("y").withNumberValue(1).build());
         String answer = null;
 
         // Act
@@ -167,7 +167,7 @@ class CalculationHelperTest {
         // Arrange
         Formula formula = new Formula("x", "y + y");
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1"));
+        inputs.add(new EquationInput.Builder("y").withNumberValue(1).build());
         String answer = "2";
 
         // Act
@@ -182,7 +182,7 @@ class CalculationHelperTest {
         // Arrange
         Formula formula = new Formula("x", "2 y");
         List<EquationInput> inputs = new ArrayList();
-        inputs.add(new EquationInput("y", "1", LatexDelimeterType.PARENTHESIS));
+        inputs.add(new EquationInput.Builder("y").withNumberValue(1).withDelimeter(LatexDelimeterType.PARENTHESIS).build());
         String answer = "2";
 
         // Act

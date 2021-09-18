@@ -2,6 +2,7 @@ package dev.peterrhodes.optionpricing.helpers;
 
 import dev.peterrhodes.optionpricing.core.EquationInput;
 import dev.peterrhodes.optionpricing.core.Formula;
+import dev.peterrhodes.optionpricing.enums.RoundingMethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +30,33 @@ public interface CalculationHelper {
             } else {
                 regEx = key.replaceAll("[\\W]", "\\\\$0"); // escape all non-word characters for the regex
             }
-            String value = LatexHelper.subFormula(input.getValue(), input.getLatexDelimeterType());
+            String value;
+            if (input.getNumberValue() != null) {
+                value = round(input.getNumberValue(), input.getPrecisionDigits(), input.getRoundingMethod());
+            } else {
+                value = input.getStringValue();
+            }
+            value = LatexHelper.subFormula(value, input.getLatexDelimeterType());
             value = value.replaceAll("\\\\", "\\\\\\\\");
             substitutedValues = substitutedValues.replaceAll(regEx, value);
         }
         
         return substitutedValues;
+    }
+
+    /**
+     * TODO.
+     */
+    static String round(Number value, Integer precisionDigits, RoundingMethod roundingMethod) {
+        switch (roundingMethod) {
+            case DECIMAL_PLACES:
+                return String.format("%." + Integer.toString(precisionDigits) + "f", value);
+            case SIGNIFICANT_FIGURES:
+                return String.format("%." + Integer.toString(precisionDigits) + "G", value);
+            case NONE:
+            default:
+                return value.toString();
+        }
     }
 
     /**

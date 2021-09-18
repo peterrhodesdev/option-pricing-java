@@ -91,19 +91,21 @@ public abstract class AbstractOption implements Option {
     }
 
     /**
+     * Returns 1 for a call option, -1 for a put option.
+     *
+     * @return type factor
+     */
+    protected double typeFactor() {
+        return this.type == OptionType.CALL ? 1 : -1;
+    }
+
+    /**
      * Returns "C" for a call option, "P" for a put option.
      *
      * @return type parameter
      */
     protected String typeParameterNotation() {
         return this.type == OptionType.CALL ? "C" : "P";
-    }
-
-    private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
-        if (value <= 0) {
-            throw new IllegalArgumentException(name + " must be greater than zero");
-        }
-        return value;
     }
 
     //region constants
@@ -118,4 +120,11 @@ public abstract class AbstractOption implements Option {
 
     //----------------------------------------------------------------------
     //endregion constants
+
+    private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
+        if (value <= 0) {
+            throw new IllegalArgumentException(name + " must be greater than zero");
+        }
+        return value;
+    }
 }

@@ -11,7 +11,6 @@ import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.helpers.CalculationHelper;
 import dev.peterrhodes.optionpricing.helpers.LatexHelper;
-import dev.peterrhodes.optionpricing.models.AnalyticalCalculationModel;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -22,6 +21,9 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
+
+    private int calculationStepPrecision = 3;
+    private boolean isPrecisionDecimalPlaces = false; // true: sig figs
 
     /**
      * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.
@@ -39,45 +41,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
         this.N = new NormalDistribution();
     }
-
-    //region d₁, d₂
-    //----------------------------------------------------------------------
-
-    /**
-     * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
-     *
-     * @return d_i
-     */
-    private double d(int i) {
-        return 1 / (this.vol * Math.sqrt(this.T)) * (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T);
-    }
-
-    private Formula dFormula(int i) {
-        String lhs = this.dParameterNotation(i);
-        String iFactor = i == 1 ? " + " : " - ";
-        String rhsNumerator = LatexHelper.naturalLogarithm(LatexHelper.fraction(NOTATION_S, NOTATION_K))
-            + LatexHelper.subFormula(NOTATION_R + iFactor + LatexHelper.half(LatexHelper.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
-        String rhsDenominator = LatexHelper.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexHelper.squareRoot(NOTATION_T);
-        String rhs = LatexHelper.fraction(rhsNumerator, rhsDenominator);
-
-        List<String> steps = new ArrayList();
-        if (i == 2) {
-            steps.add(this.dParameterNotation(1) + " - " + NOTATION_VOL + LatexHelper.squareRoot(NOTATION_T));
-        }
-        
-        return new Formula(lhs, rhs, steps);
-    }
-
-    private String dParameterNotation(int i) {
-        return String.format("d_%d", i);
-    }
-
-    private double dStandardNormalCdf(int i, double dFactor) {
-        return this.N.cumulativeProbability(dFactor * this.d(i));
-    }
-
-    //----------------------------------------------------------------------
-    //endregion d₁, d₂
 
     //region price
     //----------------------------------------------------------------------
@@ -119,7 +82,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double delta() {
-        return this.typeFactor() * Math.exp(-this.q * this.T) * this.dStandardNormalCdf(1, this.typeFactor());
+        return this.typeFactor() * Math.exp(-this.q * this.T) * this.N_at_d(1, this.typeFactor());
     }
 
     /**
@@ -163,29 +126,17 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         List<EquationInput> inputs = this.baseCalculationInputs();
 
         List<String> steps = new ArrayList();
-
-        // d_1
-        String d1Value = Double.toString(this.d(1));
-        String d1CalculationStep = CalculationHelper.solveFormula(this.dFormula(1), inputs, d1Value);
-        steps.add(d1CalculationStep);
-        
-        List<EquationInput> deltaInputs = new ArrayList(); // 
-        deltaInputs.add(new EquationInput(this.dParameterNotation(1), d1Value));
-
-        // N (TODO refactor)
-        String nLhs = this.type == OptionType.CALL
-            ? notationStandardNormalCdf(this.dParameterNotation(1))
-            : notationStandardNormalCdf("-" + this.dParameterNotation(1));
-        String nSubstituted = nLhs + CalculationHelper.substituteValuesIntoEquation(nLhs, deltaInputs);
-        String nValue = Double.toString(this.dStandardNormalCdf(1, this.typeFactor()));
-        steps.add(nLhs + " = " + nSubstituted + " = " + nValue);
+        steps.add(this.dCalculationStep(1));
+        steps.add(this.ndiCalculationStep(1, this.typeFactor()));
 
         // delta
-        String deltaValue = Double.toString(this.delta());
-        String deltaCalculationStep = CalculationHelper.solveFormula(this.deltaFormula(), deltaInputs, deltaValue);
+        List<EquationInput> deltaInputs = this.dEquationInputs(); // Don't want dᵢto appear in the final calculation inputs
+        deltaInputs.addAll(inputs);
+        // TODO add d or N?
+        double answer = this.delta();
+        // TODO fix to substitute in for N ()
+        String deltaCalculationStep = CalculationHelper.solveFormula(this.deltaFormula(), deltaInputs, Double.toString(answer));
         steps.add(deltaCalculationStep);
-
-        String answer = deltaValue;
 
         return new Calculation(inputs, steps, answer);
     }
@@ -335,28 +286,74 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         return this.baseParameters();
     }
 
-    @Override
-    public AnalyticalCalculationModel calculation() {
-        double price = this.price();
-        double delta = this.delta();
-        double gamma = this.gamma();
-        double vega = this.vega();
-        double theta = this.theta();
-        double rho = this.rho();
-        return new AnalyticalCalculationModel(price, delta, gamma, vega, theta, rho);
-    }
-
-    //region private methods
+    //region d₁, d₂
     //----------------------------------------------------------------------
 
     /**
-     * Returns 1 for a call option, -1 for a put option.
+     * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
      *
-     * @return type factor
+     * @return dᵢ
      */
-    private double typeFactor() {
-        return this.type == OptionType.CALL ? 1 : -1;
+    private double d(int i) {
+        return (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T) / (this.vol * Math.sqrt(this.T));
     }
+
+    private Formula dFormula(int i) {
+        String lhs = this.dParameterNotation(i);
+        String iFactor = i == 1 ? " + " : " - ";
+        String rhsNumerator = LatexHelper.naturalLogarithm(LatexHelper.fraction(NOTATION_S, NOTATION_K))
+            + LatexHelper.subFormula(NOTATION_R + iFactor + LatexHelper.half(LatexHelper.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
+        String rhsDenominator = LatexHelper.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexHelper.squareRoot(NOTATION_T);
+        String rhs = LatexHelper.fraction(rhsNumerator, rhsDenominator);
+
+        List<String> steps = new ArrayList();
+        if (i == 2) {
+            steps.add(this.dParameterNotation(1) + " - " + NOTATION_VOL + LatexHelper.squareRoot(NOTATION_T));
+        }
+        
+        return new Formula(lhs, rhs, steps);
+    }
+
+    private String dCalculationStep(int i) {
+        double value = this.d(i);
+        String valueRounded = String.format("%.3G", value);
+        return CalculationHelper.solveFormula(this.dFormula(i), this.baseCalculationInputs(), valueRounded);
+    }
+
+    private String dParameterNotation(int i) {
+        return String.format("d_%d", i);
+    }
+
+    private List<EquationInput> dEquationInputs() {
+        List<EquationInput> inputs = new ArrayList();
+        inputs.add(new EquationInput.Builder(this.dParameterNotation(1)).withNumberValue(this.d(1)).build());
+        inputs.add(new EquationInput.Builder(this.dParameterNotation(2)).withNumberValue(this.d(2)).build());
+        return inputs;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion d₁, d₂
+
+    //region N(dᵢ)
+    //----------------------------------------------------------------------
+
+    private double N_at_d(int i, double dFactor) {
+        return this.N.cumulativeProbability(dFactor * this.d(i));
+    }
+
+    private String ndiCalculationStep(int i, double dFactor) {
+        String nLhs = notationStandardNormalCdf((dFactor < 0 ? "-" : "") + this.dParameterNotation(i));
+        String nSubstituted = CalculationHelper.substituteValuesIntoEquation(nLhs, this.dEquationInputs());
+        String nAnswer = Double.toString(this.N_at_d(i, dFactor));
+
+        return nLhs + " = " + nSubstituted + " = " + nAnswer;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion N(dᵢ)
+
+    //region private methods
+    //----------------------------------------------------------------------
 
     //----------------------------------------------------------------------
     //endregion private methods

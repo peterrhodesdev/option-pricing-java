@@ -30,12 +30,12 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     protected final List<EquationInput> baseCalculationInputs() {
         List<EquationInput> inputs = new ArrayList();
 
-        inputs.add(new EquationInput(NOTATION_S, Double.toString(this.S)));
-        inputs.add(new EquationInput(NOTATION_K, Double.toString(this.K)));
-        inputs.add(new EquationInput(NOTATION_T, Double.toString(this.T)));
-        inputs.add(new EquationInput(NOTATION_VOL, Double.toString(this.vol)));
-        inputs.add(new EquationInput(NOTATION_R, Double.toString(this.r)));
-        inputs.add(new EquationInput(NOTATION_Q, Double.toString(this.q)));
+        inputs.add(new EquationInput.Builder(NOTATION_S).withNumberValue(this.S).build());
+        inputs.add(new EquationInput.Builder(NOTATION_K).withNumberValue(this.K).build());
+        inputs.add(new EquationInput.Builder(NOTATION_T).withNumberValue(this.T).build());
+        inputs.add(new EquationInput.Builder(NOTATION_VOL).withNumberValue(this.vol).build());
+        inputs.add(new EquationInput.Builder(NOTATION_R).withNumberValue(this.r).build());
+        inputs.add(new EquationInput.Builder(NOTATION_Q).withNumberValue(this.q).build());
 
         return inputs;
     }
