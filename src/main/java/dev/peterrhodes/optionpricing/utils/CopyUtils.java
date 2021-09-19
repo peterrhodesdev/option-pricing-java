@@ -1,0 +1,55 @@
+package dev.peterrhodes.optionpricing.utils;
+
+import dev.peterrhodes.optionpricing.core.PublicCloneable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Miscellaneous utility methods for copying.
+ */
+public interface CopyUtils {
+
+    /**
+     * Generic deep copy method for an array of objects that implement {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     */
+    static <T extends PublicCloneable<T>> T[] deepCopy(T[] arr, Class<T> c) {
+        if (arr == null) {
+            return null;
+        }
+
+        List<T> list = new ArrayList();
+        for (T element : arr) {
+            list.add(element.clone());
+        }
+
+        T[] deepCopy = (T[]) Array.newInstance(c, list.size());
+        return (T[]) list.toArray(deepCopy);
+    }
+
+    /**
+     * Generic deep copy method for a {@link java.util.List} of objects that implement {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     */
+    static <T extends PublicCloneable<T>> List<T> deepCopy(List<T> list) {
+        if (list == null) {
+            return null;
+        }
+
+        List<T> deepCopy = new ArrayList();
+        for (T element : list) {
+            deepCopy.add(element.clone());
+        }
+
+        return deepCopy;
+    }
+
+    /**
+     * Deep copies a two-dimensional array of {@link java.lang.String}.
+     */
+    static String[][] deepCopy(String[][] matrix) {
+        return Arrays.stream(matrix)
+            .map(element -> element.clone())
+            .toArray($ -> matrix.clone());
+    }
+}

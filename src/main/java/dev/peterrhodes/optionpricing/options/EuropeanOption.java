@@ -24,9 +24,6 @@ public class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
 
-    private int calculationStepPrecision = 3;
-    private boolean isPrecisionDecimalPlaces = false; // true: sig figs
-
     /**
      * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.
      *
@@ -97,7 +94,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         // delta
         double answer = this.delta();
         EquationInput[] inputs = Stream.concat(
-                Arrays.stream(this.baseCalculationInputs(LatexDelimeterType.PARENTHESIS)),
+                Arrays.stream(this.getBaseCalculationInputs(LatexDelimeterType.PARENTHESIS)),
                 Arrays.stream(new EquationInput[] { this.dEquationSubstitutionValue(1) })
             )
             .toArray(EquationInput[]::new);
@@ -230,9 +227,11 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      *   <li>dividend yield</li>
      * </ol>
      */
-    public Map<String, String> optionParameters() {
-        return this.baseParameters;
+    public Map<String, String> getOptionParameters() {
+        return this.getBaseParameters();
     }
+
+    //======================================================================
 
     //region d₁, d₂
     //----------------------------------------------------------------------
@@ -252,7 +251,7 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         // RHS
         String iFactor = i == 1 ? " + " : " - ";
         String rhsNumerator = LatexUtils.naturalLogarithm(LatexUtils.fraction(NOTATION_S, NOTATION_K))
-            + LatexUtils.subFormula(NOTATION_R + iFactor + LatexUtils.half(LatexUtils.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
+            + LatexUtils.subFormula(NOTATION_R + " - " + NOTATION_Q + iFactor + LatexUtils.half(LatexUtils.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
         String rhsDenominator = LatexUtils.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexUtils.squareRoot(NOTATION_T);
         String rhs = LatexUtils.fraction(rhsNumerator, rhsDenominator);
 
@@ -263,22 +262,23 @@ public class EuropeanOption extends AbstractAnalyticalOption {
         }
         parts.add(rhs);
         
-        return FormulaUtils.solve(parts.toArray(String[]::new), this.baseCalculationInputs(LatexDelimeterType.NONE), this.roundCalculationStepValue(this.d(i)));
+        return FormulaUtils.solve(parts.toArray(String[]::new), this.getBaseCalculationInputs(LatexDelimeterType.NONE), this.roundCalculationStepValue(this.d(i)));
     }
 
     private String dParameterNotation(int i) {
-        return String.format("d_%d", i);
+        return String.format(" d_%d ", i);
     }
-
+/*
     private EquationInput[] dEquationSubstitutionValues() {
         return new EquationInput[] {
             this.dEquationSubstitutionValue(1),
             this.dEquationSubstitutionValue(2)
         };
     }
+*/
 
     private EquationInput dEquationSubstitutionValue(int i) {
-        return new EquationInput.Builder(this.dParameterNotation(i))
+        return new EquationInput.Builder(this.dParameterNotation(i).trim())
             .withNumberValue(this.d(i))
             .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
             .build();

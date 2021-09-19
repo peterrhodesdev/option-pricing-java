@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.enums.RoundingMethod;
 import dev.peterrhodes.optionpricing.models.CalculationModel;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,39 @@ import org.junit.jupiter.api.Test;
 class EuropeanOptionTest {
 
     private final String greaterThanZeroMessage = "must be greater than zero";
+
+    private void assertCalculation(CalculationModel result, int[] expectedStepLengths, String[][] expectedStepContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
+        int expectedStepsLength = expectedStepLengths.length;
+
+        String[][] steps = result.getSteps();
+
+        assertThat(steps.length)
+            .as("number of steps")
+            .isEqualTo(expectedStepLengths.length);
+
+        for (int i = 0; i < expectedStepLengths.length; i++) {
+            // number of step parts
+            assertThat(steps[i].length)
+                .as(String.format("number of parts in step %d", i))
+                .isEqualTo(expectedStepLengths[i]);
+
+            // values substituted into equation
+            int substitutionPartIndex = steps[i].length - 2;
+            String substitutionPart = steps[i][substitutionPartIndex];
+            for (String chars : expectedStepContains[i]) {
+                assertThat(substitutionPart.contains(chars))
+                    .as(String.format("step %d, part %d '%s', contains '%s'", i, substitutionPartIndex, substitutionPart, chars))
+                    .isTrue();
+            }
+
+            // answer
+            assertThat(expectedStepAnswers[i])
+                .as(String.format("step %d last element (answer)", i))
+                .isEqualTo(steps[i][expectedStepLengths[i] - 1]);
+        }
+
+        assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
+    }
 
     //region throws IllegalArgumentException tests
     //----------------------------------------------------------------------
@@ -152,36 +186,25 @@ class EuropeanOptionTest {
     void Call_delta_Hull2014Ex191() {
         // Arrange
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        option.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = option.deltaCalculation();
 
         // Assert
+        // steps: d₁, N(d₁), Δ
+        int[] expectedStepLengths = { 4, 3, 5 };
+        String[][] expectedStepContains = {
+            // S       K       T           σ        r         q
+            { " 49 ", " 50 ", " 0.3846 ", " 0.2 ", " 0.05 ", " 0 " },
+            // d₁
+            { " 0.0542 " },
+            // T           q      d₁
+            { " 0.3846 ", " 0 ", " 0.0542 " }
+        };
+        String[] expectedStepAnswers = { "0.0542", "0.522", "0.522" };
 
-        // d₁, N(d₁), Δ
-        int[] expectedStepParts = new int[] { 4, 3, 5 };
-        String[] expectedStepAnswers = new String[] { "0.0542", "0.522", "0.522" };
-        int expectedStepsLength = expectedStepAnswers.length;
-
-        String[][] steps = result.getSteps();
-
-        assertThat(steps.length)
-            .as("number of steps")
-            .isEqualTo(expectedStepParts.length);
-
-        for (int i = 0; i < expectedStepParts.length; i++) {
-            System.out.println("step");
-            System.out.println(java.util.Arrays.toString(steps[i]));
-            assertThat(steps[i].length)
-                .as(String.format("number of parts in step %d", i))
-                .isEqualTo(expectedStepParts[i]);
-
-            assertThat(expectedStepAnswers[i])
-                .as(String.format("step %d last element", i))
-                .isEqualTo(steps[i][expectedStepParts[i] - 1]);
-        }
-
-        assertThat(result.getAnswer()).isEqualTo(0.522, withPrecision(0.001));
+        this.assertCalculation(result, expectedStepLengths, expectedStepContains, expectedStepAnswers, 0.522, 0.001);
     }
 
     /**

@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for an option that doesn't have an analytical solution.&nbsp;If the specific option has an analytical solution then it will extend {@link AnalyticalOption}.
@@ -64,4 +64,9 @@ public interface Option {
      * @return dividend yield (q)
      */
     double getQ();
+
+    /**
+     * TODO.
+     */
+    Map<String, String> getOptionParameters();
 }

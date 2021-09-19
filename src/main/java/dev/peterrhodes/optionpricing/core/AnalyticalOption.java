@@ -1,7 +1,7 @@
 package dev.peterrhodes.optionpricing.core;
 
+import dev.peterrhodes.optionpricing.enums.RoundingMethod;
 import dev.peterrhodes.optionpricing.models.CalculationModel;
-import java.util.Map;
 
 /**
  * Interface for an option that has an analytical solution, i.e.&nbsp;can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
@@ -131,5 +131,5 @@ public interface AnalyticalOption extends Option {
     /**
      * TODO.
      */
-    Map<String, String> optionParameters();
+    void setCalculationStepPrecision(int precision, RoundingMethod roundingMethod);
 }

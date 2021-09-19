@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class LatticeNode implements Cloneable {
+public class LatticeNode implements PublicCloneable<LatticeNode> {
 
     /**
      * Time step position (starts from zero at t = 0).
@@ -58,7 +58,7 @@ public class LatticeNode implements Cloneable {
      * @return the cloned object
      */
     @Override
-    public Object clone() {
+    public LatticeNode clone() {
         try {
             return (LatticeNode) super.clone();
         } catch (CloneNotSupportedException e) {

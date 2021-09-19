@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing.models;
 
 import dev.peterrhodes.optionpricing.core.LatticeNode;
 import dev.peterrhodes.optionpricing.core.Option;
-import java.util.ArrayList;
+import dev.peterrhodes.optionpricing.utils.CopyUtils;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -88,33 +88,21 @@ public class CoxRossRubinsteinModel {
 
     /**
      * Set the outputs of the model.
-     * <p>
-     * Note: a deep copy of the nodes list is made, i.e. making changes to the original object won't affect this copy.
-     * </p>
      *
      * @param price Calculated price of the option.
      * @param nodes List of the lattice nodes used to perform the calculation.
      */
     public void setOutputs(double price, List<LatticeNode> nodes) {
         this.price = price;
-
-        // Deep copy nodes
-        this.nodes = new ArrayList();
-        for (LatticeNode node : nodes) {
-            this.nodes.add((LatticeNode) node.clone());
-        }
+        this.nodes = CopyUtils.deepCopy(nodes);
     }
 
     /**
-     * Returns a deep copy of the lattice nodes list.
+     * Returns the lattice nodes list.
      *
      * @return lattice nodes
      */
     public List<LatticeNode> getNodes() {
-        List<LatticeNode> clone = new ArrayList();
-        for (LatticeNode node : this.nodes) {
-            clone.add((LatticeNode) node.clone());
-        }
-        return clone;
+        return CopyUtils.deepCopy(this.nodes);
     }
 }

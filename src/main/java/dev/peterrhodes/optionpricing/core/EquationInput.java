@@ -9,7 +9,7 @@ import lombok.NonNull;
  * Holds the details of an input that is to be substituted into a mathemtical equation.
  */
 @Getter
-public class EquationInput<T extends Number> implements Cloneable {
+public class EquationInput<T extends Number> implements PublicCloneable<EquationInput> {
 
     /**
      * Key for identifying the input variable name in an equation.
@@ -65,26 +65,37 @@ public class EquationInput<T extends Number> implements Cloneable {
     }
 
     /**
+     * TODO.
+     */
+    public LatexDelimeterType setLatexDelimeterType(LatexDelimeterType latexDelimeterType) {
+        return this.latexDelimeterType = latexDelimeterType;
+    }
+
+    /**
      * Clone the object.
      *
      * @return the cloned object
      */
     @Override
-    public Object clone() {
-        Builder builder = new Builder(this.key)
-            .withDelimeter(this.latexDelimeterType);
+    public EquationInput clone() {
+        try {
+            return (EquationInput) super.clone();
+        } catch (CloneNotSupportedException e) {
+            Builder builder = new Builder(this.key)
+                .withDelimeter(this.latexDelimeterType);
 
-        if (this.numberValue != null) {
-            builder = builder.withNumberValue(this.numberValue);
+            if (this.numberValue != null) {
+                builder = builder.withNumberValue(this.numberValue);
 
-            if (this.precisionDigits != null && this.roundingMethod != null) {
-                builder = builder.withPrecision(this.precisionDigits, this.roundingMethod);
+                if (this.precisionDigits != null && this.roundingMethod != null) {
+                    builder = builder.withPrecision(this.precisionDigits, this.roundingMethod);
+                }
+            } else {
+                builder = builder.withStringValue(this.stringValue);
             }
-        } else {
-            builder = builder.withStringValue(this.stringValue);
+            
+            return builder.build();   
         }
-
-        return builder.build();
     }
 
     /**

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.peterrhodes.optionpricing.core.EquationInput;
-import dev.peterrhodes.optionpricing.core.Formula;
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import java.util.ArrayList;
 import java.util.List;

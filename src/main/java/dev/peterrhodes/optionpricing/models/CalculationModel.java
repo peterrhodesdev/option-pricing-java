@@ -1,5 +1,7 @@
 package dev.peterrhodes.optionpricing.models;
 
+import dev.peterrhodes.optionpricing.utils.CopyUtils;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -11,6 +13,7 @@ public class CalculationModel {
     /**
      * TODO.
      */
+    @Getter(value = AccessLevel.NONE)
     private String[][] steps;
 
     /**
@@ -22,7 +25,14 @@ public class CalculationModel {
      * TODO.
      */
     public CalculationModel(String[][] steps, double answer) {
-        this.steps = steps;
+        this.steps = CopyUtils.deepCopy(steps);
         this.answer = answer;
+    }
+
+    /**
+     * TODO.
+     */
+    public String[][] getSteps() {
+        return CopyUtils.deepCopy(this.steps);
     }
 }

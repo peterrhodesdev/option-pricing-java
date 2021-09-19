@@ -42,7 +42,7 @@ public class ExoticOption extends AbstractOption {
      *   <li>dividend yield</li>
      * </ol>
      */
-    public Map<String, String> optionParameters() {
-        return this.baseParameters;
+    public Map<String, String> getOptionParameters() {
+        return this.getBaseParameters();
     }
 }

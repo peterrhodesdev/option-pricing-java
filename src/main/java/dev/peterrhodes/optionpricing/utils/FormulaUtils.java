@@ -1,7 +1,6 @@
 package dev.peterrhodes.optionpricing.utils;
 
 import dev.peterrhodes.optionpricing.core.EquationInput;
-import dev.peterrhodes.optionpricing.enums.RoundingMethod;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

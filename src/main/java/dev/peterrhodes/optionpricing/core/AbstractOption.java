@@ -3,6 +3,7 @@ package dev.peterrhodes.optionpricing.core;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -23,36 +24,40 @@ public abstract class AbstractOption implements Option {
     protected OptionType type;
 
     /**
-     * Price of the underlying asset (spot price) ({@code S}).
+     * Price of the underlying asset (spot price) (S).
      */
     protected double S;
 
     /**
-     * Strike price of the option (exercise price) ({@code S}).
+     * Strike price of the option (exercise price) (K).
      */
     protected double K;
 
     /**
-     * Time until option expiration (time from the start of the contract until maturity) ({@code T}).
+     * Time until option expiration (time from the start of the contract until maturity) (T).
      */
     protected double T;
 
     /**
-     * Underlying volatility (standard deviation of log returns) ({@code σ}).
+     * Underlying volatility (standard deviation of log returns) (σ).
      */
     protected double vol;
 
     /**
-     * Annualized risk-free interest rate, continuously compounded ({@code r}).
+     * Annualized risk-free interest rate (continuously compounded) (r).
      */
     protected double r;
 
     /**
-     * Continuous dividend yield ({@code q}).
+     * Annual dividend yield (continuously compounded) (q).
      */
     protected double q;
 
-    protected Map<String, String> baseParameters;
+    /**
+     * TODO.
+     */
+    @Getter(value = AccessLevel.NONE)
+    private Map<String, String> baseParameters;
 
     /**
      * Creates an abstract option with the specified parameters.
@@ -93,13 +98,17 @@ public abstract class AbstractOption implements Option {
         this.q = q.doubleValue();
 
         this.baseParameters = Map.ofEntries(
-            Map.entry(NOTATION_S, S.toString().trim()),
-            Map.entry(NOTATION_K, K.toString().trim()),
-            Map.entry(NOTATION_T, T.toString().trim()),
-            Map.entry(NOTATION_VOL, vol.toString().trim()),
-            Map.entry(NOTATION_R, r.toString().trim()),
-            Map.entry(NOTATION_Q, q.toString().trim())
+            Map.entry(NOTATION_S.trim(), S.toString()),
+            Map.entry(NOTATION_K.trim(), K.toString()),
+            Map.entry(NOTATION_T.trim(), T.toString()),
+            Map.entry(NOTATION_VOL.trim(), vol.toString()),
+            Map.entry(NOTATION_R.trim(), r.toString()),
+            Map.entry(NOTATION_Q.trim(), q.toString())
         );
+    }
+
+    protected Map<String, String> getBaseParameters() {
+        return this.baseParameters;
     }
 
     /**
