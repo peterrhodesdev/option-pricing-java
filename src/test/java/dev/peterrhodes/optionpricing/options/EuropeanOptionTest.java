@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
-import dev.peterrhodes.optionpricing.core.Calculation;
-import dev.peterrhodes.optionpricing.core.EquationInput;
-import dev.peterrhodes.optionpricing.core.Formula;
-import dev.peterrhodes.optionpricing.core.Parameter;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import java.util.List;
+import dev.peterrhodes.optionpricing.models.CalculationModel;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -158,26 +154,34 @@ class EuropeanOptionTest {
         EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
-        Calculation calculation = option.deltaCalculation();
+        CalculationModel result = option.deltaCalculation();
 
         // Assert
-        List<String> steps = calculation.getSteps();
-        String[] expectedStepAnswers = new String[] {
-            "0.0542", // d₁
-            "0.522", // N(d₁)
-            "0.522", // Δ
-        };
-        int expectedStepsSize = expectedStepAnswers.length;
-        assertThat(steps.size()).isEqualTo(expectedStepsSize);
-        for (int i = 0; i < expectedStepsSize; i++) {
-            String exp = expectedStepAnswers[i];
-            String act = steps.get(i);
-            String actMessage = act.substring(act.length() - exp.length(), act.length());
-            assertThat(act.endsWith(exp))
-                .as(String.format("step %d end: expected = '%s', actual = '...%s'", i, exp, actMessage))
-                .isTrue();
+
+        // d₁, N(d₁), Δ
+        int[] expectedStepParts = new int[] { 4, 3, 5 };
+        String[] expectedStepAnswers = new String[] { "0.0542", "0.522", "0.522" };
+        int expectedStepsLength = expectedStepAnswers.length;
+
+        String[][] steps = result.getSteps();
+
+        assertThat(steps.length)
+            .as("number of steps")
+            .isEqualTo(expectedStepParts.length);
+
+        for (int i = 0; i < expectedStepParts.length; i++) {
+            System.out.println("step");
+            System.out.println(java.util.Arrays.toString(steps[i]));
+            assertThat(steps[i].length)
+                .as(String.format("number of parts in step %d", i))
+                .isEqualTo(expectedStepParts[i]);
+
+            assertThat(expectedStepAnswers[i])
+                .as(String.format("step %d last element", i))
+                .isEqualTo(steps[i][expectedStepParts[i] - 1]);
         }
-        assertThat(calculation.getAnswer()).isEqualTo(0.522, withPrecision(0.001));
+
+        assertThat(result.getAnswer()).isEqualTo(0.522, withPrecision(0.001));
     }
 
     /**

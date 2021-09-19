@@ -41,11 +41,6 @@ public class EquationInput<T extends Number> implements Cloneable {
      */
     private RoundingMethod roundingMethod;
 
-    /**
-     * TODO.
-     */
-    private boolean precisionImmutable;
-
     private EquationInput(Builder builder) {
         this.key = builder.key;
         this.numberValue = (T) builder.numberValue;
@@ -53,7 +48,20 @@ public class EquationInput<T extends Number> implements Cloneable {
         this.latexDelimeterType = builder.latexDelimeterType;
         this.precisionDigits = builder.precisionDigits;
         this.roundingMethod = builder.roundingMethod;
-        this.precisionImmutable = builder.precisionImmutable;
+    }
+
+    /**
+     * TODO.
+     */
+    public boolean hasNumberValue() {
+        return this.numberValue != null;
+    }
+
+    /**
+     * TODO.
+     */
+    public boolean hasStringValue() {
+        return this.stringValue != null;
     }
 
     /**
@@ -70,7 +78,7 @@ public class EquationInput<T extends Number> implements Cloneable {
             builder = builder.withNumberValue(this.numberValue);
 
             if (this.precisionDigits != null && this.roundingMethod != null) {
-                builder = builder.withPrecision(this.precisionDigits, this.roundingMethod, this.precisionImmutable);
+                builder = builder.withPrecision(this.precisionDigits, this.roundingMethod);
             }
         } else {
             builder = builder.withStringValue(this.stringValue);
@@ -89,7 +97,6 @@ public class EquationInput<T extends Number> implements Cloneable {
         private LatexDelimeterType latexDelimeterType;
         private Integer precisionDigits;
         private RoundingMethod roundingMethod;
-        private boolean precisionImmutable;
 
         /**
          * <p>Builds an EquationInput object.</p>
@@ -100,13 +107,12 @@ public class EquationInput<T extends Number> implements Cloneable {
          *   <li>{@code latexDelimeterType} = {@link LatexDelimeterType#NONE}</li>
          *   <li>{@code precisionDigits} = null</li>
          *   <li>{@code roundingMethod} = {@link RoundingMethod#NONE}</li>
-         * TODO immutable
          * </ul>
          *
          * @param key Key for identifying the input variable name in an equation.
-         * @throws IllegalArgumentException if {@code key} is null or empty/blank
+         * @throws NullPointerException if {@code key} is null or empty/blank
          */
-        public Builder(@NonNull String key) throws IllegalArgumentException {
+        public Builder(@NonNull String key) throws NullPointerException {
             if (key.trim().length() == 0) {
                 throw new IllegalArgumentException("key can't be empty/blank");
             }
@@ -118,16 +124,15 @@ public class EquationInput<T extends Number> implements Cloneable {
             this.latexDelimeterType = LatexDelimeterType.NONE;
             this.precisionDigits = null;
             this.roundingMethod = RoundingMethod.NONE;
-            this.precisionImmutable = true;
         }
 
         /**
          * Sets the LaTeX delimeter type.
          *
          * @param latexDelimeterType The type of delimeter to surround the value with when it's substituted into the equation.
-         * @throws IllegalArgumentException if {@code latexDelimeterType} is null
+         * @throws NullPointerException if {@code latexDelimeterType} is null
          */
-        public Builder withDelimeter(@NonNull LatexDelimeterType latexDelimeterType) throws IllegalArgumentException {
+        public Builder withDelimeter(@NonNull LatexDelimeterType latexDelimeterType) throws NullPointerException {
             this.latexDelimeterType = latexDelimeterType;
             return this;
         }
@@ -137,10 +142,10 @@ public class EquationInput<T extends Number> implements Cloneable {
          * <p>Note: if the number has trailing zeros and you want to keep the precision when it's substituted in, then cast it to a {@link java.util.String} and use {@link #withStringValue(String)} instead.</p>
          *
          * @param numberValue The number value to be substituted into the equation for the key.
-         * @throws IllegalArgumentException if {@code numberValue} is null
+         * @throws NullPointerException if {@code numberValue} is null
          * @throws IllegalStateException if {@link #withStringValue(String)} has been called
          */
-        public Builder withNumberValue(N numberValue) {
+        public Builder withNumberValue(@NonNull N numberValue) {
             if (this.stringValue != null) {
                 throw new IllegalStateException("can only call either withNumberValue or withStringValue, not both");
             }
@@ -151,13 +156,12 @@ public class EquationInput<T extends Number> implements Cloneable {
         /**
          * TODO.
          */
-        public Builder withPrecision(@NonNull Integer precisionDigits, @NonNull RoundingMethod roundingMethod, boolean immutable) {
+        public Builder withPrecision(@NonNull Integer precisionDigits, @NonNull RoundingMethod roundingMethod) {
             if (this.numberValue == null) {
                 throw new IllegalStateException();
             }
             this.precisionDigits = precisionDigits;
             this.roundingMethod = roundingMethod;
-            this.precisionImmutable = immutable;
             return this;
         }
 

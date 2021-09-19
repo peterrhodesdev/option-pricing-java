@@ -2,9 +2,9 @@ package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * Base class for all concrete option classes that don't have an analytical solution.&nbsp;If the specific option has an analytical solution then it should extend {@link AbstractAnalyticalOption}.
@@ -52,6 +52,8 @@ public abstract class AbstractOption implements Option {
      */
     protected double q;
 
+    protected Map<String, String> baseParameters;
+
     /**
      * Creates an abstract option with the specified parameters.
      *
@@ -63,31 +65,41 @@ public abstract class AbstractOption implements Option {
      * @param vol {@link #vol}
      * @param r {@link #r}
      * @param q {@link #q}
+     * @throws NullPointerException if any of the arguments are null
      * @throws IllegalArgumentException if {@code S}, {@code K}, {@code T}, or {@code vol} are not greater than zero
      */
-    public AbstractOption(OptionStyle style, OptionType type, double S, double K, double T, double vol, double r, double q) throws IllegalArgumentException {
+    public AbstractOption(
+        @NonNull OptionStyle style,
+        @NonNull OptionType type,
+        @NonNull Number S,
+        @NonNull Number K,
+        @NonNull Number T, 
+        @NonNull Number vol, 
+        @NonNull Number r,
+        @NonNull Number q
+    ) throws IllegalArgumentException, NullPointerException {
+        this.checkGreaterThanZero(S, "S");
+        this.checkGreaterThanZero(K, "K");
+        this.checkGreaterThanZero(T, "T");
+        this.checkGreaterThanZero(vol, "vol (σ)");
+
         this.style = style;
         this.type = type;
-        this.S = this.checkGreaterThanZero(S, "S");
-        this.K = this.checkGreaterThanZero(K, "K");
-        this.T = this.checkGreaterThanZero(T, "T");
-        this.vol = this.checkGreaterThanZero(vol, "vol (σ)");
-        this.r = r;
-        this.q = q;
-    }
+        this.S = S.doubleValue();
+        this.K = K.doubleValue();
+        this.T = T.doubleValue();
+        this.vol = vol.doubleValue();
+        this.r = r.doubleValue();
+        this.q = q.doubleValue();
 
-    protected final List<Parameter> baseParameters() {
-        List<Parameter> params = new ArrayList<Parameter>();
-
-        params.add(new Parameter(this.typeParameterNotation(), (this.type == OptionType.CALL ? "call" : "put") + " option price"));
-        params.add(new Parameter(NOTATION_S, "price of the underlying asset at time 0"));
-        params.add(new Parameter(NOTATION_K, "strike price of the option (exercise price)"));
-        params.add(new Parameter(NOTATION_T, "time until option expiration (time from the start of the contract until maturity)"));
-        params.add(new Parameter(NOTATION_VOL, "underlying volatility (standard deviation of log returns)"));
-        params.add(new Parameter(NOTATION_R, "annualized risk-free interest rate, continuously compounded"));
-        params.add(new Parameter(NOTATION_Q, "continuous dividend yield"));
-
-        return params;
+        this.baseParameters = Map.ofEntries(
+            Map.entry(NOTATION_S, S.toString().trim()),
+            Map.entry(NOTATION_K, K.toString().trim()),
+            Map.entry(NOTATION_T, T.toString().trim()),
+            Map.entry(NOTATION_VOL, vol.toString().trim()),
+            Map.entry(NOTATION_R, r.toString().trim()),
+            Map.entry(NOTATION_Q, q.toString().trim())
+        );
     }
 
     /**
@@ -111,20 +123,19 @@ public abstract class AbstractOption implements Option {
     //region constants
     //----------------------------------------------------------------------
 
-    protected static final String NOTATION_S = "S_0";
-    protected static final String NOTATION_K = "K";
-    protected static final String NOTATION_T = "T";
-    protected static final String NOTATION_VOL = "\\sigma";
-    protected static final String NOTATION_R = "r";
-    protected static final String NOTATION_Q = "q";
+    protected static final String NOTATION_S = " S_0 ";
+    protected static final String NOTATION_K = " K ";
+    protected static final String NOTATION_T = " T ";
+    protected static final String NOTATION_VOL = " \\sigma ";
+    protected static final String NOTATION_R = " r ";
+    protected static final String NOTATION_Q = " q ";
 
     //----------------------------------------------------------------------
     //endregion constants
 
-    private double checkGreaterThanZero(double value, String name) throws IllegalArgumentException {
-        if (value <= 0) {
+    private void checkGreaterThanZero(Number value, String name) throws IllegalArgumentException {
+        if (value.doubleValue() <= 0) {
             throw new IllegalArgumentException(name + " must be greater than zero");
         }
-        return value;
     }
 }

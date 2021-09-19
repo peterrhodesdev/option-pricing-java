@@ -64,11 +64,4 @@ public interface Option {
      * @return dividend yield (q)
      */
     double getQ();
-
-    /**
-     * Returns a list of the parameters/variables (e.g.&nbsp;spot price (S), strike price (K), ...) used to define the option.
-     *
-     * @return option parameters
-     */
-    List<Parameter> optionParameters();
 }

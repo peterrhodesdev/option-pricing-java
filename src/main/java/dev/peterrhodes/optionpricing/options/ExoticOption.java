@@ -1,10 +1,9 @@
 package dev.peterrhodes.optionpricing.options;
 
 import dev.peterrhodes.optionpricing.core.AbstractOption;
-import dev.peterrhodes.optionpricing.core.Parameter;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import java.util.List;
+import java.util.Map;
 
 /**
  * A fully customizable option that supports every available setting.
@@ -23,9 +22,10 @@ public class ExoticOption extends AbstractOption {
      * @param vol {@link AbstractOption#vol}
      * @param r {@link AbstractOption#r}
      * @param q {@link AbstractOption#q}
+     * @throws NullPointerException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
      * @throws IllegalArgumentException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
      */
-    public ExoticOption(OptionStyle style, OptionType type, double S, double K, double T, double vol, double r, double q) throws IllegalArgumentException {
+    public ExoticOption(OptionStyle style, OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
         super(style, type, S, K, T, vol, r, q);
     }
 
@@ -34,7 +34,6 @@ public class ExoticOption extends AbstractOption {
      *
      * @return option parameters list
      * <ol start="0">
-     *   <li>call or put</li>
      *   <li>spot price</li>
      *   <li>exercise price</li>
      *   <li>time to maturity</li>
@@ -43,7 +42,7 @@ public class ExoticOption extends AbstractOption {
      *   <li>dividend yield</li>
      * </ol>
      */
-    public List<Parameter> optionParameters() {
-        return this.baseParameters();
+    public Map<String, String> optionParameters() {
+        return this.baseParameters;
     }
 }

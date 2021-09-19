@@ -1,6 +1,7 @@
 package dev.peterrhodes.optionpricing.core;
 
-import java.util.List;
+import dev.peterrhodes.optionpricing.models.CalculationModel;
+import java.util.Map;
 
 /**
  * Interface for an option that has an analytical solution, i.e.&nbsp;can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
@@ -22,14 +23,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] priceFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    String[] priceCalculation();
+    CalculationModel priceCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -49,14 +43,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    Formula deltaFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    Calculation deltaCalculation();
+    CalculationModel deltaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -76,14 +63,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] gammaFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    String[] gammaCalculation();
+    CalculationModel gammaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -103,14 +83,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] vegaFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    String[] vegaCalculation();
+    CalculationModel vegaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -130,14 +103,7 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] thetaFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    String[] thetaCalculation();
+    CalculationModel thetaCalculation();
 
     //----------------------------------------------------------------------
     //endregion
@@ -157,22 +123,13 @@ public interface AnalyticalOption extends Option {
      *
      * @return TODO
      */
-    String[] rhoFormula();
-
-    /**
-     * TODO.
-     *
-     * @return TODO
-     */
-    String[] rhoCalculation();
+    CalculationModel rhoCalculation();
 
     //----------------------------------------------------------------------
     //endregion
 
     /**
-     * Returns a list of the functions (e.g.&nbsp;the standard normal CDF) used in the calculation formulas.
-     *
-     * @return calculation functions
+     * TODO.
      */
-    List<Parameter> calculationFunctions();
+    Map<String, String> optionParameters();
 }
