@@ -25,6 +25,13 @@ class EuropeanOptionTest {
 
         String[][] steps = result.getSteps();
 
+        /*for (String[] step : steps) {
+            System.out.println("step");
+            for (String part : step) {
+                System.out.println(part);
+            }
+        }*/
+
         assertThat(steps.length)
             .as("number of steps")
             .isEqualTo(expectedStepLengths.length);
@@ -59,34 +66,34 @@ class EuropeanOptionTest {
     @Test
     void Invalid_argument_values_should_throw_IllegalArgumentException() {
         // Arrange
-        double S = 100.0, K = 100.0, T = 1.0, vol = 0.25, r = 0.1, q = 0.05;
+        double S = 100.0, K = 100.0, τ = 1.0, σ = 0.25, r = 0.1, q = 0.05;
         Class exClass = IllegalArgumentException.class;
         String greaterThanZeroMessage = "must be greater than zero";
 
         // Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(0, K, T, vol, r, q);
+            EuropeanOption ex = EuropeanOption.createCall(0, K, τ, σ, r, q);
         })
             .as("zero spot price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, 0, T, vol, r, q);
+            EuropeanOption ex = EuropeanOption.createCall(S, 0, τ, σ, r, q);
         })
             .as("zero strike price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, K, 0, vol, r, q);
+            EuropeanOption ex = EuropeanOption.createCall(S, K, 0, σ, r, q);
         })
             .as("zero time to maturity")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, K, T, 0, r, q);
+            EuropeanOption ex = EuropeanOption.createCall(S, K, τ, 0, r, q);
         })
             .as("zero volatiliy")
             .isInstanceOf(exClass)
@@ -103,11 +110,11 @@ class EuropeanOptionTest {
      * Hull (2014): page 360, section 15.9, Example 15.6.
      */
     @Test
-    void Call_and_put_prices_for_the_same_parameters_Hull2014Ex156() {
+    void Prices_for_call_and_put_with_same_parameters_and_no_dividend_Hull2014Ex156() {
         // Arrange
-        double S = 42, K = 40, T = 0.5, vol = 0.2, r = 0.1, q = 0;
-        EuropeanOption call = EuropeanOption.createCall(S, K, T, vol, r, q);
-        EuropeanOption put = EuropeanOption.createPut(S, K, T, vol, r, q);
+        double S = 42, K = 40, τ = 0.5, σ = 0.2, r = 0.1, q = 0;
+        EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
+        EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
 
         // Act
         double callResult = call.price();
@@ -122,7 +129,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 363, section 15.10, Example 15.7.
      */
     @Test
-    void Call_price_Hull2014Ex157() {
+    void Price_for_call_with_no_dividend_Hull2014Ex157() {
         // Arrange
         EuropeanOption option = EuropeanOption.createCall(40, 60, 5, 0.3, 0.03, 0);
 
@@ -133,14 +140,11 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(7.04, withPrecision(0.01));
     }
 
-    // TODO: Hull (2014) Chapter 15 Practice Questions
-    // TODO: Hull (2014) Chapter 16
-
     /**
      * Hull (2014): page 396, section 17.4, Example 17.1.
      */
     @Test
-    void Call_price_Hull2014Ex171() {
+    void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
         EuropeanOption option = EuropeanOption.createCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
 
@@ -151,25 +155,7 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(51.83, withPrecision(0.01));
     }
 
-    /**
-     * Hull (2014): page 399, section 17.5, Example 17.2.
-     */
-    @Test
-    void Call_prices_for_different_volatilities_Hull2014Ex172() {
-        // Arrange
-        EuropeanOption optionVolatilty10 = EuropeanOption.createCall(1.6, 1.6, 0.3333, 0.1, 0.08, 0.11);
-        EuropeanOption optionVolatilty20 = EuropeanOption.createCall(1.6, 1.6, 0.3333, 0.2, 0.08, 0.11);
-
-        // Act
-        double resultVolatilty10 = optionVolatilty10.price();
-        double resultVolatilty20 = optionVolatilty20.price();
-
-        // Assert
-        assertThat(resultVolatilty10).isEqualTo(0.0285, withPrecision(0.0001));
-        assertThat(resultVolatilty20).isEqualTo(0.0639, withPrecision(0.0001));
-    }
-
-    // TODO: Hull (2014) Chapter 17 Practice Questions
+    // TODO put with dividend
 
     //----------------------------------------------------------------------
     //endregion
@@ -177,18 +163,18 @@ class EuropeanOptionTest {
     //region delta tests
     //----------------------------------------------------------------------
 
-    // TODO make calc answer double then check that instead
     /**
      * Hull (2014): page 427, section 19.4, Example 19.1.
      */
     @Test
-    void Call_delta_Hull2014Ex191() {
+    void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
         EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
         option.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = option.deltaCalculation();
+        double value = option.delta();
 
         // Assert
         // steps: d₁, N(d₁), Δ
@@ -204,13 +190,16 @@ class EuropeanOptionTest {
         String[] expectedStepAnswers = { "0.0542", "0.522", "0.522" };
 
         this.assertCalculation(result, expectedStepLengths, expectedStepContains, expectedStepAnswers, 0.522, 0.001);
+        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(value);
     }
+
+    // TODO call dividend, put no dividend
 
     /**
      * Hull (2014): page 445, section 19.13, Example 19.9.
      */
     @Test
-    void Put_delta_Hull2014Ex199() {
+    void Delta_for_put_Hull2014Ex199() {
         // Arrange
         EuropeanOption option = EuropeanOption.createPut(90, 87, 0.5, 0.25, 0.09, 0.03);
 
@@ -231,16 +220,22 @@ class EuropeanOptionTest {
      * Hull (2014): page 436, section 19.6, Example 19.4.
      */
     @Test
-    void Call_gamma_Hull2014Ex194() {
+    void Gamma_for_option_with_no_dividend_Hull2014Ex194() {
         // Arrange
-        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        double S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
+        EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
+        EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
 
         // Act
-        double result = option.gamma();
+        double callResult = call.gamma();
+        double putResult = put.gamma();
 
         // Assert
-        assertThat(result).isEqualTo(0.066, withPrecision(0.001));
+        assertThat(callResult).as("call answer").isEqualTo(0.066, withPrecision(0.001));
+        assertThat(callResult).as("call = put").isEqualTo(putResult);
     }
+
+    // TODO dividend
 
     //----------------------------------------------------------------------
     //endregion
@@ -252,16 +247,22 @@ class EuropeanOptionTest {
      * Hull (2014): page 438, section 19.8, Example 19.6.
      */
     @Test
-    void Call_vega_Hull2014Ex196() {
+    void Vega_for_option_with_no_dividend_Hull2014Ex196() {
         // Arrange
-        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        double S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
+        EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
+        EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
 
         // Act
-        double result = option.vega();
+        double callResult = call.vega();
+        double putResult = put.vega();
 
         // Assert
-        assertThat(result).isEqualTo(12.1, withPrecision(0.1));
+        assertThat(callResult).as("call answer").isEqualTo(12.1, withPrecision(0.1));
+        assertThat(callResult).as("call = put").isEqualTo(putResult);
     }
+
+    // TODO dividend
 
     //----------------------------------------------------------------------
     //endregion
@@ -273,7 +274,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 431, section 19.5, Example 19.2.
      */
     @Test
-    void Call_theta_Hull2014Ex192() {
+    void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
         EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -284,7 +285,7 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(-4.31, withPrecision(0.01));
     }
 
-    // TODO put
+    // TODO dividend, put
 
     //----------------------------------------------------------------------
     //endregion
@@ -296,7 +297,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 439, section 19.9, Example 19.7.
      */
     @Test
-    void Call_rho_Hull2014Ex197() {
+    void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
         EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
@@ -307,10 +308,8 @@ class EuropeanOptionTest {
         assertThat(result).isEqualTo(8.91, withPrecision(0.01));
     }
 
-    // TODO put
+    // TODO dividend, put
 
     //----------------------------------------------------------------------
     //endregion
-
-    // TODO Hull (2014) Chapter 19 Practice Questions
 }

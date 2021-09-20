@@ -13,50 +13,100 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
  * Vanilla European option.&nbsp;The value of the option and it's greeks can be calculated analytically using the <a href="https://www.jstor.org/stable/1831029?origin=JSTOR-pdf">Black-Scholes model</a>
  */
 public final class EuropeanOption extends AbstractAnalyticalOption {
-    
-    private NormalDistribution N;
 
-    /**
-     * Creates a vanilla European option with the specified parameters.&nbsp;{@link dev.peterrhodes.optionpricing.core.AbstractOption#style} defaults to {@link OptionStyle#EUROPEAN}.
-     *
-     * @param type {@link dev.peterrhodes.optionpricing.core.AbstractOption#type}
-     * @param S {@link dev.peterrhodes.optionpricing.core.AbstractOption#S}
-     * @param K {@link dev.peterrhodes.optionpricing.core.AbstractOption#K}
-     * @param T {@link dev.peterrhodes.optionpricing.core.AbstractOption#T}
-     * @param vol {@link dev.peterrhodes.optionpricing.core.AbstractOption#vol}
-     * @param r {@link dev.peterrhodes.optionpricing.core.AbstractOption#r}
-     * @param q {@link dev.peterrhodes.optionpricing.core.AbstractOption#q}
-     * @throws NullPointerException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
-     * @throws IllegalArgumentException from {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
-     */
-    private EuropeanOption(OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
-        super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
-        this.N = new NormalDistribution();
+    //region constructors
+    //----------------------------------------------------------------------
+
+    private EuropeanOption(OptionType type, Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
+        super(OptionStyle.EUROPEAN, type, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     /**
      * Creates a vanilla European call option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#CALL}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
-    public static EuropeanOption createCall(Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, S, K, T, vol, r, q);
-        return option;
+    public static EuropeanOption createCall(Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
+        return new EuropeanOption(OptionType.CALL, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     /**
      * Creates a vanilla European put option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#PUT}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
-    public static EuropeanOption createPut(Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
-        EuropeanOption option = new EuropeanOption(OptionType.PUT, S, K, T, vol, r, q);
-        return option;
+    public static EuropeanOption createPut(Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
+        return new EuropeanOption(OptionType.PUT, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
+
+    //----------------------------------------------------------------------
+    //endregion constructors
+
+    //region d₁, d₂
+    //----------------------------------------------------------------------
+
+    /**
+     * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
+     *
+     * @return dᵢ
+     */
+    public double d(int i) {
+        return (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.σ, 2) / 2) * this.τ) / (this.σ * Math.sqrt(this.τ));
+    }
+
+    /**
+     * Returns the details of the dᵢ calculation step for a European option.
+     * <p>For a list of parameters used in the calculation see {@link #optionParameters}.</p>
+     * <p>The parts of the calculation step are:</p>
+     * <ol start="0">
+     *   <li>symbol</li>
+     *   <li>equation</li>
+     *   <li>option parameters substituted into the equation</li>
+     *   <li>value</li>
+     * </ol>
+     */
+    public String[] dCalculationStep(int i) {
+        String lhs = this.dParameterLatex(i).trim();
+
+        // RHS
+        String iFactor = i == 1 ? " + " : " - ";
+        String rhsNumerator = LatexUtils.naturalLogarithm(LatexUtils.fraction(LATEX_S, LATEX_K))
+            + LatexUtils.subFormula(LATEX_r + " - " + LATEX_q + iFactor + LatexUtils.half(LatexUtils.squared(LATEX_σ)), LatexDelimeterType.PARENTHESIS) + LATEX_τ;
+        String rhsDenominator = LatexUtils.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexUtils.squareRoot(LATEX_τ);
+        String rhs = LatexUtils.fraction(rhsNumerator, rhsDenominator);
+
+        List<String> parts = new ArrayList();
+        parts.add(lhs);
+        if (i == 2) {
+            parts.add(this.dParameterLatex(1) + " - " + LATEX_σ + LatexUtils.squareRoot(LATEX_τ));
+        }
+        parts.add(rhs);
+        
+        return FormulaUtils.solve(parts.toArray(String[]::new), this.baseCalculationInputs(LatexDelimeterType.NONE), this.roundCalculationStepValue(this.d(i)));
+    }
+
+    private String dParameterLatex(int i) {
+        return String.format(" d_%d ", i);
+    }
+
+    private EquationInput[] dEquationSubstitutionValues() {
+        return new EquationInput[] {
+            this.dEquationSubstitutionValue(1),
+            this.dEquationSubstitutionValue(2)
+        };
+    }
+
+    private EquationInput dEquationSubstitutionValue(int i) {
+        return new EquationInput.Builder(this.dParameterLatex(i).trim())
+            .withNumberValue(this.d(i))
+            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
+            .build();
+    }
+
+    //----------------------------------------------------------------------
+    //endregion d₁, d₂
 
     //region price
     //----------------------------------------------------------------------
@@ -67,11 +117,11 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     private double priceCall() {
-        return this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.d(1)) - this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.d(2));
+        return this.S * Math.exp(-this.q * this.τ) * this.N_at(this.d(1)) - this.K * Math.exp(-this.r * this.τ) * this.N_at(this.d(2));
     }
 
     private double pricePut() {
-        return this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(-this.d(2)) - this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(-this.d(1));
+        return this.K * Math.exp(-this.r * this.τ) * this.N_at(-this.d(2)) - this.S * Math.exp(-this.q * this.τ) * this.N_at(-this.d(1));
     }
 
     /**
@@ -90,69 +140,69 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double delta() {
-        return this.typeFactor() * Math.exp(-this.q * this.T) * this.N_at_d(1, this.typeFactor());
+        return this.typeFactor() * Math.exp(-this.q * this.τ) * this.N_at(this.typeFactor() * this.d(1));
     }
 
     /**
-     * Calculation for the delta (Δ) of a European option.
+     * Returns the details of the delta (Δ) calculation for a European option.
+     * <p>For a list of parameters used in the calculation see {@link #optionParameters}.</p>
      * <p>The calculation steps are:</p>
      * <ol start="0">
-     *   <li>d₁
+     *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
+     *   <li>standard normal CDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
+     *   <li>delta (Δ)
      *     <ol start="0">
-     *       <li></li>
-     *       <li></li>
-     *       <li></li>
-     *       <li></li>
+     *       <li>symbol</li>
+     *       <li>PDE</li>
+     *       <li>equation</li>
+     *       <li>option parameters and value of d₁ substituted in</li>
+     *       <li>value</li>
      *     </ol>
      *   </li>
-     *   <li>call: N(d₁), put: N(-d₁)</li>
-     *   <li>Δ</li>TODO describe array
      * </ol>
      */
     @Override
     public CalculationModel deltaCalculation() {
-        String[] d1Step = this.dCalculationStep(1);
-        String[] nd1Step = this.ndiCalculationStep(1, this.typeFactor());
-
+        /*int i = 1;
+        String[] d1Step = this.dCalculationStep(i);
+        String[] nd1Step = this.standardNormalCdfCalculationStep(this.dParameterLatex(i), this.d(i));
+*/
         // delta
         double answer = this.delta();
+        String[] finalStep = this.finalCalculationStep(this.deltaFormula(), answer);
+/*        
         EquationInput[] inputs = Stream.concat(
-                Arrays.stream(this.getBaseCalculationInputs(LatexDelimeterType.PARENTHESIS)),
+                Arrays.stream(this.baseCalculationInputs(LatexDelimeterType.PARENTHESIS)),
                 Arrays.stream(new EquationInput[] { this.dEquationSubstitutionValue(1) })
             )
             .toArray(EquationInput[]::new);
-        String[] finalStep = FormulaUtils.solve(
-            this.deltaFormula(),
-            inputs,
-            this.roundCalculationStepValue(answer)
-        );
-
-        return new CalculationModel(new String[][] { d1Step, nd1Step, finalStep }, answer);
+        String[] finalStep = FormulaUtils.solve(this.deltaFormula(), inputs, this.roundCalculationStepValue(answer));
+*/
+        return new CalculationModel(
+            new String[][] {
+                this.dCalculationStep(1),
+                this.N_at_d_calculationStep(1),
+                finalStep
+            }, answer);
     }
 
-    /**
-     * Formula for the delta (Δ) of a European option.&nbsp;For a list of parameters used in the formula see {@link #optionParameters}, and for a list of the functions see {@link #calculationFunctions}.
-     * <p>The "where" components include the formulas for:</p>
-     * <ol start="0">
-     *   <li>d₁</li>
-     * </ol>
-     */
     private String[] deltaFormula() {
-        String lhs = LatexUtils.partialDerivative(this.typeParameterNotation(), NOTATION_S);
+        String lhs = LatexUtils.partialDerivative(this.typeParameterLatex(), LATEX_S);
 
         // RHS
-        String factor = LatexUtils.exponential("-" + NOTATION_Q + NOTATION_T);
-        String rhs = this.type == OptionType.CALL
-            ? factor + notationStandardNormalCdf(this.dParameterNotation(1))
-            : "-" + factor + notationStandardNormalCdf("-" + this.dParameterNotation(1));
-
-        List<String> parts = Arrays.stream(new String[] { NOTATION_DELTA, lhs }).collect(Collectors.toList());
+        String rhs = this.dividendDiscountFactorLatex();
+        rhs += this.type == OptionType.CALL
+            ? standardNormalCdfLatex(this.dParameterLatex(1))
+            : LatexUtils.subFormula(standardNormalCdfLatex(this.dParameterLatex(1)) + " - 1", LatexDelimeterType.PARENTHESIS);
+/*
+        List<String> parts = Arrays.stream(new String[] { LATEX_Δ, lhs }).collect(Collectors.toList());
         if (this.type == OptionType.PUT) {
-            parts.add(notationStandardNormalCdf(this.dParameterNotation(1)) + " - 1");
+            parts.add("-" + this.dividendDiscountFactor() + standardNormalCdfLatex("-" + this.dParameterLatex(1)));
         }
         parts.add(rhs);
-        
-        return parts.toArray(String[]::new);
+*/        
+        //return parts.toArray(String[]::new);
+        return new String[] { LATEX_Δ.trim(), lhs, rhs };
     }
 
     //----------------------------------------------------------------------
@@ -163,7 +213,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double gamma() {
-        return Math.exp(-this.q * this.T) * this.N.density(this.d(1)) / (this.S * this.vol * Math.sqrt(this.T));
+        return Math.exp(-this.q * this.τ) * this.N.density(this.d(1)) / (this.S * this.σ * Math.sqrt(this.τ));
     }
 
     /**
@@ -182,7 +232,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double vega() {
-        return this.S * Math.exp(-this.q * this.T) * this.N.density(this.d(1)) * Math.sqrt(this.T);
+        return this.S * Math.exp(-this.q * this.τ) * this.N.density(this.d(1)) * Math.sqrt(this.τ);
     }
 
     /**
@@ -201,9 +251,9 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double theta() {
-        double term1 = -Math.exp(-this.q * this.T) * (this.S * this.N.density(this.d(1)) * this.vol) / (2d * Math.sqrt(this.T));
-        double term2 = this.r * this.K * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(2));
-        double term3 = this.q * this.S * Math.exp(-this.q * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(1));
+        double term1 = -Math.exp(-this.q * this.τ) * (this.S * this.N.density(this.d(1)) * this.σ) / (2d * Math.sqrt(this.τ));
+        double term2 = this.r * this.K * Math.exp(-this.r * this.τ) * this.N_at(this.typeFactor() * this.d(2));
+        double term3 = this.q * this.S * Math.exp(-this.q * this.τ) * this.N_at(this.typeFactor() * this.d(1));
         return term1 - (this.typeFactor() *  term2) + (this.typeFactor() * term3);
     }
 
@@ -223,7 +273,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
 
     @Override
     public double rho() {
-        return this.typeFactor() * this.K * this.T * Math.exp(-this.r * this.T) * this.N.cumulativeProbability(this.typeFactor() * this.d(2));
+        return this.typeFactor() * this.K * this.τ * Math.exp(-this.r * this.τ) * this.N_at(this.typeFactor() * this.d(2));
     }
 
     /**
@@ -238,12 +288,12 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
     //endregion rho
 
     /**
-     * Returns a list of the parameters/variables used to define the option.
+     * Returns a list of the parameters/variables used to define the option.&nbsp;The key is the latex notation for the parameter and the value is its number value.
      *
      * @return option parameters list
      * <ol start="0">
      *   <li>spot price</li>
-     *   <li>exercise price</li>
+     *   <li>strike price</li>
      *   <li>time to maturity</li>
      *   <li>volatility</li>
      *   <li>risk-free rate</li>
@@ -254,86 +304,16 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
         return this.baseOptionParameters();
     }
 
-    //======================================================================
-
-    //region d₁, d₂
-    //----------------------------------------------------------------------
-
-    /**
-     * Calculates the values of d₁ and d₂ in the Black-Scholes formula.
-     *
-     * @return dᵢ
-     */
-    private double d(int i) {
-        return (Math.log(this.S / this.K) + (this.r - this.q + (i == 1 ? 1 : -1) * Math.pow(this.vol, 2) / 2) * this.T) / (this.vol * Math.sqrt(this.T));
+    private String[] N_at_d_calculationStep(int i) {
+        return this.standardNormalCdfCalculationStep(this.dParameterLatex(i), this.d(i));
     }
 
-    private String[] dCalculationStep(int i) {
-        String lhs = this.dParameterNotation(i);
+    private String[] finalCalculationStep(String[] formula, double answer) {
+        EquationInput[] inputs = Stream.concat(
+            Arrays.stream(this.baseCalculationInputs(LatexDelimeterType.PARENTHESIS)),
+            Arrays.stream(this.dEquationSubstitutionValues())
+        ).toArray(EquationInput[]::new);
 
-        // RHS
-        String iFactor = i == 1 ? " + " : " - ";
-        String rhsNumerator = LatexUtils.naturalLogarithm(LatexUtils.fraction(NOTATION_S, NOTATION_K))
-            + LatexUtils.subFormula(NOTATION_R + " - " + NOTATION_Q + iFactor + LatexUtils.half(LatexUtils.squared(NOTATION_VOL)), LatexDelimeterType.PARENTHESIS) + NOTATION_T;
-        String rhsDenominator = LatexUtils.MATH_SYMBOL_GREEK_LETTER_SIGMA_LOWERCASE + LatexUtils.squareRoot(NOTATION_T);
-        String rhs = LatexUtils.fraction(rhsNumerator, rhsDenominator);
-
-        List<String> parts = new ArrayList();
-        parts.add(lhs);
-        if (i == 2) {
-            parts.add(this.dParameterNotation(1) + " - " + NOTATION_VOL + LatexUtils.squareRoot(NOTATION_T));
-        }
-        parts.add(rhs);
-        
-        return FormulaUtils.solve(parts.toArray(String[]::new), this.getBaseCalculationInputs(LatexDelimeterType.NONE), this.roundCalculationStepValue(this.d(i)));
+        return FormulaUtils.solve(formula, inputs, this.roundCalculationStepValue(answer));
     }
-
-    private String dParameterNotation(int i) {
-        return String.format(" d_%d ", i);
-    }
-/*
-    private EquationInput[] dEquationSubstitutionValues() {
-        return new EquationInput[] {
-            this.dEquationSubstitutionValue(1),
-            this.dEquationSubstitutionValue(2)
-        };
-    }
-*/
-
-    private EquationInput dEquationSubstitutionValue(int i) {
-        return new EquationInput.Builder(this.dParameterNotation(i).trim())
-            .withNumberValue(this.d(i))
-            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
-            .build();
-    }
-
-    //----------------------------------------------------------------------
-    //endregion d₁, d₂
-
-    //region N(dᵢ)
-    //----------------------------------------------------------------------
-
-    private double N_at_d(int i, double dFactor) {
-        return this.N.cumulativeProbability(dFactor * this.d(i));
-    }
-
-    private String[] ndiCalculationStep(int i, double dFactor) {
-        String formula = notationStandardNormalCdf((dFactor < 0 ? "-" : "") + this.dParameterNotation(i));
-        double answer = this.N_at_d(i, dFactor);
-
-        return FormulaUtils.solve(
-            new String[] { formula },
-            new EquationInput[] { this.dEquationSubstitutionValue(i) },
-            this.roundCalculationStepValue(answer)
-        );
-    }
-
-    //----------------------------------------------------------------------
-    //endregion N(dᵢ)
-
-    //region private methods
-    //----------------------------------------------------------------------
-
-    //----------------------------------------------------------------------
-    //endregion private methods
 }

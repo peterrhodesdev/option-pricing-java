@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
  *   <li>Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.</li>
  * </ul>
  */
+@SuppressWarnings("checkstyle:multiplevariabledeclarations")
 class CoxRossRubinsteinPricerTest {
     
     //region helpers
@@ -29,14 +30,6 @@ class CoxRossRubinsteinPricerTest {
 
     private final String greaterThanZeroMessage = "must be greater than zero";
 
-    private CoxRossRubinsteinModel createModel(int timeSteps, double deltat, double u, double d, double p, double price, List<LatticeNode> nodes) {
-        CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(timeSteps);
-        model.setParameters(deltat, u, d, p);
-        model.setOutputs(price, nodes);
-        return model;
-    }
-
-    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     private void assertCalculation(CoxRossRubinsteinModel result, CoxRossRubinsteinModel expected, double parameterPrecision, double outputPrecision) {
         // parameters
         assertThat(result.getDeltat())
@@ -96,7 +89,7 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void Zero_time_steps_should_throw() {
         // Arrange
-        // option: style, type, S, K, T, vol (σ), r, q
+        // option: style, type, S, K, τ, σ, r, q
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
         int timeSteps = 0;
 
@@ -136,10 +129,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 1, 50, 2, true),
             new LatticeNode(2, 2, 91.11, 0, false),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             1, 1.3499, 0.7408, 0.5097, // parameters: deltat (Δt), u, d, p
-            7.43, expectedNodes // outputs: price, nodes
+            expectedNodes, 7.43 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -168,10 +161,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 1, 810.00, 10.00, true),
             new LatticeNode(2, 2, 989.34, 189.34, true),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.25, 1.1052, 0.9048, 0.5126, // parameters: deltat (Δt), u, d, p
-            53.39, expectedNodes // outputs: price, nodes
+            expectedNodes, 53.39 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -204,10 +197,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 2, 0.632, 0.032, true),
             new LatticeNode(3, 3, 0.677, 0.077, true),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.0833, 1.0352, 0.9660, 0.4673, // parameters: deltat (Δt), u, d, p
-            0.019, expectedNodes // outputs: price, nodes
+            expectedNodes, 0.019 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.001); // precision: parameters, outputs
@@ -242,10 +235,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 2, 36.02, 0.00, false),
             new LatticeNode(3, 3, 48.62, 0.00, false),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.2500, 1.1618, 0.8607, 0.4626, // parameters: deltat (Δt), u, d, p
-            2.84, expectedNodes // outputs: price, nodes
+            expectedNodes, 2.84 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -274,10 +267,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 1, 78.00, 0.00, false),
             new LatticeNode(2, 2, 99.65, 19.65, true),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.1667, 1.1303, 0.8847, 0.4898, // parameters: deltat (Δt), u, d, p
-            4.67, expectedNodes // outputs: price, nodes
+            expectedNodes, 4.67 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -306,10 +299,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 1, 1500.00, 0.00, false),
             new LatticeNode(2, 2, 1934.84, 0.00, false),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.5, 1.1357, 0.8805, 0.4977, // parameters: deltat (Δt), u, d, p
-            78.41, expectedNodes // outputs: price, nodes
+            expectedNodes, 78.41 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -344,10 +337,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 2, 103.52, 10.52, true),
             new LatticeNode(3, 3, 136.98, 43.98, true),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
-            7.94, expectedNodes // outputs: price, nodes
+            expectedNodes, 7.94 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
@@ -382,10 +375,10 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 2, 103.52, 0.00, false),
             new LatticeNode(3, 3, 136.98, 0.00, false),
         });
-        CoxRossRubinsteinModel expected = this.createModel(
+        CoxRossRubinsteinModel expected = new CoxRossRubinsteinModel(
             timeSteps, // inputs
             0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
-            10.88, expectedNodes // outputs: price, nodes
+            expectedNodes, 10.88 // outputs: nodes, price
         );
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs

@@ -12,16 +12,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the fair value of the option.
+     * Calculates the fair value (price) of the option.
      *
      * @return option price
      */
     double price();
 
     /**
-     * TODO.
+     * Returns the details of the price calculation for an option.
      *
-     * @return TODO
+     * @return price calculation details
      */
     CalculationModel priceCalculation();
 
@@ -32,16 +32,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the delta (Δ) of the option (first derivative of the option value with respect to the underlying asset price).
+     * Calculates the value of delta (Δ) of the option (first derivative of the option value with respect to the underlying asset price).
      *
      * @return option delta
      */
     double delta();
 
     /**
-     * TODO.
+     * Returns the details of the delta (Δ) calculation for an option.
      *
-     * @return TODO
+     * @return delta calculation details
      */
     CalculationModel deltaCalculation();
 
@@ -52,16 +52,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the gamma (Γ) of the option (second derivative of the option value with respect to the underlying asset price).
+     * Calculates the value of gamma (Γ) of the option (second derivative of the option value with respect to the underlying asset price).
      *
-     * @return option gamma
+     * @return option gamma value
      */
     double gamma();
 
     /**
-     * TODO.
+     * Returns the details of the gamma (Γ) calculation for an option.
      *
-     * @return TODO
+     * @return gamma calculation details
      */
     CalculationModel gammaCalculation();
 
@@ -72,16 +72,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the vega (ν) of the option (first derivative of the option value with respect to the underlying asset volatility).
+     * Calculates the value of vega (ν) of the option (first derivative of the option value with respect to the underlying asset volatility).
      *
-     * @return option vega
+     * @return option vega value
      */
     double vega();
 
     /**
-     * TODO.
+     * Returns the details of the vega (ν) calculation for an option.
      *
-     * @return TODO
+     * @return vega calculation details
      */
     CalculationModel vegaCalculation();
 
@@ -92,16 +92,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the theta (Θ) of the option (negative first derivative of the option value with respect to the time to maturity).
+     * Calculates the value of theta (Θ) of the option (negative first derivative of the option value with respect to the time to maturity).
      *
-     * @return option theta
+     * @return option theta value
      */
     double theta();
 
     /**
-     * TODO.
+     * Returns the details of the theta (Θ) calculation for an option.
      *
-     * @return TODO
+     * @return theta calculation details
      */
     CalculationModel thetaCalculation();
 
@@ -112,16 +112,16 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the rho (ρ) of the option (first derivative of the option value with respect to the risk free interest rate).
+     * Calculates the value of rho (ρ) of the option (first derivative of the option value with respect to the risk free interest rate).
      *
-     * @return option rho
+     * @return option rho value
      */
     double rho();
 
     /**
-     * TODO.
+     * Returns the details of the rho (ρ) calculation for an option.
      *
-     * @return TODO
+     * @return rho calculation details
      */
     CalculationModel rhoCalculation();
 

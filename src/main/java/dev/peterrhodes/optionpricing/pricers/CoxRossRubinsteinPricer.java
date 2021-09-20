@@ -2,7 +2,6 @@ package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.core.AbstractOption;
 import dev.peterrhodes.optionpricing.core.LatticeNode;
-import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
      *
      * @param timeSteps Number of time steps in the tree.
      */
-    public CoxRossRubinsteinPricer(int timeSteps) throws IllegalArgumentException, NullPointerException {
+    public CoxRossRubinsteinPricer(int timeSteps) throws IllegalArgumentException {
         checkParameters(timeSteps);
         this.timeSteps = timeSteps;
     }
@@ -59,15 +58,23 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
     //region perform calculation
     //----------------------------------------------------------------------
 
+    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     private CoxRossRubinsteinModel performCalculation(T option) {
-        CoxRossRubinsteinModel model = determineModelParameters(option);
+        double S_0 = option.getSpotPrice().doubleValue();
+        double τ = option.getDoubleTimeToMaturity();
+        double σ = option.getDoubleVolatility();
+        double r = option.getDoubleRiskFreeRate();
+        double q = option.getDoubleDividendYield();
+
+        double[] modelParameters = determineModelParameters(τ, σ, r, q);
+        double Δt = modelParameters[0], u = modelParameters[1], d = modelParameters[2], p = modelParameters[3];
 
         List<LatticeNode> nodes = new ArrayList();
 
         // Create the tree
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)
             for (int j = 0; j <= i; j++) { // jth node at the ith time step (from lowest underlying price to highest)
-                LatticeNode node = createNode(option, i, j, model.getU(), model.getD());
+                LatticeNode node = createNode(S_0, i, j, u, d);
                 nodes.add(node);
             }
         }
@@ -75,29 +82,25 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
         // Working backwards through the tree calculating the option values
         for (int i = timeSteps; i >= 0; i--) {
             for (int j = 0; j <= i; j++) {
-                calculateNodeOptionValue(option, nodes, i, j, model.getDeltat(), model.getP());
+                calculateNodeOptionValue(option, nodes, i, j, Δt, p);
             }
         }
 
-        model.setOutputs(nodes.get(0).getV(), nodes);
-        return model;
+        return new CoxRossRubinsteinModel(this.timeSteps, Δt, u, d, p, nodes, nodes.get(0).getV());
     }
 
-    private CoxRossRubinsteinModel determineModelParameters(T option) {
-        CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(this.timeSteps);
-        
-        double deltat = option.getT() / timeSteps; // (Δt) length of a single time interval/step
-        double u = Math.exp(option.getVol() * Math.sqrt(deltat)); // proportional up movement
-        double d = Math.exp(-option.getVol() * Math.sqrt(deltat)); // proportional down movement
-        double a = Math.exp((option.getR() - option.getQ()) * deltat); // growth factor
+    private double[] determineModelParameters(double τ, double σ, double r, double q) {
+        double Δt = τ / (double) this.timeSteps; // length of a single time interval/step
+        double u = Math.exp(σ * Math.sqrt(Δt)); // proportional up movement
+        double d = Math.exp(-σ * Math.sqrt(Δt)); // proportional down movement
+        double a = Math.exp((r - q) * Δt); // growth factor
         double p = (a - d) / (u - d); // probability of an up movement (probability of a down movement is 1 - p)
 
-        model.setParameters(deltat, u, d, p);
-        return model;
+        return new double[] { Δt, u, d, p };
     }
 
-    private LatticeNode createNode(T option, int i, int j, double u, double d) {
-        double S = option.getS() * Math.pow(u, j) * Math.pow(d, i - j); // S_ij = S_0 u^j d^(i-j)
+    private LatticeNode createNode(double S_0, int i, int j, double u, double d) {
+        double S = S_0 * Math.pow(u, j) * Math.pow(d, i - j); // S_ij = S₀ u^j d^(i-j)
         //double t = i == this.timeSteps ? option.getT() : i * Δt;
         double V = 0; // Can't calculate yet
 
@@ -105,25 +108,25 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
         return node;
     }
 
-    private void calculateNodeOptionValue(T option, List<LatticeNode> nodes, int i, int j, double deltat, double p) {
+    private void calculateNodeOptionValue(T option, List<LatticeNode> nodes, int i, int j, double Δt, double p) {
         int currentIndex = calculateNodeIndex(i, j);
         LatticeNode currentNode = nodes.get(currentIndex);
         double S = currentNode.getS();
+        double r = option.getDoubleRiskFreeRate();
 
         double V;
 
         if (i == this.timeSteps) {
-            double exerciseValue = calculateOptionExerciseValue(option, S);
-            V = Math.max(0.0, exerciseValue);
-            currentNode.setExercised(exerciseValue > 0);
+            V = option.exerciseValue(S);
+            currentNode.setExercised(V > 0);
         } else {
             int downIndex = currentIndex + (i + 1);
             int upIndex = downIndex + 1;
-            double optionCurrentValue = (p * nodes.get(upIndex).getV() + (1 - p) * nodes.get(downIndex).getV()) * Math.exp(-option.getR() * deltat);
+            double optionCurrentValue = (p * nodes.get(upIndex).getV() + (1 - p) * nodes.get(downIndex).getV()) * Math.exp(-r * Δt);
             double earlyExerciseValue;
             switch (option.getStyle()) {
                 case AMERICAN:
-                    earlyExerciseValue = Math.max(0.0, calculateOptionExerciseValue(option, S));
+                    earlyExerciseValue = option.exerciseValue(S);
                     break;
                 case EUROPEAN:
                 default:
@@ -155,10 +158,6 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
      */
     private int calculateNodeIndex(int i, int j) {
         return IntStream.rangeClosed(0, i).sum() + j;
-    }
-
-    private double calculateOptionExerciseValue(T option, double S) {
-        return option.getType() == OptionType.CALL ? S - option.getK() : option.getK() - S;
     }
 
     //----------------------------------------------------------------------
