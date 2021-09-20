@@ -2,74 +2,73 @@ package dev.peterrhodes.optionpricing.core;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import java.util.HashMap;
 import java.util.Map;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Base class for all concrete option classes that don't have an analytical solution.&nbsp;If the specific option has an analytical solution then it should extend {@link AbstractAnalyticalOption}.
  */
-@Getter
 public abstract class AbstractOption implements Option {
 
     /**
-     * Style style of the option, usually defined by the exercise rights, e.g.&nbsp;European, American.
+     * Style of the option, usually defined by the exercise rights, e.g.&nbsp;European, American.
      */
-    protected OptionStyle style;
+    @Getter @Setter protected OptionStyle style;
 
     /**
      * Type of the option (call or put).
      */
-    protected OptionType type;
+    @Getter @Setter protected OptionType type;
 
     /**
-     * Price of the underlying asset (spot price) (S).
+     * ({@code S}) Price of the underlying asset.
      */
-    protected double S;
+    @Getter @Setter protected double S;
 
     /**
-     * Strike price of the option (exercise price) (K).
+     * ({@code K}) Strike/exercise price of the option.
      */
-    protected double K;
+    @Getter @Setter protected double K;
 
     /**
-     * Time until option expiration (time from the start of the contract until maturity) (T).
+     * ({@code τ = T - t}) Time to maturity (time from the start of the contract until it expires).
      */
-    protected double T;
+    @Getter @Setter protected double T;
 
     /**
-     * Underlying volatility (standard deviation of log returns) (σ).
+     * ({@code σ}) Underlying volatility (standard deviation of log returns).
      */
-    protected double vol;
+    @Getter @Setter protected double vol;
 
     /**
-     * Annualized risk-free interest rate (continuously compounded) (r).
+     * ({@code r}) Annualized risk-free interest rate, continuously compounded.
      */
-    protected double r;
+    @Getter @Setter protected double r;
 
     /**
-     * Annual dividend yield (continuously compounded) (q).
+     * ({@code q}) Annual dividend yield, continuously compounded.
      */
-    protected double q;
+    @Getter @Setter protected double q;
 
     /**
      * TODO.
      */
-    @Getter(value = AccessLevel.NONE)
-    private Map<String, String> baseParameters;
+    private Map<String, String> baseOptionParameters;
 
     /**
      * Creates an abstract option with the specified parameters.
      *
-     * @param style {@link #style}
-     * @param type {@link #type}
-     * @param S {@link #S}
-     * @param K {@link #K}
-     * @param T {@link #T}
-     * @param vol {@link #vol}
-     * @param r {@link #r}
-     * @param q {@link #q}
+     * @param style Style of the option defined by the exercise rights, e.g.&nbsp;European, American.
+     * @param type Type of the option, i.e.&nbsp;call or put.
+     * @param S Price of the underlying asset ({@code S > 0}).
+     * @param K Strike/exercise price of the option ({@code K > 0}).
+     * @param T Time to maturity/expiration ({@code τ = T - t > 0}).
+     * @param vol ({@code σ}) Underlying volatility ({@code σ > 0}).
+     * @param r Annualized risk-free interest rate continuously compounded ({@code r}).
+     * @param q Annual dividend yield continuously compounded ({@code q}).
      * @throws NullPointerException if any of the arguments are null
      * @throws IllegalArgumentException if {@code S}, {@code K}, {@code T}, or {@code vol} are not greater than zero
      */
@@ -97,7 +96,7 @@ public abstract class AbstractOption implements Option {
         this.r = r.doubleValue();
         this.q = q.doubleValue();
 
-        this.baseParameters = Map.ofEntries(
+        this.baseOptionParameters = Map.ofEntries(
             Map.entry(NOTATION_S.trim(), S.toString()),
             Map.entry(NOTATION_K.trim(), K.toString()),
             Map.entry(NOTATION_T.trim(), T.toString()),
@@ -107,9 +106,19 @@ public abstract class AbstractOption implements Option {
         );
     }
 
-    protected Map<String, String> getBaseParameters() {
-        return this.baseParameters;
+    //region getters and setters
+    //----------------------------------------------------------------------
+
+    protected Map<String, String> baseOptionParameters() {
+        Map<String, String> copy = new HashMap();
+        for (Map.Entry<String, String> entry : this.baseOptionParameters.entrySet()) {
+            copy.put(entry.getKey(), entry.getValue()); // Strings are immutable
+        }
+        return copy;
     }
+
+    //----------------------------------------------------------------------
+    //endregion constants
 
     /**
      * Returns 1 for a call option, -1 for a put option.

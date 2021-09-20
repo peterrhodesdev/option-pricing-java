@@ -17,9 +17,8 @@ import org.junit.jupiter.api.Test;
  *   <li>Hull SSM (2014): Hull, J. (2014) Student Solutions Manual for Options, Futures, and Other Derivatives. 9th Edition, Prentice Hall, Upper Saddle River.</li>
  * </ul>
  */
+@SuppressWarnings("checkstyle:multiplevariabledeclarations")
 class EuropeanOptionTest {
-
-    private final String greaterThanZeroMessage = "must be greater than zero";
 
     private void assertCalculation(CalculationModel result, int[] expectedStepLengths, String[][] expectedStepContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
         int expectedStepsLength = expectedStepLengths.length;
@@ -54,43 +53,44 @@ class EuropeanOptionTest {
         assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
     }
 
-    //region throws IllegalArgumentException tests
+    //region throws tests
     //----------------------------------------------------------------------
 
     @Test
-    void Zero_spot_price_should_throw() {
-        // Arrange Act Assert
-        assertThatThrownBy(() -> {
-            EuropeanOption ex = new EuropeanOption(OptionType.CALL, 0.0, 100.0, 1.0, 0.25, 0.1, 0.05);
-        }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(this.greaterThanZeroMessage);
-    }
+    void Invalid_argument_values_should_throw_IllegalArgumentException() {
+        // Arrange
+        double S = 100.0, K = 100.0, T = 1.0, vol = 0.25, r = 0.1, q = 0.05;
+        Class exClass = IllegalArgumentException.class;
+        String greaterThanZeroMessage = "must be greater than zero";
 
-    @Test
-    void Zero_strike_price_should_throw() {
-        // Arrange Act Assert
+        // Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 0.0, 1.0, 0.25, 0.1, 0.05);
-        }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(this.greaterThanZeroMessage);
-    }
+            EuropeanOption ex = EuropeanOption.createCall(0, K, T, vol, r, q);
+        })
+            .as("zero spot price")
+            .isInstanceOf(exClass)
+            .hasMessageContaining(greaterThanZeroMessage);
 
-    @Test
-    void Zero_time_to_expiration_should_throw() {
-        // Arrange Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 0.0, 0.25, 0.1, 0.05);
-        }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(this.greaterThanZeroMessage);
-    }
+            EuropeanOption ex = EuropeanOption.createCall(S, 0, T, vol, r, q);
+        })
+            .as("zero strike price")
+            .isInstanceOf(exClass)
+            .hasMessageContaining(greaterThanZeroMessage);
 
-    @Test
-    void Zero_volatility_should_throw() {
-        // Arrange Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = new EuropeanOption(OptionType.CALL, 100.0, 100.0, 1.0, 0.0, 0.1, 0.05);
-        }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(this.greaterThanZeroMessage);
+            EuropeanOption ex = EuropeanOption.createCall(S, K, 0, vol, r, q);
+        })
+            .as("zero time to maturity")
+            .isInstanceOf(exClass)
+            .hasMessageContaining(greaterThanZeroMessage);
+
+        assertThatThrownBy(() -> {
+            EuropeanOption ex = EuropeanOption.createCall(S, K, T, 0, r, q);
+        })
+            .as("zero volatiliy")
+            .isInstanceOf(exClass)
+            .hasMessageContaining(greaterThanZeroMessage);
     }
 
     //----------------------------------------------------------------------
@@ -102,13 +102,12 @@ class EuropeanOptionTest {
     /**
      * Hull (2014): page 360, section 15.9, Example 15.6.
      */
-    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     @Test
     void Call_and_put_prices_for_the_same_parameters_Hull2014Ex156() {
         // Arrange
         double S = 42, K = 40, T = 0.5, vol = 0.2, r = 0.1, q = 0;
-        EuropeanOption call = new EuropeanOption(OptionType.CALL, S, K, T, vol, r, q);
-        EuropeanOption put = new EuropeanOption(OptionType.PUT, S, K, T, vol, r, q);
+        EuropeanOption call = EuropeanOption.createCall(S, K, T, vol, r, q);
+        EuropeanOption put = EuropeanOption.createPut(S, K, T, vol, r, q);
 
         // Act
         double callResult = call.price();
@@ -125,7 +124,7 @@ class EuropeanOptionTest {
     @Test
     void Call_price_Hull2014Ex157() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 40, 60, 5, 0.3, 0.03, 0);
+        EuropeanOption option = EuropeanOption.createCall(40, 60, 5, 0.3, 0.03, 0);
 
         // Act
         double result = option.price();
@@ -143,7 +142,7 @@ class EuropeanOptionTest {
     @Test
     void Call_price_Hull2014Ex171() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 930, 900, 2 / 12d, 0.2, 0.08, 0.03);
+        EuropeanOption option = EuropeanOption.createCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
 
         // Act
         double result = option.price();
@@ -158,8 +157,8 @@ class EuropeanOptionTest {
     @Test
     void Call_prices_for_different_volatilities_Hull2014Ex172() {
         // Arrange
-        EuropeanOption optionVolatilty10 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.1, 0.08, 0.11);
-        EuropeanOption optionVolatilty20 = new EuropeanOption(OptionType.CALL, 1.6, 1.6, 0.3333, 0.2, 0.08, 0.11);
+        EuropeanOption optionVolatilty10 = EuropeanOption.createCall(1.6, 1.6, 0.3333, 0.1, 0.08, 0.11);
+        EuropeanOption optionVolatilty20 = EuropeanOption.createCall(1.6, 1.6, 0.3333, 0.2, 0.08, 0.11);
 
         // Act
         double resultVolatilty10 = optionVolatilty10.price();
@@ -185,7 +184,7 @@ class EuropeanOptionTest {
     @Test
     void Call_delta_Hull2014Ex191() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
         option.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
 
         // Act
@@ -213,7 +212,7 @@ class EuropeanOptionTest {
     @Test
     void Put_delta_Hull2014Ex199() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.PUT, 90, 87, 0.5, 0.25, 0.09, 0.03);
+        EuropeanOption option = EuropeanOption.createPut(90, 87, 0.5, 0.25, 0.09, 0.03);
 
         // Act
         double result = option.delta();
@@ -234,7 +233,7 @@ class EuropeanOptionTest {
     @Test
     void Call_gamma_Hull2014Ex194() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
         double result = option.gamma();
@@ -255,7 +254,7 @@ class EuropeanOptionTest {
     @Test
     void Call_vega_Hull2014Ex196() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
         double result = option.vega();
@@ -276,7 +275,7 @@ class EuropeanOptionTest {
     @Test
     void Call_theta_Hull2014Ex192() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
         double result = option.theta();
@@ -299,7 +298,7 @@ class EuropeanOptionTest {
     @Test
     void Call_rho_Hull2014Ex197() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption option = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
 
         // Act
         double result = option.rho();

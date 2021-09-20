@@ -13,17 +13,7 @@ public class ExoticOption extends AbstractOption {
     // TODO create list of parameters that gets updated depending on the configuration of the option.
 
     /**
-     * Creates a configurable/exotic option with the specified parameters.
-     *
-     * @param type {@link AbstractOption#type}
-     * @param S {@link AbstractOption#S}
-     * @param K {@link AbstractOption#K}
-     * @param T {@link AbstractOption#T}
-     * @param vol {@link AbstractOption#vol}
-     * @param r {@link AbstractOption#r}
-     * @param q {@link AbstractOption#q}
-     * @throws NullPointerException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
-     * @throws IllegalArgumentException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
+     * Creates a configurable/exotic option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
     public ExoticOption(OptionStyle style, OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
         super(style, type, S, K, T, vol, r, q);
@@ -42,7 +32,7 @@ public class ExoticOption extends AbstractOption {
      *   <li>dividend yield</li>
      * </ol>
      */
-    public Map<String, String> getOptionParameters() {
-        return this.getBaseParameters();
+    public Map<String, String> optionParameters() {
+        return this.baseOptionParameters();
     }
 }

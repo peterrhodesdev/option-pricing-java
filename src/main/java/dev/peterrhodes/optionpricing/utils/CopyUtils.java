@@ -5,6 +5,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Miscellaneous utility methods for copying.
@@ -42,6 +44,14 @@ public interface CopyUtils {
         }
 
         return deepCopy;
+    }
+
+    /**
+     * Generic deep copy method for a {@link java.util.Map} of key/value pairs where the value implements {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     */
+    static <K, V extends PublicCloneable<V>> Map<K, V> deepCopy(Map<K, V> map) {
+        return map.entrySet().stream()
+            .collect(Collectors.toMap(element -> element.getKey(), element -> element.getValue().clone()));
     }
 
     /**

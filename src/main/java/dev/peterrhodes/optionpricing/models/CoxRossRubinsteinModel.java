@@ -1,7 +1,6 @@
 package dev.peterrhodes.optionpricing.models;
 
 import dev.peterrhodes.optionpricing.core.LatticeNode;
-import dev.peterrhodes.optionpricing.core.Option;
 import dev.peterrhodes.optionpricing.utils.CopyUtils;
 import java.util.List;
 import lombok.AccessLevel;
@@ -14,11 +13,6 @@ import lombok.Getter;
 public class CoxRossRubinsteinModel {
 
     // Inputs
-
-    /**
-     * The option that the calculation was performed for.
-     */
-    private Option option;
 
     /**
      * Number of time steps in the calculation.
@@ -63,11 +57,9 @@ public class CoxRossRubinsteinModel {
     /**
      * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
      *
-     * @param option The option that the calculation was performed for.
      * @param timeSteps Number of time steps in the calculation.
      */
-    public CoxRossRubinsteinModel(Option option, int timeSteps) {
-        this.option = option;
+    public CoxRossRubinsteinModel(int timeSteps) {
         this.timeSteps = timeSteps;
     }
 

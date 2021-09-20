@@ -29,8 +29,8 @@ class CoxRossRubinsteinPricerTest {
 
     private final String greaterThanZeroMessage = "must be greater than zero";
 
-    private CoxRossRubinsteinModel createModel(Option option, int timeSteps, double deltat, double u, double d, double p, double price, List<LatticeNode> nodes) {
-        CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(option, timeSteps);
+    private CoxRossRubinsteinModel createModel(int timeSteps, double deltat, double u, double d, double p, double price, List<LatticeNode> nodes) {
+        CoxRossRubinsteinModel model = new CoxRossRubinsteinModel(timeSteps);
         model.setParameters(deltat, u, d, p);
         model.setOutputs(price, nodes);
         return model;
@@ -102,7 +102,7 @@ class CoxRossRubinsteinPricerTest {
 
         // Act Assert
         assertThatThrownBy(() -> {
-            double ex = CoxRossRubinsteinPricer.price(option, timeSteps);
+            CoxRossRubinsteinPricer ex = new CoxRossRubinsteinPricer(timeSteps);
         }).isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining(this.greaterThanZeroMessage);
     }
@@ -121,9 +121,10 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
         int timeSteps = 2;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -136,7 +137,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 2, 91.11, 0, false),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             1, 1.3499, 0.7408, 0.5097, // parameters: deltat (Δt), u, d, p
             7.43, expectedNodes // outputs: price, nodes
         );
@@ -150,11 +151,12 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void European_call_calculation_Hull2014Fig1311() {
         // Arrange
-        EuropeanOption option = new EuropeanOption(OptionType.CALL, 810, 800, 0.5, 0.2, 0.05, 0.02);
+        EuropeanOption option = EuropeanOption.createCall(810, 800, 0.5, 0.2, 0.05, 0.02);
         int timeSteps = 2;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -167,7 +169,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 2, 989.34, 189.34, true),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.25, 1.1052, 0.9048, 0.5126, // parameters: deltat (Δt), u, d, p
             53.39, expectedNodes // outputs: price, nodes
         );
@@ -183,9 +185,10 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07);
         int timeSteps = 3;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -202,7 +205,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 3, 0.677, 0.077, true),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.0833, 1.0352, 0.9660, 0.4673, // parameters: deltat (Δt), u, d, p
             0.019, expectedNodes // outputs: price, nodes
         );
@@ -220,9 +223,10 @@ class CoxRossRubinsteinPricerTest {
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 31, 30, 0.75, 0.3, r, q);
         int timeSteps = 3;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -239,7 +243,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 3, 48.62, 0.00, false),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.2500, 1.1618, 0.8607, 0.4626, // parameters: deltat (Δt), u, d, p
             2.84, expectedNodes // outputs: price, nodes
         );
@@ -255,9 +259,10 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.EUROPEAN, OptionType.CALL, 78, 80, 4 / 12d, 0.3, 0.03, 0);
         int timeSteps = 2;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -270,7 +275,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 2, 99.65, 19.65, true),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.1667, 1.1303, 0.8847, 0.4898, // parameters: deltat (Δt), u, d, p
             4.67, expectedNodes // outputs: price, nodes
         );
@@ -286,9 +291,10 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025);
         int timeSteps = 2;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -301,7 +307,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(2, 2, 1934.84, 0.00, false),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.5, 1.1357, 0.8805, 0.4977, // parameters: deltat (Δt), u, d, p
             78.41, expectedNodes // outputs: price, nodes
         );
@@ -319,9 +325,10 @@ class CoxRossRubinsteinPricerTest {
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 90, 93, 0.75, 0.28, r, q);
         int timeSteps = 3;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -338,7 +345,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 3, 136.98, 43.98, true),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
             7.94, expectedNodes // outputs: price, nodes
         );
@@ -356,9 +363,10 @@ class CoxRossRubinsteinPricerTest {
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
         ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 90, 93, 0.75, 0.28, r, q);
         int timeSteps = 3;
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = CoxRossRubinsteinPricer.calculation(option, timeSteps);
+        CoxRossRubinsteinModel result = pricer.calculation(option);
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -375,7 +383,7 @@ class CoxRossRubinsteinPricerTest {
             new LatticeNode(3, 3, 136.98, 0.00, false),
         });
         CoxRossRubinsteinModel expected = this.createModel(
-            option, timeSteps, // inputs
+            timeSteps, // inputs
             0.25, 1.1503, 0.8694, 0.4651, // parameters: deltat (Δt), u, d, p
             10.88, expectedNodes // outputs: price, nodes
         );

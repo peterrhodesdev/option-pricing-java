@@ -149,8 +149,8 @@ public class EquationInput<T extends Number> implements PublicCloneable<Equation
         }
 
         /**
-         * Use this to set the substitution value if it extends {@link java.util.Number} (e.g.&nbsp;{@link java.util.Double}, {@link java.util.Integer}, ...).
-         * <p>Note: if the number has trailing zeros and you want to keep the precision when it's substituted in, then cast it to a {@link java.util.String} and use {@link #withStringValue(String)} instead.</p>
+         * Use this to set the substitution value if it extends {@link java.lang.Number} (e.g.&nbsp;{@link java.lang.Double}, {@link java.lang.Integer}, ...).
+         * <p>Note: if the number has trailing zeros and you want to keep the precision when it's substituted in, then cast it to a {@link java.lang.String} and use {@link #withStringValue(String)} instead.</p>
          *
          * @param numberValue The number value to be substituted into the equation for the key.
          * @throws NullPointerException if {@code numberValue} is null

@@ -20,7 +20,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 /**
  * Vanilla European option.&nbsp;The value of the option and it's greeks can be calculated analytically using the <a href="https://www.jstor.org/stable/1831029?origin=JSTOR-pdf">Black-Scholes model</a>
  */
-public class EuropeanOption extends AbstractAnalyticalOption {
+public final class EuropeanOption extends AbstractAnalyticalOption {
     
     private NormalDistribution N;
 
@@ -37,9 +37,25 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * @throws NullPointerException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
      * @throws IllegalArgumentException from {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
      */
-    public EuropeanOption(OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
+    private EuropeanOption(OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
         super(OptionStyle.EUROPEAN, type, S, K, T, vol, r, q);
         this.N = new NormalDistribution();
+    }
+
+    /**
+     * Creates a vanilla European call option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#CALL}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     */
+    public static EuropeanOption createCall(Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
+        EuropeanOption option = new EuropeanOption(OptionType.CALL, S, K, T, vol, r, q);
+        return option;
+    }
+
+    /**
+     * Creates a vanilla European put option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#PUT}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     */
+    public static EuropeanOption createPut(Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
+        EuropeanOption option = new EuropeanOption(OptionType.PUT, S, K, T, vol, r, q);
+        return option;
     }
 
     //region price
@@ -81,7 +97,14 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      * Calculation for the delta (Δ) of a European option.
      * <p>The calculation steps are:</p>
      * <ol start="0">
-     *   <li>d₁</li>
+     *   <li>d₁
+     *     <ol start="0">
+     *       <li></li>
+     *       <li></li>
+     *       <li></li>
+     *       <li></li>
+     *     </ol>
+     *   </li>
      *   <li>call: N(d₁), put: N(-d₁)</li>
      *   <li>Δ</li>TODO describe array
      * </ol>
@@ -227,8 +250,8 @@ public class EuropeanOption extends AbstractAnalyticalOption {
      *   <li>dividend yield</li>
      * </ol>
      */
-    public Map<String, String> getOptionParameters() {
-        return this.getBaseParameters();
+    public Map<String, String> optionParameters() {
+        return this.baseOptionParameters();
     }
 
     //======================================================================

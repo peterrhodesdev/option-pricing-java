@@ -150,6 +150,7 @@
         <configuration>
           <defaultVersion>${project.version}</defaultVersion>
           <sourcepath>target/generated-sources/delombok</sourcepath>
+          <show>public</show>
         </configuration>
       </plugin>
       <plugin>

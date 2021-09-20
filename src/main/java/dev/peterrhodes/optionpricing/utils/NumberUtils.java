@@ -3,7 +3,7 @@ package dev.peterrhodes.optionpricing.utils;
 import dev.peterrhodes.optionpricing.enums.RoundingMethod;
 
 /**
- * Miscellaneous utility methods for the {@link java.util.Number} class.
+ * Miscellaneous utility methods for the {@link java.lang.Number} class.
  */
 public interface NumberUtils {
 

@@ -18,18 +18,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     private EquationInput[] baseCalculationInputs;
 
     /**
-     * Creates an abstract analytical option with the specified parameters.
-     *
-     * @param style {@link AbstractOption#style}
-     * @param type {@link AbstractOption#type}
-     * @param S {@link AbstractOption#S}
-     * @param K {@link AbstractOption#K}
-     * @param T {@link AbstractOption#T}
-     * @param vol {@link AbstractOption#vol}
-     * @param r {@link AbstractOption#r}
-     * @param q {@link AbstractOption#q}
-     * @throws NullPointerException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
-     * @throws IllegalArgumentException from {@link AbstractOption#AbstractOption(OptionStyle, OptionType, double, double, double, double, double, double)}
+     * Creates an abstract analytical option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
     public AbstractAnalyticalOption(OptionStyle style, OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
         super(style, type, S, K, T, vol, r, q);
