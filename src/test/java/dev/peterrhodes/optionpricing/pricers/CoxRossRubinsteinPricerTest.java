@@ -24,64 +24,6 @@ import org.junit.jupiter.api.Test;
  */
 @SuppressWarnings("checkstyle:multiplevariabledeclarations")
 class CoxRossRubinsteinPricerTest {
-    
-    //region helpers
-    //----------------------------------------------------------------------
-
-    private final String greaterThanZeroMessage = "must be greater than zero";
-
-    private void assertCalculation(CoxRossRubinsteinModel result, CoxRossRubinsteinModel expected, double parameterPrecision, double outputPrecision) {
-        // parameters
-        assertThat(result.getDeltat())
-            .as("parameter Δt")
-            .isEqualTo(expected.getDeltat(), withPrecision(parameterPrecision));
-        assertThat(result.getU())
-            .as("parameter u")
-            .isEqualTo(expected.getU(), withPrecision(parameterPrecision));
-        assertThat(result.getD())
-            .as("parameter d")
-            .isEqualTo(expected.getD(), withPrecision(parameterPrecision));
-        assertThat(result.getP())
-            .as("parameter p")
-            .isEqualTo(expected.getP(), withPrecision(parameterPrecision));
-
-        // price
-        assertThat(result.getPrice()).as("price").isEqualTo(expected.getPrice(), withPrecision(outputPrecision));
-
-        // nodes
-        List<LatticeNode> expectedNodes = expected.getNodes();
-        List<LatticeNode> resultNodes = result.getNodes();
-
-        // number of nodes
-        int size = expectedNodes.size();
-        assertThat(resultNodes.size()).as("nodes size").isEqualTo(size);
-
-        for (LatticeNode expectedNode : expectedNodes) {
-            // node with same i and n exists
-            int i = expectedNode.getI(), j = expectedNode.getJ();
-            LatticeNode resultNode = resultNodes.stream()
-                .filter(item -> item.getI() == i && item.getJ() == j)
-                .findAny()
-                .orElse(null);
-            assertThat(resultNode)
-                .withFailMessage("node (%d, %d) not found", i, j)
-                .isNotNull();
-
-            // node(i, n) values
-            assertThat(resultNode.getS())
-                .as(String.format("node (%d, %d) S", i, j))
-                .isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
-            assertThat(resultNode.getV())
-                .as(String.format("node (%d, %d) V", i, j))
-                .isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
-            assertThat(resultNode.isExercised())
-                .as(String.format("node (%d, %d) exercised", i, j))
-                .isEqualTo(expectedNode.isExercised());
-        }
-    }
-
-    //----------------------------------------------------------------------
-    //endregion
 
     //region throws IllegalArgumentException tests
     //----------------------------------------------------------------------
@@ -97,7 +39,7 @@ class CoxRossRubinsteinPricerTest {
         assertThatThrownBy(() -> {
             CoxRossRubinsteinPricer ex = new CoxRossRubinsteinPricer(timeSteps);
         }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(this.greaterThanZeroMessage);
+          .hasMessageContaining("must be greater than zero");
     }
 
     //----------------------------------------------------------------------
@@ -388,4 +330,60 @@ class CoxRossRubinsteinPricerTest {
 
     //----------------------------------------------------------------------
     //endregion
+    
+    //region private methods
+    //----------------------------------------------------------------------
+
+    private void assertCalculation(CoxRossRubinsteinModel result, CoxRossRubinsteinModel expected, double parameterPrecision, double outputPrecision) {
+        // parameters
+        assertThat(result.getDeltat())
+            .as("parameter Δt")
+            .isEqualTo(expected.getDeltat(), withPrecision(parameterPrecision));
+        assertThat(result.getU())
+            .as("parameter u")
+            .isEqualTo(expected.getU(), withPrecision(parameterPrecision));
+        assertThat(result.getD())
+            .as("parameter d")
+            .isEqualTo(expected.getD(), withPrecision(parameterPrecision));
+        assertThat(result.getP())
+            .as("parameter p")
+            .isEqualTo(expected.getP(), withPrecision(parameterPrecision));
+
+        // price
+        assertThat(result.getPrice()).as("price").isEqualTo(expected.getPrice(), withPrecision(outputPrecision));
+
+        // nodes
+        List<LatticeNode> expectedNodes = expected.getNodes();
+        List<LatticeNode> resultNodes = result.getNodes();
+
+        // number of nodes
+        int size = expectedNodes.size();
+        assertThat(resultNodes.size()).as("nodes size").isEqualTo(size);
+
+        for (LatticeNode expectedNode : expectedNodes) {
+            // node with same i and n exists
+            int i = expectedNode.getI(), j = expectedNode.getJ();
+            LatticeNode resultNode = resultNodes.stream()
+                .filter(item -> item.getI() == i && item.getJ() == j)
+                .findAny()
+                .orElse(null);
+            assertThat(resultNode)
+                .withFailMessage("node (%d, %d) not found", i, j)
+                .isNotNull();
+
+            // node(i, n) values
+            assertThat(resultNode.getS())
+                .as(String.format("node (%d, %d) S", i, j))
+                .isEqualTo(expectedNode.getS(), withPrecision(outputPrecision));
+            assertThat(resultNode.getV())
+                .as(String.format("node (%d, %d) V", i, j))
+                .isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
+            assertThat(resultNode.isExercised())
+                .as(String.format("node (%d, %d) exercised", i, j))
+                .isEqualTo(expectedNode.isExercised());
+        }
+    }
+
+    //----------------------------------------------------------------------
+    //endregion private methods
 }

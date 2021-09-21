@@ -3,10 +3,11 @@ package dev.peterrhodes.optionpricing.core;
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.enums.RoundingMethod;
+import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.utils.FormulaUtils;
 import dev.peterrhodes.optionpricing.utils.LatexUtils;
 import dev.peterrhodes.optionpricing.utils.NumberUtils;
+import lombok.NonNull;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -14,8 +15,8 @@ import org.apache.commons.math3.distribution.NormalDistribution;
  */
 public abstract class AbstractAnalyticalOption extends AbstractOption implements AnalyticalOption {
     
-    protected Integer calculationStepPrecision;
-    protected RoundingMethod calculationStepRoundingMethod;
+    protected Integer calculationStepPrecisionDigits;
+    protected PrecisionType calculationStepPrecisionType;
     private NormalDistribution normalDistribution;
 
     /**
@@ -23,8 +24,8 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      */
     public AbstractAnalyticalOption(OptionStyle style, OptionType type, Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
         super(style, type, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
-        this.calculationStepPrecision = 3;
-        this.calculationStepRoundingMethod = RoundingMethod.SIGNIFICANT_FIGURES;
+        this.calculationStepPrecisionDigits = 3;
+        this.calculationStepPrecisionType = PrecisionType.SIGNIFICANT_FIGURES;
         this.normalDistribution = new NormalDistribution();
     }
 
@@ -32,17 +33,23 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     //----------------------------------------------------------------------
 
     /**
-     * TODO.
+     * Returns the standard normal cumulative distribution function (CDF) evaluated at {@code x}.
+     *
+     * @param x point to evaluate the standard normal CDF at
+     * @return standard normal CDF at {@code x}
      */
-    public double standardNormalCdf(Number x) {
-        return this.normalDistribution.cumulativeProbability(x.doubleValue());
+    public double standardNormalCdf(double x) {
+        return this.normalDistribution.cumulativeProbability(x);
     }
 
     /**
-     * TODO.
+     * Returns the standard normal probability density function (PDF) evaluated at {@code x}.
+     *
+     * @param x point to evaluate the standard normal PDF at
+     * @return standard normal PDF at {@code x}
      */
-    public double standardNormalPdf(Number x) {
-        return this.normalDistribution.density(x.doubleValue());
+    public double standardNormalPdf(double x) {
+        return this.normalDistribution.density(x);
     }
 
     /**
@@ -56,10 +63,10 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      */
     public String[] standardNormalCdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalCdfLatex(variableLatex).trim();
-        double answer = this.standardNormalCdf(variableValue);
+        double answer = this.standardNormalCdf(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
             .withNumberValue(variableValue)
-            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
+            .withPrecision(this.calculationStepPrecisionDigits, this.calculationStepPrecisionType)
             .build();
 
         return FormulaUtils.solve(
@@ -80,10 +87,10 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      */
     public String[] standardNormalPdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalPdfLatex(variableLatex).trim();
-        double answer = this.standardNormalPdf(variableValue);
+        double answer = this.standardNormalPdf(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
             .withNumberValue(variableValue)
-            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
+            .withPrecision(this.calculationStepPrecisionDigits, this.calculationStepPrecisionType)
             .build();
 
         return FormulaUtils.solve(
@@ -97,11 +104,25 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     //endregion standard normal
 
     /**
-     * TODO.
+     * Set the precision of the calculated values (not option parameters) for display in the LaTeX mathematical expressions.
+     * <p>The default values are:</p>
+     * <ul>
+     *   <li>{@code precisionDigits}: 3</li>
+     *   <li>{@code precisionType}: {@link PrecisionType#SIGNIFICANT_FIGURES}</li>
+     * </ul>
+     *
+     * @param precisionDigits number of digits of precision
+     * @param precisionType type of precision for formatting
+     * @throws NullPointerException if {@code precisionType} is null
+     * @throws IllegalArgumentException if {@code precisionDigits} is less than zero
      */
-    public final void setCalculationStepPrecision(int precision, RoundingMethod roundingMethod) {
-        this.calculationStepPrecision = precision;
-        this.calculationStepRoundingMethod = roundingMethod;
+    @Override
+    public final void setCalculationStepPrecision(int precisionDigits, @NonNull PrecisionType precisionType) throws NullPointerException {
+        if (precisionDigits < 0) {
+            throw new IllegalArgumentException("precisionDigits must be greater than or equal to zero");
+        }
+        this.calculationStepPrecisionDigits = precisionDigits;
+        this.calculationStepPrecisionType = precisionType;
     }
 
     protected final EquationInput[] baseCalculationInputs(LatexDelimeterType latexDelimeterType) {
@@ -140,7 +161,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     }
 
     protected final String roundCalculationStepValue(double value) {
-        return NumberUtils.round(value, this.calculationStepPrecision, this.calculationStepRoundingMethod);
+        return NumberUtils.precision(value, this.calculationStepPrecisionDigits, this.calculationStepPrecisionType);
     }
 
     protected static final String standardNormalCdfLatex(String argument) {

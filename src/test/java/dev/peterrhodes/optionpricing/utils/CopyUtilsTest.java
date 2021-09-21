@@ -14,32 +14,6 @@ import org.junit.jupiter.api.Test;
  */
 class CopyUtilsTest {
 
-    private static class TestClass implements PublicCloneable<TestClass> {
-
-        private String field;
-
-        public TestClass(String field) {
-            this.field = field;
-        }
-
-        public String getField() {
-            return this.field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-
-        @Override
-        public TestClass clone() {
-            try {
-                return (TestClass) super.clone();
-            } catch (CloneNotSupportedException e) {
-                return new TestClass(this.field);
-            }
-        }
-    }
-
     //region List tests
     //----------------------------------------------------------------------
 
@@ -164,5 +138,31 @@ class CopyUtilsTest {
         // Assert
         assertThat(shallowCopy[0][0]).as("shallow copy").isEqualTo("z");
         assertThat(deepCopy[0][0]).as("deep copy").isEqualTo("a");
+    }
+
+    private static class TestClass implements PublicCloneable<TestClass> {
+
+        private String field;
+
+        public TestClass(String field) {
+            this.field = field;
+        }
+
+        public String getField() {
+            return this.field;
+        }
+
+        public void setField(String field) {
+            this.field = field;
+        }
+
+        @Override
+        public TestClass clone() {
+            try {
+                return (TestClass) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return new TestClass(this.field);
+            }
+        }
     }
 }

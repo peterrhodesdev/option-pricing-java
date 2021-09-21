@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.enums.RoundingMethod;
+import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.CalculationModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,44 +20,6 @@ import org.junit.jupiter.api.Test;
  */
 @SuppressWarnings("checkstyle:multiplevariabledeclarations")
 class EuropeanOptionTest {
-
-    private void assertCalculation(CalculationModel result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
-        int expectedStepsLength = expectedStepLengths.length;
-
-        String[][] steps = result.getSteps();
-
-        assertThat(steps.length)
-            .as("number of steps")
-            .isEqualTo(expectedStepLengths.length);
-
-        for (int i = 0; i < expectedStepLengths.length; i++) {
-            // number of step parts
-            assertThat(steps[i].length)
-                .as(String.format("number of parts in step %d", i))
-                .isEqualTo(expectedStepLengths[i]);
-
-            // values substituted into equation
-            int substitutionPartIndex = steps[i].length - 2;
-            String substitutionPart = steps[i][substitutionPartIndex];
-            for (String chars : expectedStepSubstitutionContains[i]) {
-                assertThat(substitutionPart.contains(chars))
-                    .as(String.format("step %d, part %d '%s', contains '%s'", i, substitutionPartIndex, substitutionPart, chars))
-                    .isTrue();
-            }
-
-            // answer (null if not given in example)
-            if (expectedStepAnswers[i] != null) {
-                assertThat(steps[i][expectedStepLengths[i] - 1])
-                    .as(String.format("step %d last element (answer)", i))
-                    .isEqualTo(expectedStepAnswers[i]);
-            }
-        }
-
-        assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
-    }
-
-    //region throws tests
-    //----------------------------------------------------------------------
 
     @Test
     void Invalid_argument_values_should_throw_IllegalArgumentException() {
@@ -96,9 +58,6 @@ class EuropeanOptionTest {
             .hasMessageContaining(greaterThanZeroMessage);
     }
 
-    //----------------------------------------------------------------------
-    //endregion
-
     //region price tests
     //----------------------------------------------------------------------
 
@@ -109,7 +68,7 @@ class EuropeanOptionTest {
     void Price_for_call_with_no_dividend_HullSsm2014P1513() {
         // Arrange
         EuropeanOption call = EuropeanOption.createCall(52, 50, 0.25, 0.3, 0.12, 0);
-        call.setCalculationStepPrecision(4, RoundingMethod.DECIMAL_PLACES);
+        call.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
         CalculationModel result = call.priceCalculation();
@@ -127,13 +86,6 @@ class EuropeanOptionTest {
 
         this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 5.06, 0.01);
         assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.price());
-
-        /*for (String[] step : result.getSteps()) {
-            System.out.println("step");
-            for (String part : step) {
-                System.out.println(part);
-            }
-        }*/
     }
 
     /**
@@ -143,7 +95,7 @@ class EuropeanOptionTest {
     void Price_for_put_with_no_dividend_Hull2014Ex156() {
         // Arrange
         EuropeanOption put = EuropeanOption.createPut(42, 40, 0.5, 0.2, 0.1, 0);
-        put.setCalculationStepPrecision(4, RoundingMethod.DECIMAL_PLACES);
+        put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
         CalculationModel result = put.priceCalculation();
@@ -178,7 +130,7 @@ class EuropeanOptionTest {
     void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
         EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
+        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = call.deltaCalculation();
@@ -205,7 +157,7 @@ class EuropeanOptionTest {
     void Delta_for_put_with_dividend_Hull2014Ex199() {
         // Arrange
         EuropeanOption put = EuropeanOption.createPut(90, 87, 0.5, 0.25, 0.09, 0.03);
-        put.setCalculationStepPrecision(4, RoundingMethod.DECIMAL_PLACES);
+        put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
         CalculationModel result = put.deltaCalculation();
@@ -237,9 +189,9 @@ class EuropeanOptionTest {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
         EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
-        call.setCalculationStepPrecision(3, RoundingMethod.DECIMAL_PLACES);
+        call.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
         EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
-        put.setCalculationStepPrecision(3, RoundingMethod.DECIMAL_PLACES);
+        put.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
 
         // Act
         CalculationModel callResult = call.gammaCalculation();
@@ -275,9 +227,9 @@ class EuropeanOptionTest {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
         EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
-        call.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
+        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
         EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
-        put.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
+        put.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel callResult = call.vegaCalculation();
@@ -312,7 +264,7 @@ class EuropeanOptionTest {
     void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
         EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
+        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = call.thetaCalculation();
@@ -348,7 +300,7 @@ class EuropeanOptionTest {
     void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
         EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, RoundingMethod.SIGNIFICANT_FIGURES);
+        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = call.rhoCalculation();
@@ -382,7 +334,7 @@ class EuropeanOptionTest {
     void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
         EuropeanOption call = EuropeanOption.createCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
-        call.setCalculationStepPrecision(4, RoundingMethod.SIGNIFICANT_FIGURES);
+        call.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
         CalculationModel result = call.priceCalculation();
@@ -404,4 +356,45 @@ class EuropeanOptionTest {
 
     //----------------------------------------------------------------------
     //endregion disabled tests
+
+    //region private methods
+    //----------------------------------------------------------------------
+
+    private void assertCalculation(CalculationModel result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
+        int expectedStepsLength = expectedStepLengths.length;
+
+        String[][] steps = result.getSteps();
+
+        assertThat(steps.length)
+            .as("number of steps")
+            .isEqualTo(expectedStepLengths.length);
+
+        for (int i = 0; i < expectedStepLengths.length; i++) {
+            // number of step parts
+            assertThat(steps[i].length)
+                .as(String.format("number of parts in step %d", i))
+                .isEqualTo(expectedStepLengths[i]);
+
+            // values substituted into equation
+            int substitutionPartIndex = steps[i].length - 2;
+            String substitutionPart = steps[i][substitutionPartIndex];
+            for (String chars : expectedStepSubstitutionContains[i]) {
+                assertThat(substitutionPart.contains(chars))
+                    .as(String.format("step %d, part %d '%s', contains '%s'", i, substitutionPartIndex, substitutionPart, chars))
+                    .isTrue();
+            }
+
+            // answer (null if not given in example)
+            if (expectedStepAnswers[i] != null) {
+                assertThat(steps[i][expectedStepLengths[i] - 1])
+                    .as(String.format("step %d last element (answer)", i))
+                    .isEqualTo(expectedStepAnswers[i]);
+            }
+        }
+
+        assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
+    }
+
+    //----------------------------------------------------------------------
+    //endregion private methods
 }

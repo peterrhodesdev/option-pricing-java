@@ -16,7 +16,6 @@ import java.util.stream.Stream;
  * Vanilla European option.
  * <p>The value of a European option and it's greeks can be calculated analytically using the <a href="https://www.jstor.org/stable/1831029">Black-Scholes model</a>. This model was extended by <a href="https://www.jstor.org/stable/3003143">Merton</a> to allow for the inclusion of a continuous dividend yield.</p>
  */
-@SuppressWarnings("PMD")
 public final class EuropeanOption extends AbstractAnalyticalOption {
 
     //region constructors
@@ -115,7 +114,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
     private EquationInput dEquationSubstitutionValue(int i) {
         return new EquationInput.Builder(this.dParameterLatex(i, true).trim())
             .withNumberValue(this.d(i))
-            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
+            .withPrecision(this.calculationStepPrecisionDigits, this.calculationStepPrecisionType)
             .build();
     }
 
@@ -138,8 +137,8 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <ol start="0">
      *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
      *   <li>d₂ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
-     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
+     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
+     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
      *   <li>price
      *     <ol start="0">
      *       <li>symbol</li>
@@ -199,7 +198,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <p>The calculation steps are:</p>
      * <ol start="0">
      *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
+     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
      *   <li>delta (Δ)
      *     <ol start="0">
      *       <li>symbol</li>
@@ -251,7 +250,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <p>The calculation steps are:</p>
      * <ol start="0">
      *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, double)})</li>
+     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, Number)})</li>
      *   <li>gamma (Γ)
      *     <ol start="0">
      *       <li>symbol</li>
@@ -305,7 +304,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <p>The calculation steps are:</p>
      * <ol start="0">
      *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, double)})</li>
+     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, Number)})</li>
      *   <li>vega
      *     <ol start="0">
      *       <li>symbol</li>
@@ -362,9 +361,9 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <ol start="0">
      *   <li>d₁ (see {@link #dCalculationStep(int)})</li>
      *   <li>d₂ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
-     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
-     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, double)})</li>
+     *   <li>standard normal CDF at +d₁ for call and -d₁ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
+     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
+     *   <li>standard normal PDF at d₁ (see {@link AbstractAnalyticalOption#standardNormalPdfCalculationStep(String, Number)})</li>
      *   <li>theta (Θ)
      *     <ol start="0">
      *       <li>symbol</li>
@@ -431,7 +430,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
      * <p>The calculation steps are:</p>
      * <ol start="0">
      *   <li>d₂ (see {@link #dCalculationStep(int)})</li>
-     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, double)})</li>
+     *   <li>standard normal CDF at +d₂ for call and -d₂ for put (see {@link AbstractAnalyticalOption#standardNormalCdfCalculationStep(String, Number)})</li>
      *   <li>rho (ρ)
      *     <ol start="0">
      *       <li>symbol</li>
@@ -470,7 +469,7 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
     //endregion rho
 
     /**
-     * Returns a list of the parameters/variables used to define the option.&nbsp;The key is the latex notation for the parameter and the value is its number value.
+     * Returns a map of the parameters/variables used to define the option.&nbsp;The key is the latex notation for the parameter and the value is its numeric value.
      *
      * @return option parameters list
      * <ol start="0">

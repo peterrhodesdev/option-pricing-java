@@ -17,39 +17,17 @@ public abstract class AbstractOption implements Option {
     @Getter protected OptionStyle style;
 
     /**
-     * Type of the option (call or put).
+     * Type of the option, i.e.&nbsp;call or put.
      */
     @Getter protected OptionType type;
 
-    /**
-     * ({@code S}) Price of the underlying asset.
-     */
-    @Getter protected Number spotPrice;
-
-    /**
-     * ({@code K}) Strike/exercise price of the option.
-     */
-    @Getter protected Number strikePrice;
-
-    /**
-     * ({@code τ = T - t}) Time to maturity (time from the start of the contract until it expires).
-     */
-    @Getter protected Number timeToMaturity;
-
-    /**
-     * ({@code σ}) Underlying volatility (standard deviation of log returns).
-     */
-    @Getter protected Number volatility;
-
-    /**
-     * ({@code r}) Annualized risk-free interest rate, continuously compounded.
-     */
-    @Getter protected Number riskFreeRate;
-
-    /**
-     * ({@code q}) Annual dividend yield, continuously compounded.
-     */
-    @Getter protected Number dividendYield;
+    // No lombok getter annotation as return the double value
+    protected Number spotPrice;
+    protected Number strikePrice;
+    protected Number timeToMaturity;
+    protected Number volatility;
+    protected Number riskFreeRate;
+    protected Number dividendYield;
 
     // Fields for calculations to simplify and match the math notation
     protected double S; // spot price
@@ -58,8 +36,8 @@ public abstract class AbstractOption implements Option {
     protected double σ; // volatility
     protected double r; // risk free rate
     protected double q; // dividend yield
-    protected double C̟P̠;
-    protected double C̠P̟;
+    protected double C̟P̠; // +1 for call, -1 for put
+    protected double C̠P̟; // -1 for call, +1 for put
 
     /**
      * Creates an abstract option with the specified parameters.
@@ -85,11 +63,6 @@ public abstract class AbstractOption implements Option {
         @NonNull Number riskFreeRate,
         @NonNull Number dividendYield
     ) throws IllegalArgumentException, NullPointerException {
-        this.checkGreaterThanZero(spotPrice, "S");
-        this.checkGreaterThanZero(strikePrice, "K");
-        this.checkGreaterThanZero(timeToMaturity, "T");
-        this.checkGreaterThanZero(volatility, "σ");
-
         this.style = style;
         this.setType(type);
         this.setSpotPrice(spotPrice);
@@ -100,6 +73,7 @@ public abstract class AbstractOption implements Option {
         this.setDividendYield(dividendYield);
     }
 
+    @Override
     public double exerciseValue(double spotPrice) {
         return Math.max(0.0, this.typeFactor() * (spotPrice - this.K));
     }
@@ -107,65 +81,142 @@ public abstract class AbstractOption implements Option {
     //region getters and setters
     //----------------------------------------------------------------------
 
-    public double getDoubleSpotPrice() {
+    /**
+     * Gets the spot price.
+     *
+     * @return Price of the underlying asset ({@code S > 0}).
+     */
+    public double getSpotPrice() {
         return this.S;
     }
 
-    public double getDoubleStrikePrice() {
+    /**
+     * Gets the strike price.
+     *
+     * @return Strike/exercise price of the option ({@code K > 0}).
+     */
+    public double getStrikePrice() {
         return this.K;
     }
 
-    public double getDoubleTimeToMaturity() {
+    /**
+     * Gets the time to maturity.
+     *
+     * @return Time until maturity/expiration in years ({@code τ = T - t > 0}).
+     */
+    public double getTimeToMaturity() {
         return this.τ;
     }
 
-    public double getDoubleVolatility() {
+    /**
+     * Gets the volatility.
+     *
+     * @return Underlying volatility ({@code σ > 0}).
+     */
+    public double getVolatility() {
         return this.σ;
     }
 
-    public double getDoubleRiskFreeRate() {
+    /**
+     * Gets the risk-free rate.
+     *
+     * @return Annualized risk-free interest rate continuously compounded ({@code r}).
+     */
+    public double getRiskFreeRate() {
         return this.r;
     }
 
-    public double getDoubleDividendYield() {
+    /**
+     * Gets the dividend yield.
+     *
+     * @return Annual dividend yield continuously compounded ({@code q}).
+     */
+    public double getDividendYield() {
         return this.q;
     }
 
     /**
-     * TODO.
+     * Sets the option type.
+     *
+     * @param type Type of the option, i.e.&nbsp;call or put.
+     * @throws NullPointerException if {@code type} is null
      */
-    public void setType(@NonNull OptionType type) {
+    public void setType(@NonNull OptionType type) throws NullPointerException {
         this.type = type;
         this.C̟P̠ = type == OptionType.CALL ? 1d : -1d;
         this.C̠P̟ = type == OptionType.CALL ? -1d : 1d;
     }
 
-    public void setSpotPrice(@NonNull Number spotPrice) {
+    /**
+     * Sets the spot price.
+     *
+     * @param spotPrice Price of the underlying asset ({@code S > 0}).
+     * @throws NullPointerException if {@code spotPrice} is null
+     * @throws  IllegalArgumentExceptionif {@code spotPrice} is not greater than zero
+     */
+    public void setSpotPrice(@NonNull Number spotPrice) throws NullPointerException, IllegalArgumentException {
+        this.checkGreaterThanZero(spotPrice, "spot price");
         this.spotPrice = spotPrice;
         this.S = spotPrice.doubleValue();
     }
 
-    public void setStrikePrice(@NonNull Number strikePrice) {
+    /**
+     * Sets the strike price.
+     *
+     * @param strikePrice Strike/exercise price of the option ({@code K > 0}).
+     * @throws NullPointerException if {@code strikePrice} is null
+     * @throws  IllegalArgumentExceptionif {@code strikePrice} is not greater than zero
+     */
+    public void setStrikePrice(@NonNull Number strikePrice) throws NullPointerException, IllegalArgumentException {
+        this.checkGreaterThanZero(strikePrice, "strike price");
         this.strikePrice = strikePrice;
         this.K = strikePrice.doubleValue();
     }
 
-    public void setTimeToMaturity(@NonNull Number timeToMaturity) {
+    /**
+     * Sets the time to maturity.
+     *
+     * @param timeToMaturity Time until maturity/expiration in years ({@code τ = T - t > 0}).
+     * @throws NullPointerException if {@code timeToMaturity} is null
+     * @throws  IllegalArgumentExceptionif {@code timeToMaturity} is not greater than zero
+     */
+    public void setTimeToMaturity(@NonNull Number timeToMaturity) throws NullPointerException, IllegalArgumentException {
+        this.checkGreaterThanZero(timeToMaturity, "time to maturity");
         this.timeToMaturity = timeToMaturity;
         this.τ = timeToMaturity.doubleValue();
     }
 
-    public void setVolatility(@NonNull Number volatility) {
+    /**
+     * Sets the volatility.
+     *
+     * @param volatility Underlying volatility ({@code σ > 0}).
+     * @throws NullPointerException if {@code volatility} is null
+     * @throws  IllegalArgumentExceptionif {@code volatility} is not greater than zero
+     */
+    public void setVolatility(@NonNull Number volatility) throws NullPointerException, IllegalArgumentException {
+        this.checkGreaterThanZero(volatility, "volatility");
         this.volatility = volatility;
         this.σ = volatility.doubleValue();
     }
 
-    public void setRiskFreeRate(@NonNull Number riskFreeRate) {
+    /**
+     * Sets the risk-free rate.
+     *
+     * @param riskFreeRate Annualized risk-free interest rate continuously compounded ({@code r}).
+     * @throws NullPointerException if {@code riskFreeRate} is null
+     */
+    public void setRiskFreeRate(@NonNull Number riskFreeRate) throws NullPointerException {
         this.riskFreeRate = riskFreeRate;
         this.r = riskFreeRate.doubleValue();
     }
 
-    public void setDividendYield(@NonNull Number dividendYield) {
+    /**
+     * Sets the dividend yield.
+     *
+     * @param dividendYield Annual dividend yield continuously compounded ({@code q}).
+     * @throws NullPointerException if {@code dividendYield} is null
+     */
+    public void setDividendYield(@NonNull Number dividendYield) throws NullPointerException {
         this.dividendYield = dividendYield;
         this.q = dividendYield.doubleValue();
     }

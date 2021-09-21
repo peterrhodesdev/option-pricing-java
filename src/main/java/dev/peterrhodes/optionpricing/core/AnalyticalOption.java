@@ -1,15 +1,12 @@
 package dev.peterrhodes.optionpricing.core;
 
-import dev.peterrhodes.optionpricing.enums.RoundingMethod;
+import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.CalculationModel;
 
 /**
  * Interface for an option that has an analytical solution, i.e.&nbsp;can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
  */
 public interface AnalyticalOption extends Option {
-
-    //region price
-    //----------------------------------------------------------------------
 
     /**
      * Calculates the fair value (price) of the option.
@@ -25,12 +22,6 @@ public interface AnalyticalOption extends Option {
      */
     CalculationModel priceCalculation();
 
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region delta
-    //----------------------------------------------------------------------
-
     /**
      * Calculates the value of delta (Δ) of the option (first derivative of the option value with respect to the underlying asset price).
      *
@@ -44,12 +35,6 @@ public interface AnalyticalOption extends Option {
      * @return delta calculation details
      */
     CalculationModel deltaCalculation();
-
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region gamma
-    //----------------------------------------------------------------------
 
     /**
      * Calculates the value of gamma (Γ) of the option (second derivative of the option value with respect to the underlying asset price).
@@ -65,12 +50,6 @@ public interface AnalyticalOption extends Option {
      */
     CalculationModel gammaCalculation();
 
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region vega
-    //----------------------------------------------------------------------
-
     /**
      * Calculates the value of vega of the option (first derivative of the option value with respect to the underlying asset volatility).
      *
@@ -84,12 +63,6 @@ public interface AnalyticalOption extends Option {
      * @return vega calculation details
      */
     CalculationModel vegaCalculation();
-
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region theta
-    //----------------------------------------------------------------------
 
     /**
      * Calculates the value of theta (Θ) of the option (negative first derivative of the option value with respect to the time to maturity).
@@ -105,12 +78,6 @@ public interface AnalyticalOption extends Option {
      */
     CalculationModel thetaCalculation();
 
-    //----------------------------------------------------------------------
-    //endregion
-
-    //region rho
-    //----------------------------------------------------------------------
-
     /**
      * Calculates the value of rho (ρ) of the option (first derivative of the option value with respect to the risk free interest rate).
      *
@@ -125,11 +92,11 @@ public interface AnalyticalOption extends Option {
      */
     CalculationModel rhoCalculation();
 
-    //----------------------------------------------------------------------
-    //endregion
-
     /**
-     * TODO.
+     * Sets the precision of the calculated values (not option parameters) for display in the LaTeX mathematical expressions.
+     *
+     * @param precisionDigits number of digits of precision
+     * @param precisionType type of precision for formatting
      */
-    void setCalculationStepPrecision(int precision, RoundingMethod roundingMethod);
+    void setCalculationStepPrecision(int precisionDigits, PrecisionType precisionType);
 }

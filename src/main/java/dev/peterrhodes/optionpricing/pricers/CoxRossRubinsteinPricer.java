@@ -23,9 +23,10 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
     private int timeSteps;
 
     /**
-     * TODO.
+     * Creates a new Cox, Ross, and Rubinstein option pricer.
      *
      * @param timeSteps Number of time steps in the tree.
+     * @throws IllegalArgumentException if {@code timeSteps} is not greater than zero
      */
     public CoxRossRubinsteinPricer(int timeSteps) throws IllegalArgumentException {
         checkParameters(timeSteps);
@@ -37,7 +38,7 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
      *
      * @param option the option to perform the calculation for
      * @return the calculated price of the option
-     * TODO
+     * @throws NullPointerException if {@code option} is null
      */
     public double price(@NonNull T option) throws NullPointerException {
         CoxRossRubinsteinModel model = performCalculation(option);
@@ -49,7 +50,7 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
      *
      * @param option the option to perform the calculation for
      * @return model object populated with the results of the calculations
-     * TODO
+     * @throws NullPointerException if {@code option} is null
      */
     public CoxRossRubinsteinModel calculation(@NonNull T option) throws NullPointerException {
         return performCalculation(option);
@@ -58,16 +59,18 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
     //region perform calculation
     //----------------------------------------------------------------------
 
-    @SuppressWarnings("checkstyle:multiplevariabledeclarations")
     private CoxRossRubinsteinModel performCalculation(T option) {
-        double S_0 = option.getSpotPrice().doubleValue();
-        double τ = option.getDoubleTimeToMaturity();
-        double σ = option.getDoubleVolatility();
-        double r = option.getDoubleRiskFreeRate();
-        double q = option.getDoubleDividendYield();
+        double S_0 = option.getSpotPrice();
+        double τ = option.getTimeToMaturity();
+        double σ = option.getVolatility();
+        double r = option.getRiskFreeRate();
+        double q = option.getDividendYield();
 
         double[] modelParameters = determineModelParameters(τ, σ, r, q);
-        double Δt = modelParameters[0], u = modelParameters[1], d = modelParameters[2], p = modelParameters[3];
+        double Δt = modelParameters[0];
+        double u = modelParameters[1];
+        double d = modelParameters[2];
+        double p = modelParameters[3];
 
         List<LatticeNode> nodes = new ArrayList();
 
@@ -82,7 +85,7 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
         // Working backwards through the tree calculating the option values
         for (int i = timeSteps; i >= 0; i--) {
             for (int j = 0; j <= i; j++) {
-                calculateNodeOptionValue(option, nodes, i, j, Δt, p);
+                calculateNodeOptionValue(option, r, nodes, i, j, Δt, p);
             }
         }
 
@@ -108,16 +111,15 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
         return node;
     }
 
-    private void calculateNodeOptionValue(T option, List<LatticeNode> nodes, int i, int j, double Δt, double p) {
+    private void calculateNodeOptionValue(T option, double r, List<LatticeNode> nodes, int i, int j, double Δt, double p) {
         int currentIndex = calculateNodeIndex(i, j);
         LatticeNode currentNode = nodes.get(currentIndex);
-        double S = currentNode.getS();
-        double r = option.getDoubleRiskFreeRate();
+        double S_ij = currentNode.getS();
 
         double V;
 
         if (i == this.timeSteps) {
-            V = option.exerciseValue(S);
+            V = option.exerciseValue(S_ij);
             currentNode.setExercised(V > 0);
         } else {
             int downIndex = currentIndex + (i + 1);
@@ -126,7 +128,7 @@ public class CoxRossRubinsteinPricer<T extends AbstractOption> {
             double earlyExerciseValue;
             switch (option.getStyle()) {
                 case AMERICAN:
-                    earlyExerciseValue = option.exerciseValue(S);
+                    earlyExerciseValue = option.exerciseValue(S_ij);
                     break;
                 case EUROPEAN:
                 default:

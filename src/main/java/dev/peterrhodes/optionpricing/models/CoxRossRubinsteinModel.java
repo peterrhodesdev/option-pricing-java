@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Model that represents a calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
+ * Model that represents a calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer}.
  */
 @Getter
 public class CoxRossRubinsteinModel {
@@ -49,7 +49,7 @@ public class CoxRossRubinsteinModel {
     private double price;
 
     /**
-     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer CoxRossRubinsteinPricer}.
+     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer}.
      *
      * @param timeSteps Number of time steps in the calculation.
      * @param deltat (Δt) length of a single time interval/step.

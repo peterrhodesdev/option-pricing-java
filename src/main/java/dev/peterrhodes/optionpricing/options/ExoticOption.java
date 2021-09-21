@@ -6,11 +6,9 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 import java.util.Map;
 
 /**
- * A fully customizable option that supports every available setting.
+ * A customizable option contract.
  */
 public class ExoticOption extends AbstractOption {
-
-    // TODO create list of parameters that gets updated depending on the configuration of the option.
 
     /**
      * Creates a configurable/exotic option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
@@ -20,7 +18,7 @@ public class ExoticOption extends AbstractOption {
     }
 
     /**
-     * Returns a list of the parameters/variables used to define the option.
+     * Returns a map of the parameters/variables used to define the option.&nbsp;The key is the latex notation for the parameter and the value is its numeric value.
      *
      * @return option parameters list
      * <ol start="0">

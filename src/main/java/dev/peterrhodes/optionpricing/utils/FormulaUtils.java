@@ -46,7 +46,7 @@ public interface FormulaUtils {
 
         String replacement;
         if (equationInput.hasNumberValue()) {
-            replacement = NumberUtils.round(equationInput.getNumberValue(), equationInput.getPrecisionDigits(), equationInput.getRoundingMethod());
+            replacement = NumberUtils.precision(equationInput.getNumberValue(), equationInput.getPrecisionDigits(), equationInput.getPrecisionType());
         } else {
             replacement = equationInput.getStringValue();
         }
@@ -57,7 +57,7 @@ public interface FormulaUtils {
     }
 
     /**
-     * Returns a new array which appends TODO.
+     * Returns a new array which appends substituted values and the answer to the original formula.
      *
      * @param formula the formula parts where the last element is the one to have the values substituted in for
      * @param values list of values for the variables in the equation
