@@ -58,6 +58,8 @@ public abstract class AbstractOption implements Option {
     protected double σ; // volatility
     protected double r; // risk free rate
     protected double q; // dividend yield
+    protected double C̟P̠;
+    protected double C̠P̟;
 
     /**
      * Creates an abstract option with the specified parameters.
@@ -66,7 +68,7 @@ public abstract class AbstractOption implements Option {
      * @param type Type of the option, i.e.&nbsp;call or put.
      * @param spotPrice Price of the underlying asset ({@code S > 0}).
      * @param strikePrice Strike/exercise price of the option ({@code K > 0}).
-     * @param timeToMaturity Time until maturity/expiration ({@code τ = T - t > 0}).
+     * @param timeToMaturity Time until maturity/expiration in years ({@code τ = T - t > 0}).
      * @param volatility Underlying volatility ({@code σ > 0}).
      * @param riskFreeRate Annualized risk-free interest rate continuously compounded ({@code r}).
      * @param dividendYield Annual dividend yield continuously compounded ({@code q}).
@@ -89,7 +91,7 @@ public abstract class AbstractOption implements Option {
         this.checkGreaterThanZero(volatility, "σ");
 
         this.style = style;
-        this.type = type;
+        this.setType(type);
         this.setSpotPrice(spotPrice);
         this.setStrikePrice(strikePrice);
         this.setTimeToMaturity(timeToMaturity);
@@ -127,6 +129,15 @@ public abstract class AbstractOption implements Option {
 
     public double getDoubleDividendYield() {
         return this.q;
+    }
+
+    /**
+     * TODO.
+     */
+    public void setType(@NonNull OptionType type) {
+        this.type = type;
+        this.C̟P̠ = type == OptionType.CALL ? 1d : -1d;
+        this.C̠P̟ = type == OptionType.CALL ? -1d : 1d;
     }
 
     public void setSpotPrice(@NonNull Number spotPrice) {

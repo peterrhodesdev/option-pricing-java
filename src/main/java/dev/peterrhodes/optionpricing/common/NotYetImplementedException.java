@@ -13,5 +13,5 @@ public class NotYetImplementedException extends RuntimeException {
      * @deprecated Deprecated to serve as a reminder to implement the corresponding code.
      */
     @Deprecated(forRemoval = false)
-    public NotYetImplementedException() {}
+    public NotYetImplementedException() { }
 }

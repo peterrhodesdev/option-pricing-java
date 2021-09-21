@@ -14,9 +14,9 @@ import org.apache.commons.math3.distribution.NormalDistribution;
  */
 public abstract class AbstractAnalyticalOption extends AbstractOption implements AnalyticalOption {
     
-    protected NormalDistribution N;
     protected Integer calculationStepPrecision;
     protected RoundingMethod calculationStepRoundingMethod;
+    private NormalDistribution normalDistribution;
 
     /**
      * Creates an abstract analytical option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
@@ -25,7 +25,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
         super(style, type, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
         this.calculationStepPrecision = 3;
         this.calculationStepRoundingMethod = RoundingMethod.SIGNIFICANT_FIGURES;
-        this.N = new NormalDistribution();
+        this.normalDistribution = new NormalDistribution();
     }
 
     //region standard normal
@@ -34,13 +34,15 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     /**
      * TODO.
      */
-    public double standardNormalCdf(double x) {
-        return this.N.cumulativeProbability(x);
+    public double standardNormalCdf(Number x) {
+        return this.normalDistribution.cumulativeProbability(x.doubleValue());
     }
 
-    // Use this in calculations to simplify and resemble mth notation
-    protected double N_at(double x) {
-        return this.standardNormalCdf(x);
+    /**
+     * TODO.
+     */
+    public double standardNormalPdf(Number x) {
+        return this.normalDistribution.density(x.doubleValue());
     }
 
     /**
@@ -52,9 +54,33 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      *   <li>calculation result</li>
      * </ol>
      */
-    public String[] standardNormalCdfCalculationStep(String variableLatex, double variableValue) {
+    public String[] standardNormalCdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalCdfLatex(variableLatex).trim();
         double answer = this.standardNormalCdf(variableValue);
+        EquationInput input = new EquationInput.Builder(variableLatex)
+            .withNumberValue(variableValue)
+            .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
+            .build();
+
+        return FormulaUtils.solve(
+            new String[] { formula },
+            new EquationInput[] { input },
+            this.roundCalculationStepValue(answer)
+        );
+    }
+
+    /**
+     * Returns the details of a standard normal probability density function calculation step.
+     * <p>The parts of the calculation step are:</p>
+     * <ol start="0">
+     *   <li>function notation</li>
+     *   <li>function with the value of the variable substituted in</li>
+     *   <li>calculation result</li>
+     * </ol>
+     */
+    public String[] standardNormalPdfCalculationStep(String variableLatex, Number variableValue) {
+        String formula = standardNormalPdfLatex(variableLatex).trim();
+        double answer = this.standardNormalPdf(variableValue);
         EquationInput input = new EquationInput.Builder(variableLatex)
             .withNumberValue(variableValue)
             .withPrecision(this.calculationStepPrecision, this.calculationStepRoundingMethod)
@@ -90,11 +116,27 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     }
 
     protected final String discountFactorLatex() {
-        return LatexUtils.exponential("-" + LATEX_r + LATEX_τ);
+        return " " + LatexUtils.exponential("-" + LATEX_r + LATEX_τ) + " ";
     }
 
     protected final String dividendDiscountFactorLatex() {
-        return LatexUtils.exponential("-" + LATEX_q + LATEX_τ);
+        return " " + LatexUtils.exponential("-" + LATEX_q + LATEX_τ) + " ";
+    }
+
+    /**
+     * Standard normal cumulative distribution function, usually denoted by the capital Greek letter phi 𝚽 .
+     */
+    protected double N(double x) {
+        return this.standardNormalCdf(x);
+    }
+
+    /**
+     * Standard normal probability density function, usually denoted with the small Greek letter phi 𝜑.
+     * Note: Using Nʹinstead of N̕ is more readable but causes an error in PMD, and don't want to exclude the files from checking.
+     * TODO: Raise issue with PMD
+     */
+    protected double N̕(double x) {
+        return this.standardNormalPdf(x);
     }
 
     protected final String roundCalculationStepValue(double value) {
@@ -105,10 +147,18 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
         return " \\mathrm{N} ( " + argument + " ) ";
     }
 
+    protected static final String standardNormalPdfLatex(String argument) {
+        return " \\mathrm{N'} ( " + argument + " ) ";
+    }
+
     //region constants
     //----------------------------------------------------------------------
 
     protected static final String LATEX_Δ = " \\Delta ";
+    protected static final String LATEX_Γ = " \\Gamma ";
+    protected static final String LATEX_VEGA = " \\mathcal {V} ";
+    protected static final String LATEX_ρ = " \\rho ";
+    protected static final String LATEX_Θ = " \\Theta ";
 
     //----------------------------------------------------------------------
     //endregion constants

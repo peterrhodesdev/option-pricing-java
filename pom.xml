@@ -258,6 +258,12 @@
             <phase>verify</phase>
             <goals>
               <goal>check</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>cpd</id>
+            <phase>verify</phase>
+            <goals>
               <goal>cpd-check</goal>
             </goals>
           </execution>

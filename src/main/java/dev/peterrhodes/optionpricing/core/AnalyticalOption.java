@@ -72,14 +72,14 @@ public interface AnalyticalOption extends Option {
     //----------------------------------------------------------------------
 
     /**
-     * Calculates the value of vega (ν) of the option (first derivative of the option value with respect to the underlying asset volatility).
+     * Calculates the value of vega of the option (first derivative of the option value with respect to the underlying asset volatility).
      *
      * @return option vega value
      */
     double vega();
 
     /**
-     * Returns the details of the vega (ν) calculation for an option.
+     * Returns the details of the vega calculation for an option.
      *
      * @return vega calculation details
      */

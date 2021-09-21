@@ -79,6 +79,18 @@ public interface LatexUtils {
     }
 
     /**
+     * Produces a partial derivative fraction.
+     *
+     * @param dependentVariable top value of the fraction
+     * @param independentVariable bottom value of the fraction
+     * @param order order/degree of the derivative
+     * @return the partial derivative fraction
+     */
+    static String partialDerivative(String dependentVariable, String independentVariable, String order) {
+        return fraction(superscript(MATH_SYMBOL_PARTIAL_DIFFERENTIAL, order) + dependentVariable, MATH_SYMBOL_PARTIAL_DIFFERENTIAL + superscript(independentVariable, order));
+    }
+
+    /**
      * Typeset the given letters in Roman font.
      *
      * @param letters the letters which are to be typeset

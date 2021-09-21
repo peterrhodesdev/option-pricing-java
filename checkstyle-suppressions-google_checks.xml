@@ -12,6 +12,8 @@
   <suppress checks="ParameterNameCheck" files="."/>
   <suppress checks="LocalVariableNameCheck" files="."/>
   <suppress checks="MethodNameCheck" files="."/>
+  <suppress checks="WhitespaceAround" files="."/>
+  <suppress checks="ParenPad" files="."/>
 
   <!-- allow list of parameters to be defined on a single line -->
   <suppress checks="MultipleVariableDeclarationsCheck" files="."/>

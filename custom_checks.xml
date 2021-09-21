@@ -15,9 +15,9 @@
 
     <!-- Suppressed google check, re-enabling here so can selectively suppress with annotation -->
     <module name="MultipleVariableDeclarations" />
-
-    <!-- Suppressed google check, re-enabling here so can selectively suppress with annotation -->
     <module name="VariableDeclarationUsageDistanceCheck" />
+    <module name="WhitespaceAround" />
+    <module name="ParenPad" />
 
     <!-- indent spaces -->
     <module name="Indentation">
