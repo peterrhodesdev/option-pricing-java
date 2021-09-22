@@ -5,15 +5,12 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 import java.util.Map;
 
 /**
- * A customizable option contract.
+ * A customizable option.
  */
-public class ExoticOption extends AbstractOption {
+public final class ExoticOption extends AbstractOption {
 
-    /**
-     * Creates a configurable/exotic option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
-     */
-    public ExoticOption(OptionStyle style, OptionType type, Number S, Number K, Number T, Number vol, Number r, Number q) throws IllegalArgumentException, NullPointerException {
-        super(style, type, S, K, T, vol, r, q);
+    private ExoticOption(Builder builder) {
+        super(builder.style, builder.type, builder.spotPrice, builder.strikePrice, builder.timeToMaturity, builder.volatility, builder.riskFreeRate, builder.dividendYield);
     }
 
     /**
@@ -31,5 +28,55 @@ public class ExoticOption extends AbstractOption {
      */
     public Map<String, String> optionParameters() {
         return this.baseOptionParameters();
+    }
+
+    /**
+     * Builder class for {@link ExoticOption}.
+     */
+    public static class Builder {
+        private OptionStyle style;
+        private OptionType type;
+        private Number spotPrice;
+        private Number strikePrice;
+        private Number timeToMaturity;
+        private Number volatility;
+        private Number riskFreeRate;
+        private Number dividendYield;
+
+        /**
+         * TODO.
+         */
+        public Builder(OptionType type, Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) {
+            this.type = type;
+            this.spotPrice = spotPrice;
+            this.strikePrice = strikePrice;
+            this.timeToMaturity = timeToMaturity;
+            this.volatility = volatility;
+            this.riskFreeRate = riskFreeRate;
+            this.dividendYield = dividendYield;
+        }
+
+        /**
+         * TODO.
+         */
+        public Builder styleAmerican() {
+            this.style = OptionStyle.AMERICAN;
+            return this;
+        }
+
+        /**
+         * TODO.
+         */
+        public Builder styleEuropean() {
+            this.style = OptionStyle.EUROPEAN;
+            return this;
+        }
+
+        /**
+         * TODO.
+         */
+        public ExoticOption build() {
+            return new ExoticOption(this);
+        }
     }
 }

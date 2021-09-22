@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
+import dev.peterrhodes.optionpricing.Contract;
 import dev.peterrhodes.optionpricing.common.LatticeNode;
+import dev.peterrhodes.optionpricing.contracts.ExoticContract;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
-import dev.peterrhodes.optionpricing.options.EuropeanOption;
-import dev.peterrhodes.optionpricing.options.ExoticOption;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -31,12 +31,14 @@ class CoxRossRubinsteinPricerTest {
     void Zero_time_steps_should_throw() {
         // Arrange
         // option: style, type, S, K, τ, σ, r, q
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
+        Contract option = new ExoticContract.Builder(OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0)
+            .europeanStyle()
+            .build();
         int timeSteps = 0;
 
         // Act Assert
         assertThatThrownBy(() -> {
-            CoxRossRubinsteinPricer ex = new CoxRossRubinsteinPricer(timeSteps);
+            CoxRossRubinsteinPricer ex = new CoxRossRubinsteinPricer(option, timeSteps);
         }).isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("must be greater than zero");
     }
@@ -53,12 +55,14 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void American_put_calculation_Hull2014Fig1310() {
         // Arrange
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0);
+        Contract option = new ExoticContract.Builder(OptionType.PUT, 50, 52, 2, 0.3, 0.05, 0)
+            .americanStyle()
+            .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -85,12 +89,14 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void European_call_calculation_Hull2014Fig1311() {
         // Arrange
-        EuropeanOption option = EuropeanOption.createCall(810, 800, 0.5, 0.2, 0.05, 0.02);
+        Contract option = new ExoticContract.Builder(OptionType.CALL, 810, 800, 0.5, 0.2, 0.05, 0.02)
+            .europeanStyle()
+            .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -117,12 +123,14 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void American_call_calculation_Hull2014Fig1312() {
         // Arrange
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07);
+        Contract option = new ExoticContract.Builder(OptionType.CALL, 0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07)
+            .americanStyle()
+            .build();
         int timeSteps = 3;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -155,12 +163,14 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         double r = 0.05;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 31, 30, 0.75, 0.3, r, q);
+        Contract option = new ExoticContract.Builder(OptionType.PUT, 31, 30, 0.75, 0.3, r, q)
+            .americanStyle()
+            .build();
         int timeSteps = 3;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -191,12 +201,14 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void European_call_calculation_HullSsm2014P1316() {
         // Arrange
-        ExoticOption option = new ExoticOption(OptionStyle.EUROPEAN, OptionType.CALL, 78, 80, 4 / 12d, 0.3, 0.03, 0);
+        Contract option = new ExoticContract.Builder(OptionType.CALL, 78, 80, 4 / 12d, 0.3, 0.03, 0)
+            .europeanStyle()
+            .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -223,12 +235,14 @@ class CoxRossRubinsteinPricerTest {
     @Test
     void American_put_calculation_HullSsm2014P1317() {
         // Arrange
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025);
+        Contract option = new ExoticContract.Builder(OptionType.PUT, 1500, 1480, 1, 0.18, 0.04, 0.025)
+            .americanStyle()
+            .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -257,12 +271,14 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.CALL, 90, 93, 0.75, 0.28, r, q);
+        Contract option = new ExoticContract.Builder(OptionType.CALL, 90, 93, 0.75, 0.28, r, q)
+            .americanStyle()
+            .build();
         int timeSteps = 3;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
@@ -295,12 +311,14 @@ class CoxRossRubinsteinPricerTest {
         // Arrange
         double r = 0.03;
         double q = r; // Hull (2014), p 315: "in a risk-neutral world a futures price should have an expected growth rate of zero"
-        ExoticOption option = new ExoticOption(OptionStyle.AMERICAN, OptionType.PUT, 90, 93, 0.75, 0.28, r, q);
+        Contract option = new ExoticContract.Builder(OptionType.PUT, 90, 93, 0.75, 0.28, r, q)
+            .americanStyle()
+            .build();
         int timeSteps = 3;
-        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(timeSteps);
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(option, timeSteps);
 
         // Act
-        CoxRossRubinsteinModel result = pricer.calculation(option);
+        CoxRossRubinsteinModel result = pricer.calculation();
 
         // Assert
         List<LatticeNode> expectedNodes = Arrays.asList(new LatticeNode[] {
