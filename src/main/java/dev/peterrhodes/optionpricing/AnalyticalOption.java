@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.core;
+package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.CalculationModel;

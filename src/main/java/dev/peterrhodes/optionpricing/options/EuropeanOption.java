@@ -1,7 +1,6 @@
 package dev.peterrhodes.optionpricing.options;
 
-import dev.peterrhodes.optionpricing.core.AbstractAnalyticalOption;
-import dev.peterrhodes.optionpricing.core.EquationInput;
+import dev.peterrhodes.optionpricing.common.EquationInput;
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
@@ -26,14 +25,14 @@ public final class EuropeanOption extends AbstractAnalyticalOption {
     }
 
     /**
-     * Creates a vanilla European call option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#CALL}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     * Creates a vanilla European call option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#CALL}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.common.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
     public static EuropeanOption createCall(Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
         return new EuropeanOption(OptionType.CALL, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     /**
-     * Creates a vanilla European put option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#PUT}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     * Creates a vanilla European put option.&nbsp;The option's style defaults to {@link OptionStyle#EUROPEAN}, and the option's type defaults to {@link OptionType#PUT}.&nbsp;For a description of the other arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.common.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
     public static EuropeanOption createPut(Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
         return new EuropeanOption(OptionType.PUT, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);

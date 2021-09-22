@@ -1,8 +1,8 @@
 package dev.peterrhodes.optionpricing.pricers;
 
-import dev.peterrhodes.optionpricing.core.AbstractOption;
-import dev.peterrhodes.optionpricing.core.LatticeNode;
+import dev.peterrhodes.optionpricing.common.LatticeNode;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
+import dev.peterrhodes.optionpricing.options.AbstractOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;

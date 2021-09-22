@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.peterrhodes.optionpricing.core.PublicCloneable;
+import dev.peterrhodes.optionpricing.common.PublicCloneable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

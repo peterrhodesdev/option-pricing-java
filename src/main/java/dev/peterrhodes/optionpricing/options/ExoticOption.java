@@ -1,6 +1,5 @@
 package dev.peterrhodes.optionpricing.options;
 
-import dev.peterrhodes.optionpricing.core.AbstractOption;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import java.util.Map;

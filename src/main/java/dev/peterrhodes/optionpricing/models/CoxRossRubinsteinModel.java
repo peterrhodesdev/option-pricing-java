@@ -1,6 +1,6 @@
 package dev.peterrhodes.optionpricing.models;
 
-import dev.peterrhodes.optionpricing.core.LatticeNode;
+import dev.peterrhodes.optionpricing.common.LatticeNode;
 import dev.peterrhodes.optionpricing.utils.CopyUtils;
 import java.util.List;
 import lombok.AccessLevel;

@@ -1,5 +1,7 @@
-package dev.peterrhodes.optionpricing.core;
+package dev.peterrhodes.optionpricing.options;
 
+import dev.peterrhodes.optionpricing.AnalyticalOption;
+import dev.peterrhodes.optionpricing.common.EquationInput;
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
@@ -20,7 +22,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     private NormalDistribution normalDistribution;
 
     /**
-     * Creates an abstract analytical option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.core.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     * Creates an abstract analytical option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.common.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
      */
     public AbstractAnalyticalOption(OptionStyle style, OptionType type, Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
         super(style, type, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);

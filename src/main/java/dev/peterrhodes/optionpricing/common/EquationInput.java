@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.core;
+package dev.peterrhodes.optionpricing.common;
 
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.PrecisionType;

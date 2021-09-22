@@ -1,6 +1,6 @@
 package dev.peterrhodes.optionpricing.utils;
 
-import dev.peterrhodes.optionpricing.core.PublicCloneable;
+import dev.peterrhodes.optionpricing.common.PublicCloneable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;

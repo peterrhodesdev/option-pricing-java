@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.core;
+package dev.peterrhodes.optionpricing.common;
 
 /**
  * Generic interface that publicly exposes and types the {@link java.lang.Cloneable} {@code clone} method.

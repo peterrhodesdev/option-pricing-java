@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
-import dev.peterrhodes.optionpricing.core.LatticeNode;
-import dev.peterrhodes.optionpricing.core.Option;
+import dev.peterrhodes.optionpricing.common.LatticeNode;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
