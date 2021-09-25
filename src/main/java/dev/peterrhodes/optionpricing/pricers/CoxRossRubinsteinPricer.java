@@ -1,28 +1,23 @@
 package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.Contract;
+import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
 import dev.peterrhodes.optionpricing.common.LatticeNode;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 /**
- * Implements the binomial options pricing model described by <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a>.
+ * Binomial options pricing model described by <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a>.
  */
-@Getter
-@Setter
-public class CoxRossRubinsteinPricer {
-
-    /**
-     * Number of time steps in the tree.
-     */
-    private int timeSteps;
+public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
 
     private Contract contract;
+    private int timeSteps;
+
+    // Math notation
     private double S_0;
     private double τ;
     private double σ;
@@ -32,48 +27,34 @@ public class CoxRossRubinsteinPricer {
     /**
      * Creates a new Cox, Ross, and Rubinstein option pricer.
      *
+     * @param contract the option contract to perform the calculation on
      * @param timeSteps Number of time steps in the tree.
-     * TODO
+     * @throws NullPointerException if {@code contract} is null
      * @throws IllegalArgumentException if {@code timeSteps} is not greater than zero
      */
-    public CoxRossRubinsteinPricer(Contract contract, int timeSteps) throws IllegalArgumentException {
+    public CoxRossRubinsteinPricer(@NonNull Contract contract, int timeSteps) throws NullPointerException, IllegalArgumentException {
         if (timeSteps <= 0) {
             throw new IllegalArgumentException("timeSteps must be greater than zero");
         }
-        this.timeSteps = timeSteps;
 
         this.contract = contract;
-        this.S_0 = contract.spotPrice();
-        this.τ = contract.timeToMaturity();
-        this.σ = contract.volatility();
-        this.r = contract.riskFreeRate();
-        this.q = contract.dividendYield();
+        this.timeSteps = timeSteps;
+
+        this.S_0 = contract.initialSpotPrice().doubleValue();
+        this.τ = contract.timeToMaturity().doubleValue();
+        this.σ = contract.volatility().doubleValue();
+        this.r = contract.riskFreeRate().doubleValue();
+        this.q = contract.dividendYield().doubleValue();
     }
 
     /**
-     * Calculates the price of the given option.
+     * Returns the details of the Cox, Ross, and Rubinstein calculation.
      *
-     * @return the calculated price of the option
+     * @return calculation details
      */
-    public double price() {
-        CoxRossRubinsteinModel model = performCalculation();
-        return model.getPrice();
-    }
-
-    /**
-     * Performs all of the calculations necessary to populate a {@link dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel CoxRossRubinsteinModel}, i.e.&nbsp;calculates the option price along with a list of the tree nodes.
-     *
-     * @return model object populated with the results of the calculations
-     */
+    @Override
     public CoxRossRubinsteinModel calculation() {
-        return performCalculation();
-    }
-
-    //region perform calculation
-    //----------------------------------------------------------------------
-
-    private CoxRossRubinsteinModel performCalculation() {
-        double[] modelParameters = determineModelParameters(τ, σ, r, q);
+        double[] modelParameters = determineModelParameters();
         double Δt = modelParameters[0];
         double u = modelParameters[1];
         double d = modelParameters[2];
@@ -96,10 +77,11 @@ public class CoxRossRubinsteinPricer {
             }
         }
 
-        return new CoxRossRubinsteinModel(this.timeSteps, Δt, u, d, p, nodes, nodes.get(0).getV());
+        double price = nodes.get(0).getV();
+        return new CoxRossRubinsteinModel(price, this.timeSteps, Δt, u, d, p, nodes);
     }
 
-    private double[] determineModelParameters(double τ, double σ, double r, double q) {
+    private double[] determineModelParameters() {
         double Δt = this.τ / (double) this.timeSteps; // length of a single time interval/step
         double u = Math.exp(this.σ * Math.sqrt(Δt)); // proportional up movement
         double d = Math.exp(-this.σ * Math.sqrt(Δt)); // proportional down movement
@@ -122,17 +104,18 @@ public class CoxRossRubinsteinPricer {
         LatticeNode currentNode = nodes.get(currentIndex);
         double S_ij = currentNode.getS();
         double t_i = i == this.timeSteps ? this.τ : i * Δt;
+        double exerciseValue = this.calculateExerciseValue(t_i, S_ij);
 
         double V;
 
         if (i == this.timeSteps) {
-            V = this.contract.exerciseValue(t_i, S_ij);
+            V = exerciseValue;
             currentNode.setExercised(V > 0);
         } else {
             int downIndex = currentIndex + (i + 1);
             int upIndex = downIndex + 1;
             double optionCurrentValue = (p * nodes.get(upIndex).getV() + (1 - p) * nodes.get(downIndex).getV()) * Math.exp(-this.r * Δt);
-            double earlyExerciseValue = this.contract.exerciseValue(t_i, S_ij);
+            double earlyExerciseValue = exerciseValue;
             V = Math.max(optionCurrentValue, earlyExerciseValue);
             currentNode.setExercised(earlyExerciseValue > optionCurrentValue);
         }
@@ -161,6 +144,9 @@ public class CoxRossRubinsteinPricer {
         return IntStream.rangeClosed(0, i).sum() + j;
     }
 
-    //----------------------------------------------------------------------
-    //endregion perform calculation
+    private double calculateExerciseValue(double t_i, double S_ij) {
+        ExerciseValueInput exerciseValueInput = new ExerciseValueInput.Builder(t_i, S_ij)
+            .build();
+        return this.contract.exerciseValue(exerciseValueInput);
+    }
 }

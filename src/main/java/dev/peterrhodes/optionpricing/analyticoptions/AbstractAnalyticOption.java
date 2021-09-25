@@ -1,9 +1,9 @@
-package dev.peterrhodes.optionpricing.options;
+package dev.peterrhodes.optionpricing.analyticoptions;
 
-import dev.peterrhodes.optionpricing.AnalyticalOption;
+import dev.peterrhodes.optionpricing.AnalyticOption;
+import dev.peterrhodes.optionpricing.Contract;
 import dev.peterrhodes.optionpricing.common.EquationInput;
 import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
-import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.utils.FormulaUtils;
@@ -13,22 +13,62 @@ import lombok.NonNull;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
- * Base class for concrete option classes that have an analytical solution, e.g.&nbsp;vanilla European options.&nbsp;If the specific option doesn't have an analytical solution then it should extend {@link AbstractOption}.
+ * Base class for concrete option classes that have an analytical solution, e.g.&nbsp;vanilla European options.
  */
-public abstract class AbstractAnalyticalOption extends AbstractOption implements AnalyticalOption {
+public abstract class AbstractAnalyticOption implements AnalyticOption {
     
     protected Integer calculationStepPrecisionDigits;
     protected PrecisionType calculationStepPrecisionType;
+
+    // Math notation
+    protected boolean isCall;
+    protected double S; // initial spot price
+    protected double K; // strike price
+    protected double τ; // time to maturity
+    protected double σ; // volatility
+    protected double r; // risk free rate
+    protected double q; // dividend yield
+    protected double C̟P̠; // +1 for call, -1 for put
+    protected double C̠P̟; // -1 for call, +1 for put
+
     private NormalDistribution normalDistribution;
+    private Contract contract;
 
     /**
-     * Creates an abstract analytical option.&nbsp;For a description of the arguments and exceptions thrown see {@link dev.peterrhodes.optionpricing.common.AbstractOption#AbstractOption(OptionStyle, OptionType, Number, Number, Number, Number, Number, Number)}.
+     * Creates the base class for an analytic option.
      */
-    public AbstractAnalyticalOption(OptionStyle style, OptionType type, Number spotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) throws IllegalArgumentException, NullPointerException {
-        super(style, type, spotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
+    public AbstractAnalyticOption(Contract contract) {
+        this.contract = contract;
+
+        // defaults
         this.calculationStepPrecisionDigits = 3;
         this.calculationStepPrecisionType = PrecisionType.SIGNIFICANT_FIGURES;
         this.normalDistribution = new NormalDistribution();
+
+        // math notation
+        this.isCall = contract.optionType() == OptionType.CALL;
+        this.S = contract.initialSpotPrice().doubleValue();
+        this.K = contract.strikePrice().doubleValue();
+        this.τ = contract.timeToMaturity().doubleValue();
+        this.σ = contract.volatility().doubleValue();
+        this.r = contract.riskFreeRate().doubleValue();
+        this.q = contract.dividendYield().doubleValue();
+        this.C̟P̠ = contract.optionType() == OptionType.CALL ? 1d : -1d;
+        this.C̠P̟ = this.C̟P̠ * -1d;
+    }
+
+    @Override
+    public final Contract contract() {
+        return this.contract;
+    }
+
+    @Override
+    public final void setCalculationStepPrecision(int precisionDigits, @NonNull PrecisionType precisionType) throws NullPointerException, IllegalArgumentException {
+        if (precisionDigits < 0) {
+            throw new IllegalArgumentException("precisionDigits must be greater than or equal to zero");
+        }
+        this.calculationStepPrecisionDigits = precisionDigits;
+        this.calculationStepPrecisionType = precisionType;
     }
 
     //region standard normal
@@ -40,7 +80,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      * @param x point to evaluate the standard normal CDF at
      * @return standard normal CDF at {@code x}
      */
-    public double standardNormalCdf(double x) {
+    public final double standardNormalCdf(double x) {
         return this.normalDistribution.cumulativeProbability(x);
     }
 
@@ -50,7 +90,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      * @param x point to evaluate the standard normal PDF at
      * @return standard normal PDF at {@code x}
      */
-    public double standardNormalPdf(double x) {
+    public final double standardNormalPdf(double x) {
         return this.normalDistribution.density(x);
     }
 
@@ -63,7 +103,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      *   <li>calculation result</li>
      * </ol>
      */
-    public String[] standardNormalCdfCalculationStep(String variableLatex, Number variableValue) {
+    public final String[] standardNormalCdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalCdfLatex(variableLatex).trim();
         double answer = this.standardNormalCdf(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
@@ -87,7 +127,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      *   <li>calculation result</li>
      * </ol>
      */
-    public String[] standardNormalPdfCalculationStep(String variableLatex, Number variableValue) {
+    public final String[] standardNormalPdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalPdfLatex(variableLatex).trim();
         double answer = this.standardNormalPdf(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
@@ -105,37 +145,22 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     //----------------------------------------------------------------------
     //endregion standard normal
 
-    /**
-     * Set the precision of the calculated values (not option parameters) for display in the LaTeX mathematical expressions.
-     * <p>The default values are:</p>
-     * <ul>
-     *   <li>{@code precisionDigits}: 3</li>
-     *   <li>{@code precisionType}: {@link PrecisionType#SIGNIFICANT_FIGURES}</li>
-     * </ul>
-     *
-     * @param precisionDigits number of digits of precision
-     * @param precisionType type of precision for formatting
-     * @throws NullPointerException if {@code precisionType} is null
-     * @throws IllegalArgumentException if {@code precisionDigits} is less than zero
-     */
-    @Override
-    public final void setCalculationStepPrecision(int precisionDigits, @NonNull PrecisionType precisionType) throws NullPointerException {
-        if (precisionDigits < 0) {
-            throw new IllegalArgumentException("precisionDigits must be greater than or equal to zero");
-        }
-        this.calculationStepPrecisionDigits = precisionDigits;
-        this.calculationStepPrecisionType = precisionType;
-    }
-
     protected final EquationInput[] baseCalculationInputs(LatexDelimeterType latexDelimeterType) {
         return new EquationInput[] {
-            new EquationInput.Builder(LATEX_S.trim()).withNumberValue(this.spotPrice).withDelimeter(latexDelimeterType).build(),
-            new EquationInput.Builder(LATEX_K.trim()).withNumberValue(this.strikePrice).withDelimeter(latexDelimeterType).build(),
-            new EquationInput.Builder(LATEX_τ.trim()).withNumberValue(this.timeToMaturity).withDelimeter(latexDelimeterType).build(),
-            new EquationInput.Builder(LATEX_σ.trim()).withNumberValue(this.volatility).withDelimeter(latexDelimeterType).build(),
-            new EquationInput.Builder(LATEX_r.trim()).withNumberValue(this.riskFreeRate).withDelimeter(latexDelimeterType).build(),
-            new EquationInput.Builder(LATEX_q.trim()).withNumberValue(this.dividendYield).withDelimeter(latexDelimeterType).build()
+            this.baseCalculationInput(LATEX_S.trim(), this.contract.initialSpotPrice(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_K.trim(), this.contract.strikePrice(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_τ.trim(), this.contract.timeToMaturity(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_σ.trim(), this.contract.volatility(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_r.trim(), this.contract.riskFreeRate(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_q.trim(), this.contract.dividendYield(), latexDelimeterType),
         };
+    }
+
+    protected final EquationInput baseCalculationInput(String notation, Number value, LatexDelimeterType latexDelimeterType) {
+        return new EquationInput.Builder(notation)
+                .withNumberValue(value)
+                .withDelimeter(latexDelimeterType)
+                .build();
     }
 
     protected final String discountFactorLatex() {
@@ -149,7 +174,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
     /**
      * Standard normal cumulative distribution function, usually denoted by the capital Greek letter phi 𝚽 .
      */
-    protected double N(double x) {
+    protected final double N(double x) {
         return this.standardNormalCdf(x);
     }
 
@@ -158,7 +183,7 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
      * Note: Using Nʹinstead of N̕ is more readable but causes an error in PMD, and don't want to exclude the files from checking.
      * TODO: Raise issue with PMD
      */
-    protected double N̕(double x) {
+    protected final double N̕(double x) {
         return this.standardNormalPdf(x);
     }
 
@@ -174,9 +199,27 @@ public abstract class AbstractAnalyticalOption extends AbstractOption implements
         return " \\mathrm{N'} ( " + argument + " ) ";
     }
 
+    /**
+     * Returns "C" for a call option, "P" for a put option.
+     *
+     * @return type parameter
+     */
+    protected final String typeParameterLatex() {
+        return this.isCall ? " C " : " P ";
+    }
+
     //region constants
     //----------------------------------------------------------------------
+    
+    // Base option parameters
+    protected static final String LATEX_S = " S ";
+    protected static final String LATEX_K = " K ";
+    protected static final String LATEX_τ = " \\tau ";
+    protected static final String LATEX_σ = " \\sigma ";
+    protected static final String LATEX_r = " r ";
+    protected static final String LATEX_q = " q ";
 
+    // Greeks
     protected static final String LATEX_Δ = " \\Delta ";
     protected static final String LATEX_Γ = " \\Gamma ";
     protected static final String LATEX_VEGA = " \\mathcal {V} ";

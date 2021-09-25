@@ -1,57 +1,88 @@
 package dev.peterrhodes.optionpricing;
 
+import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
+import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
 /**
- * TODO.
+ * Defines the option contract.
  */
 public interface Contract {
 
     /**
-     * TODO.
+     * Calculates the value of exercising the option (assuming all preconditions are met).
+     *
+     * @param exerciseValueInput inputs required to calculate the exercise value
+     * @return exercise value
      */
-    public double exerciseValue(double time, double spotPrice);
+    default double exerciseValue(ExerciseValueInput exerciseValueInput) {
+        double τ = this.timeToMaturity().doubleValue();
+        double C̟P̠ = this.optionType() == OptionType.CALL ? 1d : -1d;
+
+        double t = exerciseValueInput.getTime();
+        double S_t = exerciseValueInput.getSpotPrice();
+        double K = this.strikePrice().doubleValue();
+
+        switch (this.optionStyle()) {
+            case EUROPEAN:
+                return t < τ ? 0d : Math.max(0d, C̟P̠ * (S_t - K));
+            case AMERICAN:
+                return Math.max(0d, C̟P̠ * (S_t - K));
+            default:
+                throw new NotYetImplementedException();
+        }
+    }
 
     /**
-     * Returns the spot price.
-     *
-     * @return Price of the underlying asset ({@code S > 0}).
+     * Style of the option defined by the exercise rights, e.g.&nbsp;European, American.
      */
-    public double spotPrice();
+    OptionStyle optionStyle();
+
+    /**
+     * Type of the option, i.e.&nbsp;call or put.
+     */
+    OptionType optionType();
+
+    /**
+     * Returns the initial spot price.
+     *
+     * @return Initial price of the underlying asset ({@code S₀ > 0}).
+     */
+    Number initialSpotPrice();
 
     /**
      * Returns the strike price.
      *
      * @return Strike/exercise price of the option ({@code K > 0}).
      */
-    public double strikePrice();
+    Number strikePrice();
 
     /**
      * Returns the time to maturity.
      *
      * @return Time until maturity/expiration in years ({@code τ = T - t > 0}).
      */
-    public double timeToMaturity();
+    Number timeToMaturity();
 
     /**
      * Returns the volatility.
      *
      * @return Underlying volatility ({@code σ > 0}).
      */
-    public double volatility();
+    Number volatility();
 
     /**
      * Returns the risk-free rate.
      *
      * @return Annualized risk-free interest rate continuously compounded ({@code r}).
      */
-    public double riskFreeRate();
+    Number riskFreeRate();
 
     /**
      * Returns the dividend yield.
      *
      * @return Annual dividend yield continuously compounded ({@code q}).
      */
-    double dividendYield();
+    Number dividendYield();
 }

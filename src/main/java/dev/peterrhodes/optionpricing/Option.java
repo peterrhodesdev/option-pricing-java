@@ -1,19 +1,43 @@
 package dev.peterrhodes.optionpricing;
 
-import java.util.Map;
+import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
+import dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer;
 
 /**
- * Interface for an option that doesn't have an analytical solution.&nbsp;If the specific option has an analytical solution then it will extend {@link AnalyticalOption}.
+ * Defines an option with the ways that it can be valued.
  */
 public interface Option {
 
     /**
-     * Calculates the value of exercising the option (assuming all preconditions are met).
+     * Returns the contract that defines the option properties.
+     *
+     * @return the option contract
      */
-    double exerciseValue(double spotPrice);
+    Contract contract();
 
     /**
-     * Returns a map of the parameters/variables used to define the option.&nbsp;The key is the latex notation for the parameter and the value is its numeric value.
+     * Returns the price of the option calculated with the <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a> model.
+     *
+     * @param timeSteps Number of time steps in the tree.
+     * @return option price
+     * @throws IllegalArgumentException if {@code timeSteps} is not greater than zero
      */
-    Map<String, String> optionParameters();
+    default double coxRossRubinsteinPrice(int timeSteps) throws IllegalArgumentException {
+        return this.coxRossRubinsteinCalculation(timeSteps).getPrice();
+    }
+
+    /**
+     * Returns the details of the option price calculation performed by the <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a> model.
+     *
+     * @param timeSteps Number of time steps in the tree.
+     * @return option price calculation details
+     * @throws IllegalArgumentException if {@code timeSteps} is not greater than zero
+     */
+    default CoxRossRubinsteinModel coxRossRubinsteinCalculation(int timeSteps) throws IllegalArgumentException {
+        if (timeSteps <= 0) {
+            throw new IllegalArgumentException("timeSteps must be greater than zero");
+        }
+        CoxRossRubinsteinPricer pricer = new CoxRossRubinsteinPricer(this.contract(), timeSteps);
+        return pricer.calculation();
+    }
 }

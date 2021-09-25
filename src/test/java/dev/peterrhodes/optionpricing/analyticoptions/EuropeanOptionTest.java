@@ -1,12 +1,12 @@
-package dev.peterrhodes.optionpricing.options;
+package dev.peterrhodes.optionpricing.analyticoptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
-import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.AnalyticOptionFactory;
 import dev.peterrhodes.optionpricing.enums.PrecisionType;
-import dev.peterrhodes.optionpricing.models.CalculationModel;
+import dev.peterrhodes.optionpricing.models.AnalyticCalculationModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -30,28 +30,28 @@ class EuropeanOptionTest {
 
         // Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(0, K, τ, σ, r, q);
+            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(0, K, τ, σ, r, q);
         })
             .as("zero spot price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, 0, τ, σ, r, q);
+            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, 0, τ, σ, r, q);
         })
             .as("zero strike price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, K, 0, σ, r, q);
+            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, 0, σ, r, q);
         })
             .as("zero time to maturity")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = EuropeanOption.createCall(S, K, τ, 0, r, q);
+            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, 0, r, q);
         })
             .as("zero volatiliy")
             .isInstanceOf(exClass)
@@ -67,11 +67,11 @@ class EuropeanOptionTest {
     @Test
     void Price_for_call_with_no_dividend_HullSsm2014P1513() {
         // Arrange
-        EuropeanOption call = EuropeanOption.createCall(52, 50, 0.25, 0.3, 0.12, 0);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
         call.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        CalculationModel result = call.priceCalculation();
+        AnalyticCalculationModel result = call.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(d₁), N(d₂), price
@@ -94,11 +94,11 @@ class EuropeanOptionTest {
     @Test
     void Price_for_put_with_no_dividend_Hull2014Ex156() {
         // Arrange
-        EuropeanOption put = EuropeanOption.createPut(42, 40, 0.5, 0.2, 0.1, 0);
+        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
         put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        CalculationModel result = put.priceCalculation();
+        AnalyticCalculationModel result = put.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(-d₁), N(-d₂), price
@@ -129,11 +129,11 @@ class EuropeanOptionTest {
     @Test
     void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
-        EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        CalculationModel result = call.deltaCalculation();
+        AnalyticCalculationModel result = call.deltaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N(d₁), Δ
@@ -156,11 +156,11 @@ class EuropeanOptionTest {
     @Test
     void Delta_for_put_with_dividend_Hull2014Ex199() {
         // Arrange
-        EuropeanOption put = EuropeanOption.createPut(90, 87, 0.5, 0.25, 0.09, 0.03);
+        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
         put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        CalculationModel result = put.deltaCalculation();
+        AnalyticCalculationModel result = put.deltaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N(-d₁), Δ
@@ -188,14 +188,14 @@ class EuropeanOptionTest {
     void Gamma_for_option_with_no_dividend_Hull2014Ex194() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
-        EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
         call.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
-        EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
+        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
         put.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        CalculationModel callResult = call.gammaCalculation();
-        CalculationModel putResult = put.gammaCalculation();
+        AnalyticCalculationModel callResult = call.gammaCalculation();
+        AnalyticCalculationModel putResult = put.gammaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N̕(d₁), Δ
@@ -226,14 +226,14 @@ class EuropeanOptionTest {
     void Vega_for_option_with_no_dividend_Hull2014Ex196() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
-        EuropeanOption call = EuropeanOption.createCall(S, K, τ, σ, r, q);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
-        EuropeanOption put = EuropeanOption.createPut(S, K, τ, σ, r, q);
+        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
         put.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        CalculationModel callResult = call.vegaCalculation();
-        CalculationModel putResult = put.vegaCalculation();
+        AnalyticCalculationModel callResult = call.vegaCalculation();
+        AnalyticCalculationModel putResult = put.vegaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N̕(d₁), Δ
@@ -263,11 +263,11 @@ class EuropeanOptionTest {
     @Test
     void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
-        EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        CalculationModel result = call.thetaCalculation();
+        AnalyticCalculationModel result = call.thetaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 3, 5 }; // d₁, d₂, N(-d₁), N(-d₂), N̕(d₁), ϴ
@@ -299,11 +299,11 @@ class EuropeanOptionTest {
     @Test
     void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
-        EuropeanOption call = EuropeanOption.createCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        CalculationModel result = call.rhoCalculation();
+        AnalyticCalculationModel result = call.rhoCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₂, N(d₂), vega
@@ -333,11 +333,11 @@ class EuropeanOptionTest {
     @Test
     void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
-        EuropeanOption call = EuropeanOption.createCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
+        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
         call.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        CalculationModel result = call.priceCalculation();
+        AnalyticCalculationModel result = call.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(d₁), N(d₂), price
@@ -360,7 +360,7 @@ class EuropeanOptionTest {
     //region private methods
     //----------------------------------------------------------------------
 
-    private void assertCalculation(CalculationModel result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
+    private void assertCalculation(AnalyticCalculationModel result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
         int expectedStepsLength = expectedStepLengths.length;
 
         String[][] steps = result.getSteps();
@@ -394,7 +394,4 @@ class EuropeanOptionTest {
 
         assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
     }
-
-    //----------------------------------------------------------------------
-    //endregion private methods
 }

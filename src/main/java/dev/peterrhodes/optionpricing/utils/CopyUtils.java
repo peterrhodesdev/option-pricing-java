@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public interface CopyUtils {
 
     /**
-     * Generic deep copy method for an array of objects that implement {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     * Generic deep copy method for an array of objects that implement {@link dev.peterrhodes.optionpricing.common.PublicCloneable}.
      */
     static <T extends PublicCloneable<T>> T[] deepCopy(T[] arr, Class<T> c) {
         if (arr == null) {
@@ -31,7 +31,7 @@ public interface CopyUtils {
     }
 
     /**
-     * Generic deep copy method for a {@link java.util.List} of objects that implement {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     * Generic deep copy method for a {@link java.util.List} of objects that implement {@link dev.peterrhodes.optionpricing.common.PublicCloneable}.
      */
     static <T extends PublicCloneable<T>> List<T> deepCopy(List<T> list) {
         if (list == null) {
@@ -47,7 +47,7 @@ public interface CopyUtils {
     }
 
     /**
-     * Generic deep copy method for a {@link java.util.Map} of key/value pairs where the value implements {@link dev.peterrhodes.optionpricing.core.PublicCloneable}.
+     * Generic deep copy method for a {@link java.util.Map} of key/value pairs where the value implements {@link dev.peterrhodes.optionpricing.common.PublicCloneable}.
      */
     static <K, V extends PublicCloneable<V>> Map<K, V> deepCopy(Map<K, V> map) {
         return map.entrySet().stream()

@@ -7,10 +7,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Model that represents a calculation performed with {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer}.
+ * Model for the details of an option price calculation performed with the <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a> model.
  */
 @Getter
-public class CoxRossRubinsteinModel {
+public class CoxRossRubinsteinModel extends CalculationModel {
 
     /**
      * Number of time steps in the calculation.
@@ -44,12 +44,7 @@ public class CoxRossRubinsteinModel {
     private List<LatticeNode> nodes;
 
     /**
-     * Calculated price of the option.
-     */
-    private double price;
-
-    /**
-     * Creates a model for the results of a calculation performed by {@link dev.peterrhodes.optionpricing.pricers.CoxRossRubinsteinPricer}.
+     * Creates a model for the details of the Cox, Ross, and Rubinstein option price calculation.
      *
      * @param timeSteps Number of time steps in the calculation.
      * @param deltat (Δt) length of a single time interval/step.
@@ -57,16 +52,15 @@ public class CoxRossRubinsteinModel {
      * @param d Proportional down movement.
      * @param p Probability of an up movement (the corresponding probability of a down movement is {@code 1 - p}).
      * @param nodes List of the lattice nodes used to perform the calculation.
-     * @param price Calculated price of the option.
      */
-    public CoxRossRubinsteinModel(int timeSteps, double deltat, double u, double d, double p, List<LatticeNode> nodes, double price) {
+    public CoxRossRubinsteinModel(double price, int timeSteps, double deltat, double u, double d, double p, List<LatticeNode> nodes) {
+        super(price);
         this.timeSteps = timeSteps;
         this.deltat = deltat;
         this.u = u;
         this.d = d;
         this.p = p;
         this.nodes = CopyUtils.deepCopy(nodes);
-        this.price = price;
     }
 
     /**
