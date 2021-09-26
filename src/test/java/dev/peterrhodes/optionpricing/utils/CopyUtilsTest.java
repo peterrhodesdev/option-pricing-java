@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link #CopyUtils}.
  */
-class CopyUtilsTest {
+public class CopyUtilsTest {
 
     //region List tests
     //----------------------------------------------------------------------
 
     @Test
-    void Deep_copy_null_list_should_return_null() {
+    public void Deep_copy_null_list_should_return_null() {
         // Arrange
         List<TestClass> original = null;
 
@@ -30,7 +30,7 @@ class CopyUtilsTest {
     }
 
     @Test
-    void Deep_copy_empty_list_should_return_empty_list() {
+    public void Deep_copy_empty_list_should_return_empty_list() {
         // Arrange
         List<TestClass> original = new ArrayList<TestClass>();
 
@@ -43,7 +43,7 @@ class CopyUtilsTest {
     }
 
     @Test
-    void Deep_copy_list_of_objects() {
+    public void Deep_copy_list_of_objects() {
         // Arrange
         List<TestClass> original = new ArrayList<TestClass>();
         original.add(new TestClass("a"));
@@ -66,7 +66,7 @@ class CopyUtilsTest {
     //----------------------------------------------------------------------
 
     @Test
-    void Deep_copy_null_array_should_return_null() {
+    public void Deep_copy_null_array_should_return_null() {
         // Arrange
         TestClass[] original = null;
 
@@ -78,7 +78,7 @@ class CopyUtilsTest {
     }
 
     @Test
-    void Deep_copy_empty_array_should_return_empty_array() {
+    public void Deep_copy_empty_array_should_return_empty_array() {
         // Arrange
         TestClass[] original = {};
 
@@ -91,7 +91,7 @@ class CopyUtilsTest {
     }
 
     @Test
-    void Deep_copy_array_of_objects() {
+    public void Deep_copy_array_of_objects() {
         // Arrange
         TestClass[] original = { new TestClass("a"), new TestClass("b") };
         TestClass[] shallowCopy = original;
@@ -109,7 +109,7 @@ class CopyUtilsTest {
     //----------------------------------------------------------------------
 
     @Test
-    void Deep_copy_map_with_object_values() {
+    public void Deep_copy_map_with_object_values() {
         // Arrange
         Map<Integer, TestClass> original = new HashMap<Integer, TestClass>();
         original.put(0, new TestClass("a"));
@@ -126,7 +126,7 @@ class CopyUtilsTest {
     }
 
     @Test
-    void Deep_copy_matrix_of_strings() {
+    public void Deep_copy_matrix_of_strings() {
         // Arrange
         String[][] original = {{"a", "b"}, {"c", "d"}};
         String[][] shallowCopy = original;

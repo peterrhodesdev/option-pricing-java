@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link #NumberUtils}.
  */
-class NumberUtilsTest {
+public class NumberUtilsTest {
 
     @Test
-    void Null_precision_type_should_throw() {
+    public void Null_precision_type_should_throw() {
         // Arrange
         Integer digits = 1;
         PrecisionType precisionType = null;
@@ -29,7 +29,7 @@ class NumberUtilsTest {
     }
 
     @Test
-    void Precision_type_isnt_unchanged_with_invalid_digits_should_throw() {
+    public void Precision_type_isnt_unchanged_with_invalid_digits_should_throw() {
         // Arrange
         Integer digitsNull = null;
         Integer digitsLessThanZero = null;
@@ -51,7 +51,7 @@ class NumberUtilsTest {
     }
 
     @Test
-    void Precision_type_unchanged_shouldnt_change_number() {
+    public void Precision_type_unchanged_shouldnt_change_number() {
         // Arrange
         Integer digits = null;
         PrecisionType precisionType = PrecisionType.UNCHANGED;
@@ -69,7 +69,7 @@ class NumberUtilsTest {
     }
 
     @Test
-    void Rounding_algorithm_is_half_up() {
+    public void Rounding_algorithm_is_half_up() {
         // Arrange
         Integer digits = 0;
         Number[] numbers = { 1.5, -1.5 };
@@ -92,7 +92,7 @@ class NumberUtilsTest {
     }
 
     @Test
-    void Two_decimal_places() {
+    public void Two_decimal_places() {
         // Arrange
         Integer digits = 2;
         PrecisionType precisionType = PrecisionType.DECIMAL_PLACES;
@@ -110,7 +110,7 @@ class NumberUtilsTest {
     }
 
     @Test
-    void Two_significant_figures() {
+    public void Two_significant_figures() {
         // Arrange
         Integer digits = 2;
         PrecisionType precisionType = PrecisionType.SIGNIFICANT_FIGURES;

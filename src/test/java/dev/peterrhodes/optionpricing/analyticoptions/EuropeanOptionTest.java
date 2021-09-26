@@ -19,10 +19,10 @@ import org.junit.jupiter.api.Test;
  * </ul>
  */
 @SuppressWarnings("checkstyle:multiplevariabledeclarations")
-class EuropeanOptionTest {
+public class EuropeanOptionTest {
 
     @Test
-    void Invalid_argument_values_should_throw_IllegalArgumentException() {
+    public void Invalid_argument_values_should_throw_IllegalArgumentException() {
         // Arrange
         double S = 100.0, K = 100.0, τ = 1.0, σ = 0.25, r = 0.1, q = 0.05;
         Class exClass = IllegalArgumentException.class;
@@ -65,7 +65,7 @@ class EuropeanOptionTest {
      * Hull SSM (2014): page 166, Problem 15.13.
      */
     @Test
-    void Price_for_call_with_no_dividend_HullSsm2014P1513() {
+    public void Price_for_call_with_no_dividend_HullSsm2014P1513() {
         // Arrange
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
         call.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
@@ -92,7 +92,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 360, section 15.9, Example 15.6.
      */
     @Test
-    void Price_for_put_with_no_dividend_Hull2014Ex156() {
+    public void Price_for_put_with_no_dividend_Hull2014Ex156() {
         // Arrange
         EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
         put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
@@ -127,7 +127,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 427, section 19.4, Example 19.1.
      */
     @Test
-    void Delta_for_call_with_no_dividend_Hull2014Ex191() {
+    public void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
@@ -154,7 +154,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 445, section 19.13, Example 19.9.
      */
     @Test
-    void Delta_for_put_with_dividend_Hull2014Ex199() {
+    public void Delta_for_put_with_dividend_Hull2014Ex199() {
         // Arrange
         EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
         put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
@@ -185,7 +185,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 436, section 19.6, Example 19.4.
      */
     @Test
-    void Gamma_for_option_with_no_dividend_Hull2014Ex194() {
+    public void Gamma_for_option_with_no_dividend_Hull2014Ex194() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
@@ -223,7 +223,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 438, section 19.8, Example 19.6.
      */
     @Test
-    void Vega_for_option_with_no_dividend_Hull2014Ex196() {
+    public void Vega_for_option_with_no_dividend_Hull2014Ex196() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
@@ -261,7 +261,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 431, section 19.5, Example 19.2.
      */
     @Test
-    void Theta_for_call_with_no_dividend_Hull2014Ex192() {
+    public void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
@@ -297,7 +297,7 @@ class EuropeanOptionTest {
      * Hull (2014): page 439, section 19.9, Example 19.7.
      */
     @Test
-    void Rho_for_call_with_no_dividend_Hull2014Ex197() {
+    public void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
@@ -331,7 +331,7 @@ class EuropeanOptionTest {
      */
     @Disabled("Likely rounding issue due to the time being given as a fraction. Confirm the results with another source. d₁: book = 0.5444 calc = 0.5445, N(d₁): book = 0.6782 calc = 0.6783")
     @Test
-    void Price_for_call_with_dividend_Hull2014Ex171() {
+    public void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
         EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
         call.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);

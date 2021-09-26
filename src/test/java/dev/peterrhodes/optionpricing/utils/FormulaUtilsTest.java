@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link #FormulaUtils}.
  */
-class FormulaUtilsTest {
+public class FormulaUtilsTest {
 
     //region substitute tests
     //----------------------------------------------------------------------
 
     @Test
-    void Empty_equation_should_throw() {
+    public void Empty_equation_should_throw() {
         // Arrange
         String equation = "";
         EquationInput[] values = { new EquationInput.Builder("x").withNumberValue(0).build() };
@@ -32,7 +32,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Empty_values_should_throw() {
+    public void Empty_values_should_throw() {
         // Arrange
         String equation = "x";
         EquationInput[] values = {};
@@ -45,7 +45,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substituting_with_unmatched_input_shouldnt_change_equation() {
+    public void Substituting_with_unmatched_input_shouldnt_change_equation() {
         // Arrange
         String equation = "x";
         EquationInput[] values = { new EquationInput.Builder("y").withNumberValue(1.23).build() };
@@ -58,7 +58,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substitution_shouldnt_match_substrings() {
+    public void Substitution_shouldnt_match_substrings() {
         // Arrange
         String equation = "xx ax xa 2x x2 x_ _x x_x";
         EquationInput[] values = { new EquationInput.Builder("x").withNumberValue(1.23).build() };
@@ -71,7 +71,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substituting_multiple_values() {
+    public void Substituting_multiple_values() {
         // Arrange
         String equation = "a 2 ab (abc) [d] {de} def^2 2^a ab+abc-d=de def";
         EquationInput[] values = {
@@ -91,7 +91,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substituting_a_latex_command() {
+    public void Substituting_a_latex_command() {
         // Arrange
         String equation = "\\sigma 2 \\sigma (\\sigma) [\\sigma] {\\sigma} \\sigma^2 2^\\sigma \\sigma+\\sigma-\\sigma=\\sigma \\sigma";
         EquationInput[] values = { new EquationInput.Builder("\\sigma").withNumberValue(1.23).build() };
@@ -104,7 +104,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substitution_with_special_characters() {
+    public void Substitution_with_special_characters() {
         // Arrange
         String equation = "f(a) \\left( b \\right) \\frac{c}{d} e+f-g^h=i";
         EquationInput[] values = {
@@ -122,7 +122,7 @@ class FormulaUtilsTest {
     }
 
     @Test
-    void Substituting_with_brackets() {
+    public void Substituting_with_brackets() {
         // Arrange
         String equation = "a b c";
         EquationInput[] values = {
@@ -145,7 +145,7 @@ class FormulaUtilsTest {
     //----------------------------------------------------------------------
 
     @Test
-    void Empty_formula_should_throw() {
+    public void Empty_formula_should_throw() {
         // Arrange
         String[] formula = {};
         EquationInput[] values = {};
@@ -168,7 +168,7 @@ class FormulaUtilsTest {
 
     @Disabled("Unlikely scenario, determine whether needs to be fixed")
     @Test
-    void Latex_command_text_key_shouldnt_substitute_for_latex_command() {
+    public void Latex_command_text_key_shouldnt_substitute_for_latex_command() {
         // Arrange
         String equation = "\\x \\x \\x";
         EquationInput[] values = { new EquationInput.Builder("x").withNumberValue(1.23).build() };
@@ -182,7 +182,7 @@ class FormulaUtilsTest {
 
     @Disabled("Not intending to support alpha substitution, numeric substitution doesn't match intended usage")
     @Test
-    void Values_shouldnt_override_each_other() {
+    public void Values_shouldnt_override_each_other() {
         // Arrange
         String alphaEquation = "x + y";
         EquationInput[] alphaValues = {

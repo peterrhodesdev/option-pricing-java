@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
  * </ul>
  */
 @SuppressWarnings("checkstyle:multiplevariabledeclarations")
-class CoxRossRubinsteinPricerTest {
+public class CoxRossRubinsteinPricerTest {
 
     //region throws IllegalArgumentException tests
     //----------------------------------------------------------------------
 
     @Test
-    void Zero_time_steps_should_throw() {
+    public void Zero_time_steps_should_throw() {
         // Arrange
         // option: S, K, τ, σ, r, q
         Option option = new OptionBuilder(50, 52, 2, 0.3, 0.05, 0)
@@ -55,7 +55,7 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 314, section 13.11, Figure 13.12.
      */
     @Test
-    void American_call_calculation_Hull2014Fig1312() {
+    public void American_call_calculation_Hull2014Fig1312() {
         // Arrange
         Option option = new OptionBuilder(0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07)
             .americanStyle()
@@ -94,7 +94,7 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 142, Problem 13.17.
      */
     @Test
-    void American_put_calculation_HullSsm2014P1317() {
+    public void American_put_calculation_HullSsm2014P1317() {
         // Arrange
         Option option = new OptionBuilder(1500, 1480, 1, 0.18, 0.04, 0.025)
             .americanStyle()
@@ -125,7 +125,7 @@ class CoxRossRubinsteinPricerTest {
      * Hull (2014): page 313, section 13.11, Figure 13.11.
      */
     @Test
-    void European_call_calculation_Hull2014Fig1311() {
+    public void European_call_calculation_Hull2014Fig1311() {
         // Arrange
         Option option = new OptionBuilder(810, 800, 0.5, 0.2, 0.05, 0.02)
             .europeanStyle()
@@ -159,7 +159,7 @@ class CoxRossRubinsteinPricerTest {
      * Hull SSM (2014): page 144, Problem 13.19.
      */
     @Test
-    void European_put_calculation_HullSsm2014P1319() {
+    public void European_put_calculation_HullSsm2014P1319() {
         // Arrange
         Option option = new OptionBuilder(140, 150, 0.5, 0.25, 0.04, 0)
             .europeanStyle()

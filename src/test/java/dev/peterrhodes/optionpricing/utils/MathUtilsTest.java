@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link #MathUtils}.
  */
-class MathUtilsTest {
+public class MathUtilsTest {
 
     @Test
-    void Factorial_less_than_zero_should_throw() {
+    public void Factorial_less_than_zero_should_throw() {
         // Arrange
         int n = -1;
 
@@ -28,7 +28,7 @@ class MathUtilsTest {
     }
 
     @Test
-    void Factorial() {
+    public void Factorial() {
         // Arrange
         int[] nValues = { 0, 1, 2, 3, 4, 10, 20, 21, 22 };
 
@@ -49,7 +49,7 @@ class MathUtilsTest {
     }
 
     @Test
-    void Erf() {
+    public void Erf() {
         // Arrange
         double[] xValues = {
             0,

@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link #LatexUtils}.
  */
-class LatexUtilsTest {
+public class LatexUtilsTest {
 
     @Test
-    void Fraction() {
+    public void Fraction() {
         // Arrange
         String[][] numeratorDenominators = {
             new String[] { "1", "2" },
@@ -39,7 +39,7 @@ class LatexUtilsTest {
     }
 
     @Test
-    void Roman_font_style() {
+    public void Roman_font_style() {
         // Arrange
         String[] lettersArr = { "1", "1.23", "a", "abc" };
 
@@ -60,7 +60,7 @@ class LatexUtilsTest {
     }
 
     @Test
-    void Square_root() {
+    public void Square_root() {
         // Arrange
         String[] radicands = { "1", "1.23", "a", "abc" };
 
@@ -81,7 +81,7 @@ class LatexUtilsTest {
     }
 
     @Test
-    void Sub_formula() {
+    public void Sub_formula() {
         // Arrange
         String value = "x + y";
         LatexDelimeterType[] latexDelimieterTypes = {
@@ -108,7 +108,7 @@ class LatexUtilsTest {
     }
 
     @Test
-    void Subscript() {
+    public void Subscript() {
         // Arrange
         String[][] baseExps = {
             new String[] { "1", "2" },
@@ -134,7 +134,7 @@ class LatexUtilsTest {
     }
 
     @Test
-    void Superscript() {
+    public void Superscript() {
         // Arrange
         String[][] baseExps = {
             new String[] { "1", "2" },
