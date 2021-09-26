@@ -33,7 +33,7 @@ class MathUtilsTest {
         int[] nValues = { 0, 1, 2, 3, 4, 10, 20, 21, 22 };
 
         // Act
-        List<BigInteger> results = new ArrayList();
+        List<BigInteger> results = new ArrayList<BigInteger>();
         for (int n : nValues) {
             results.add(MathUtils.factorial(n));
         }
@@ -61,7 +61,7 @@ class MathUtilsTest {
         };
 
         // Act
-        List<Double> results = new ArrayList();
+        List<Double> results = new ArrayList<Double>();
         for (double x : xValues) {
             results.add(MathUtils.erf(x));
         }

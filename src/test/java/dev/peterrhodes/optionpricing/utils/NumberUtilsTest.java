@@ -58,7 +58,7 @@ class NumberUtilsTest {
         Number[] numbers = { 10, 1, 1.0, 1.4, 1.5, 1.6, -10, -1, -1.0, -1.4, -1.5, -1.6 };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (Number number : numbers) {
             result.add(NumberUtils.precision(number, digits, precisionType));
         }
@@ -75,12 +75,12 @@ class NumberUtilsTest {
         Number[] numbers = { 1.5, -1.5 };
 
         // Act
-        List<String> resultDecimalPlaces = new ArrayList();
+        List<String> resultDecimalPlaces = new ArrayList<String>();
         for (Number number : numbers) {
             resultDecimalPlaces.add(NumberUtils.precision(number, digits, PrecisionType.DECIMAL_PLACES));
         }
 
-        List<String> resultSignificantFigures = new ArrayList();
+        List<String> resultSignificantFigures = new ArrayList<String>();
         for (Number number : numbers) {
             resultSignificantFigures.add(NumberUtils.precision(number, digits, PrecisionType.SIGNIFICANT_FIGURES));
         }
@@ -99,7 +99,7 @@ class NumberUtilsTest {
         Number[] numbers = { 46, 4.6, 0.46, 0.046, 0.0046 };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (Number number : numbers) {
             result.add(NumberUtils.precision(number, digits, precisionType));
         }
@@ -117,7 +117,7 @@ class NumberUtilsTest {
         Number[] numbers = { 0, 0.1, 0.12, 0.124, 0.126, 1, 1.2, 1.20, 1.24, 1.26, 12, 12.0, 12.4, 12.6, 120, 124, 126, 123.456 };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (Number number : numbers) {
             result.add(NumberUtils.precision(number, digits, precisionType));
         }

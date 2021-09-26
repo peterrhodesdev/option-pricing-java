@@ -16,12 +16,13 @@ public interface CopyUtils {
     /**
      * Generic deep copy method for an array of objects that implement {@link dev.peterrhodes.optionpricing.common.PublicCloneable}.
      */
+    @SuppressWarnings("unchecked")
     static <T extends PublicCloneable<T>> T[] deepCopy(T[] arr, Class<T> c) {
         if (arr == null) {
             return null;
         }
 
-        List<T> list = new ArrayList();
+        List<T> list = new ArrayList<T>();
         for (T element : arr) {
             list.add(element.clone());
         }
@@ -38,7 +39,7 @@ public interface CopyUtils {
             return null;
         }
 
-        List<T> deepCopy = new ArrayList();
+        List<T> deepCopy = new ArrayList<T>();
         for (T element : list) {
             deepCopy.add(element.clone());
         }

@@ -23,7 +23,7 @@ class LatexUtilsTest {
         };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (String[] numeratorDenominator : numeratorDenominators) {
             result.add(LatexUtils.fraction(numeratorDenominator[0], numeratorDenominator[1]));
         }
@@ -44,7 +44,7 @@ class LatexUtilsTest {
         String[] lettersArr = { "1", "1.23", "a", "abc" };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (String letters : lettersArr) {
             result.add(LatexUtils.romanFontStyle(letters));
         }
@@ -65,7 +65,7 @@ class LatexUtilsTest {
         String[] radicands = { "1", "1.23", "a", "abc" };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (String radicand : radicands) {
             result.add(LatexUtils.squareRoot(radicand));
         }
@@ -92,7 +92,7 @@ class LatexUtilsTest {
         };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (LatexDelimeterType latexDelimieterType : latexDelimieterTypes) {
             result.add(LatexUtils.subFormula(value, latexDelimieterType));
         }
@@ -118,7 +118,7 @@ class LatexUtilsTest {
         };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (String[] baseExp : baseExps) {
             result.add(LatexUtils.subscript(baseExp[0], baseExp[1]));
         }
@@ -144,7 +144,7 @@ class LatexUtilsTest {
         };
 
         // Act
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (String[] baseExp : baseExps) {
             result.add(LatexUtils.superscript(baseExp[0], baseExp[1]));
         }

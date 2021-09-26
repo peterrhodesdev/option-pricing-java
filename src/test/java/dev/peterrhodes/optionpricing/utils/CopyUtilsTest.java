@@ -32,7 +32,7 @@ class CopyUtilsTest {
     @Test
     void Deep_copy_empty_list_should_return_empty_list() {
         // Arrange
-        List<TestClass> original = new ArrayList();
+        List<TestClass> original = new ArrayList<TestClass>();
 
         // Act
         List<TestClass> deepCopy = CopyUtils.deepCopy(original);
@@ -45,7 +45,7 @@ class CopyUtilsTest {
     @Test
     void Deep_copy_list_of_objects() {
         // Arrange
-        List<TestClass> original = new ArrayList();
+        List<TestClass> original = new ArrayList<TestClass>();
         original.add(new TestClass("a"));
         original.add(new TestClass("b"));
         List<TestClass> shallowCopy = original;
@@ -111,7 +111,7 @@ class CopyUtilsTest {
     @Test
     void Deep_copy_map_with_object_values() {
         // Arrange
-        Map<Integer, TestClass> original = new HashMap();
+        Map<Integer, TestClass> original = new HashMap<Integer, TestClass>();
         original.put(0, new TestClass("a"));
         original.put(1, new TestClass("b"));
         Map<Integer, TestClass> shallowCopy = original;

@@ -1,7 +1,6 @@
 package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
-import dev.peterrhodes.optionpricing.common.NotYetImplementedException;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
@@ -30,7 +29,7 @@ public interface Contract {
             case AMERICAN:
                 return Math.max(0d, C̟P̠ * (S_t - K));
             default:
-                throw new NotYetImplementedException();
+                throw new IllegalStateException(this.optionStyle().toString() + " enum value not handled");
         }
     }
 

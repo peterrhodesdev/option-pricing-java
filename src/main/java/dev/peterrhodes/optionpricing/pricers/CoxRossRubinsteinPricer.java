@@ -59,7 +59,7 @@ public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
         double d = modelParameters[2];
         double p = modelParameters[3];
 
-        List<LatticeNode> nodes = new ArrayList();
+        List<LatticeNode> nodes = new ArrayList<LatticeNode>();
 
         // Create the tree
         for (int i = 0; i <= timeSteps; i++) { // ith time step: time = iΔt (i = 0, 1, ..., time steps)

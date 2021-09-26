@@ -85,19 +85,8 @@
           <target>${java.version}</target>
           <encoding>UTF-8</encoding>
           <compilerArgs>
-            <arg>-XDcompilePolicy=simple</arg>
-            <arg>-Xplugin:ErrorProne</arg>
+            <arg>-Xlint:unchecked</arg>
           </compilerArgs>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>com.google.errorprone</groupId>
-              <artifactId>error_prone_core</artifactId>
-              <version>2.9.0</version>
-            </path>
-          </annotationProcessorPaths>
-          <argLine>
-            --illegal-access=permit
-          </argLine>
         </configuration>
       </plugin>
       <plugin>
