@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import lombok.NonNull;
+import dev.peterrhodes.optionpricing.utils.ValidationUtils;
 
 /**
  * Builds a customizable {@link Option}.
@@ -38,17 +38,24 @@ public final class OptionBuilder {
      * @throws IllegalArgumentException if {@code initialSpotPrice}, {@code strikePrice}, {@code timeToMaturity}, or {@code volatility} are not greater than zero
      */
     public OptionBuilder(
-        @NonNull Number initialSpotPrice,
-        @NonNull Number strikePrice,
-        @NonNull Number timeToMaturity,
-        @NonNull Number volatility,
-        @NonNull Number riskFreeRate,
-        @NonNull Number dividendYield
+        Number initialSpotPrice,
+        Number strikePrice,
+        Number timeToMaturity,
+        Number volatility,
+        Number riskFreeRate,
+        Number dividendYield
     ) throws NullPointerException, IllegalArgumentException {
-        this.checkGreaterThanZero(initialSpotPrice, "initialSpotPrice");
-        this.checkGreaterThanZero(strikePrice, "strikePrice");
-        this.checkGreaterThanZero(timeToMaturity, "timeToMaturity");
-        this.checkGreaterThanZero(volatility, "volatility");
+        ValidationUtils.checkNotNull(initialSpotPrice, "initialSpotPrice");
+        ValidationUtils.checkNotNull(strikePrice, "strikePrice");
+        ValidationUtils.checkNotNull(timeToMaturity, "timeToMaturity");
+        ValidationUtils.checkNotNull(volatility, "volatility");
+        ValidationUtils.checkNotNull(riskFreeRate, "riskFreeRate");
+        ValidationUtils.checkNotNull(dividendYield, "dividendYield");
+
+        ValidationUtils.checkGreaterThanZero(initialSpotPrice, "initialSpotPrice");
+        ValidationUtils.checkGreaterThanZero(strikePrice, "strikePrice");
+        ValidationUtils.checkGreaterThanZero(timeToMaturity, "timeToMaturity");
+        ValidationUtils.checkGreaterThanZero(volatility, "volatility");
 
         this.contract = new ContractImpl(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
@@ -104,21 +111,12 @@ public final class OptionBuilder {
      * @throws IllegalStateException if the type (call or put) and/or the style (European, American, ...) haven't been configured
      */
     public Option build() throws IllegalStateException {
-        if (this.contract.getOptionStyle() == null) {
+        if (this.contract.optionStyle() == null) {
             throw new IllegalStateException("option style not configured");
         }
-        if (this.contract.getOptionType() == null) {
+        if (this.contract.optionType() == null) {
             throw new IllegalStateException("option type not configured");
         }
         return new OptionImpl(this.contract);
-    }
-
-    //region private methods
-    //----------------------------------------------------------------------
-
-    private static void checkGreaterThanZero(Number value, String name) throws IllegalArgumentException {
-        if (value.doubleValue() <= 0) {
-            throw new IllegalArgumentException(name + " must be greater than zero");
-        }
     }
 }

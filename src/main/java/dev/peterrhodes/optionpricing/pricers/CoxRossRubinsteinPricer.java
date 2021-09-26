@@ -4,10 +4,10 @@ import dev.peterrhodes.optionpricing.Contract;
 import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
 import dev.peterrhodes.optionpricing.common.LatticeNode;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
+import dev.peterrhodes.optionpricing.utils.ValidationUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import lombok.NonNull;
 
 /**
  * Binomial options pricing model described by <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a>.
@@ -32,10 +32,9 @@ public class CoxRossRubinsteinPricer implements Pricer<CoxRossRubinsteinModel> {
      * @throws NullPointerException if {@code contract} is null
      * @throws IllegalArgumentException if {@code timeSteps} is not greater than zero
      */
-    public CoxRossRubinsteinPricer(@NonNull Contract contract, int timeSteps) throws NullPointerException, IllegalArgumentException {
-        if (timeSteps <= 0) {
-            throw new IllegalArgumentException("timeSteps must be greater than zero");
-        }
+    public CoxRossRubinsteinPricer(Contract contract, int timeSteps) throws NullPointerException, IllegalArgumentException {
+        ValidationUtils.checkNotNull(contract, "contract");
+        ValidationUtils.checkGreaterThanZero(timeSteps, "timeSteps");
 
         this.contract = contract;
         this.timeSteps = timeSteps;

@@ -9,7 +9,7 @@ import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.utils.FormulaUtils;
 import dev.peterrhodes.optionpricing.utils.LatexUtils;
 import dev.peterrhodes.optionpricing.utils.NumberUtils;
-import lombok.NonNull;
+import dev.peterrhodes.optionpricing.utils.ValidationUtils;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
@@ -63,7 +63,9 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
     }
 
     @Override
-    public final void setCalculationStepPrecision(int precisionDigits, @NonNull PrecisionType precisionType) throws NullPointerException, IllegalArgumentException {
+    public final void setCalculationStepPrecision(int precisionDigits, PrecisionType precisionType) throws NullPointerException, IllegalArgumentException {
+        ValidationUtils.checkNotNull(precisionType, "precisionType");
+        //ValidationUtils.checkGreaterThanZero(precisionDigits, "precisionDigits");
         if (precisionDigits < 0) {
             throw new IllegalArgumentException("precisionDigits must be greater than or equal to zero");
         }

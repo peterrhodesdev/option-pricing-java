@@ -22,9 +22,6 @@ public final class EuropeanOption extends AbstractAnalyticOption {
         super(contract);
     }
 
-    //----------------------------------------------------------------------
-    //endregion constructors
-
     //region d₁, d₂
     //----------------------------------------------------------------------
 

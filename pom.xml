@@ -50,7 +50,6 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <junit-platform.version>5.7.2</junit-platform.version>
-    <lombok.version>1.18.20</lombok.version>
   </properties>
 
   <dependencies>
@@ -58,20 +57,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
       <version>3.6.1</version>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-javadoc-plugin</artifactId>
-      <version>3.3.1</version>
-    </dependency>-->
-
-    <!-- scope provided -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- scope test -->
@@ -115,12 +100,10 @@
               <artifactId>error_prone_core</artifactId>
               <version>2.9.0</version>
             </path>
-            <path>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-              <version>${lombok.version}</version>
-            </path>
           </annotationProcessorPaths>
+          <argLine>
+            --illegal-access=permit
+          </argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -149,25 +132,7 @@
         <version>3.3.1</version>
         <configuration>
           <defaultVersion>${project.version}</defaultVersion>
-          <sourcepath>target/generated-sources/delombok</sourcepath>
           <show>public</show>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok-maven-plugin</artifactId>
-        <version>${lombok.version}.0</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>delombok</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <addOutputDirectory>false</addOutputDirectory>
-          <sourceDirectory>src/main/java</sourceDirectory>
         </configuration>
       </plugin>
 
@@ -213,6 +178,7 @@
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <!--<consoleOutput>true</consoleOutput>-->
           <encoding>UTF-8</encoding>
+          <excludes>**/module-info.java</excludes>
         </configuration>
       </plugin>
 

@@ -1,7 +1,6 @@
 package dev.peterrhodes.optionpricing.utils;
 
 import dev.peterrhodes.optionpricing.enums.PrecisionType;
-import lombok.NonNull;
 
 /**
  * Miscellaneous utility methods for the {@link java.lang.Number} class.
@@ -18,7 +17,7 @@ public interface NumberUtils {
      * @throws NullPointerException if the {@code precisionType} is null
      * @throws IllegalStateException if the {@code precisionType} isn't {@link PrecisionType#UNCHANGED} and the {@code digits} is null or less than zero.
      */
-    static String precision(Number number, Integer digits, @NonNull PrecisionType precisionType) throws NullPointerException, IllegalStateException {
+    static String precision(Number number, Integer digits, PrecisionType precisionType) throws NullPointerException, IllegalStateException {
         precisionArgumentsCheck(digits, precisionType);
 
         switch (precisionType) {
@@ -32,7 +31,8 @@ public interface NumberUtils {
         }
     }
 
-    private static void precisionArgumentsCheck(Integer digits, PrecisionType precisionType) throws NullPointerException {
+    private static void precisionArgumentsCheck(Integer digits, PrecisionType precisionType) throws NullPointerException, IllegalStateException {
+        ValidationUtils.checkNotNull(precisionType, "precisionType");
         if (precisionType != PrecisionType.UNCHANGED && (digits == null || digits < 0)) {
             throw new IllegalStateException("if {@code precisionType} isn't {@link PrecisionType#UNCHANGED} then {@code digits} can't be null or less than zero");
         }

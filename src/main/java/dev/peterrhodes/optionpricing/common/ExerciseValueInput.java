@@ -1,11 +1,8 @@
 package dev.peterrhodes.optionpricing.common;
 
-import lombok.Getter;
-
 /**
  * Parameters that are required to determine the exercise value of an option.
  */
-@Getter
 public class ExerciseValueInput {
 
     private double time;
@@ -43,4 +40,28 @@ public class ExerciseValueInput {
             return new ExerciseValueInput(this);
         }
     }
+
+    //region getters
+    //----------------------------------------------------------------------
+
+    /**
+     * Get time.
+     *
+     * @return time
+     */
+    public double getTime() {
+        return this.time;
+    }
+
+    /**
+     * Get spotPrice.
+     *
+     * @return spotPrice
+     */
+    public double getSpotPrice() {
+        return this.spotPrice;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion getters
 }

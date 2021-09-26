@@ -239,9 +239,9 @@ class CoxRossRubinsteinPricerTest {
             assertThat(resultNode.getV())
                 .as(String.format("node (%d, %d) V", i, j))
                 .isEqualTo(expectedNode.getV(), withPrecision(outputPrecision));
-            assertThat(resultNode.isExercised())
+            assertThat(resultNode.getExercised())
                 .as(String.format("node (%d, %d) exercised", i, j))
-                .isEqualTo(expectedNode.isExercised());
+                .isEqualTo(expectedNode.getExercised());
         }
     }
 }

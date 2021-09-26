@@ -3,7 +3,8 @@ package dev.peterrhodes.optionpricing;
 import dev.peterrhodes.optionpricing.analyticoptions.EuropeanOption;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import lombok.NonNull;
+import dev.peterrhodes.optionpricing.utils.ValidationUtils;
+import java.util.Map;
 
 /**
  * Factory for options where the price has been analytically determined, see {@link AnalyticOption}.
@@ -27,12 +28,12 @@ public interface AnalyticOptionFactory {
      * @throws IllegalArgumentException if {@code initialSpotPrice}, {@code strikePrice}, {@code timeToMaturity}, or {@code volatility} are not greater than zero
      */
     static AnalyticOption createEuropeanCall(
-        @NonNull Number initialSpotPrice,
-        @NonNull Number strikePrice,
-        @NonNull Number timeToMaturity,
-        @NonNull Number volatility,
-        @NonNull Number riskFreeRate,
-        @NonNull Number dividendYield
+        Number initialSpotPrice,
+        Number strikePrice,
+        Number timeToMaturity,
+        Number volatility,
+        Number riskFreeRate,
+        Number dividendYield
     ) throws NullPointerException, IllegalArgumentException {
         return createEuropean(OptionType.CALL, initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
@@ -51,21 +52,31 @@ public interface AnalyticOptionFactory {
      * @throws IllegalArgumentException if {@code initialSpotPrice}, {@code strikePrice}, {@code timeToMaturity}, or {@code volatility} are not greater than zero
      */
     static AnalyticOption createEuropeanPut(
-        @NonNull Number initialSpotPrice,
-        @NonNull Number strikePrice,
-        @NonNull Number timeToMaturity,
-        @NonNull Number volatility,
-        @NonNull Number riskFreeRate,
-        @NonNull Number dividendYield
+        Number initialSpotPrice,
+        Number strikePrice,
+        Number timeToMaturity,
+        Number volatility,
+        Number riskFreeRate,
+        Number dividendYield
     ) throws NullPointerException, IllegalArgumentException {
         return createEuropean(OptionType.PUT, initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     private static AnalyticOption createEuropean(OptionType optionType, Number initialSpotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) {
-        checkGreaterThanZero(initialSpotPrice, "initialSpotPrice");
-        checkGreaterThanZero(strikePrice, "strikePrice");
-        checkGreaterThanZero(timeToMaturity, "timeToMaturity");
-        checkGreaterThanZero(volatility, "volatility");
+        ValidationUtils.checkNotNull(Map.ofEntries(
+            Map.entry("optionType", optionType),
+            Map.entry("initialSpotPrice", initialSpotPrice),
+            Map.entry("strikePrice", strikePrice),
+            Map.entry("timeToMaturity", timeToMaturity),
+            Map.entry("volatility", volatility),
+            Map.entry("riskFreeRate", riskFreeRate),
+            Map.entry("dividendYield", dividendYield)
+        ));
+
+        ValidationUtils.checkGreaterThanZero(initialSpotPrice, "initialSpotPrice");
+        ValidationUtils.checkGreaterThanZero(strikePrice, "strikePrice");
+        ValidationUtils.checkGreaterThanZero(timeToMaturity, "timeToMaturity");
+        ValidationUtils.checkGreaterThanZero(volatility, "volatility");
 
         ContractImpl contract = new ContractImpl(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
         contract.setOptionStyle(OptionStyle.EUROPEAN);
@@ -76,13 +87,4 @@ public interface AnalyticOptionFactory {
 
     //----------------------------------------------------------------------
     //endregion European
-
-    //region private methods
-    //----------------------------------------------------------------------
-
-    private static void checkGreaterThanZero(Number value, String name) throws IllegalArgumentException {
-        if (value.doubleValue() <= 0) {
-            throw new IllegalArgumentException(name + " must be greater than zero");
-        }
-    }
 }

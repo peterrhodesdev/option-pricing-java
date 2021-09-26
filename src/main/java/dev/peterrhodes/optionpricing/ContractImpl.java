@@ -2,14 +2,10 @@ package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Implementation of {@link Contract}.
  */
-@Getter
-@Setter
 class ContractImpl implements Contract {
 
     private OptionStyle optionStyle;
@@ -75,4 +71,24 @@ class ContractImpl implements Contract {
     public Number dividendYield() {
         return this.dividendYield;
     }
+
+    //region setters
+    //----------------------------------------------------------------------
+
+    /**
+     * Set optionStyle.
+     */
+    public void setOptionStyle(OptionStyle optionStyle) {
+        this.optionStyle = optionStyle;
+    }
+
+    /**
+     * Set optionType.
+     */
+    public void setOptionType(OptionType optionType) {
+        this.optionType = optionType;
+    }
+
+    //----------------------------------------------------------------------
+    //endregion setters
 }
