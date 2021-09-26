@@ -8,9 +8,9 @@ import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.utils.FormulaUtils;
 import dev.peterrhodes.optionpricing.utils.LatexUtils;
+import dev.peterrhodes.optionpricing.utils.MathUtils;
 import dev.peterrhodes.optionpricing.utils.NumberUtils;
 import dev.peterrhodes.optionpricing.utils.ValidationUtils;
-import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
  * Base class for concrete option classes that have an analytical solution, e.g.&nbsp;vanilla European options.
@@ -31,7 +31,6 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
     protected double C̟P̠; // +1 for call, -1 for put
     protected double C̠P̟; // -1 for call, +1 for put
 
-    private NormalDistribution normalDistribution;
     private Contract contract;
 
     /**
@@ -43,7 +42,6 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
         // defaults
         this.calculationStepPrecisionDigits = 3;
         this.calculationStepPrecisionType = PrecisionType.SIGNIFICANT_FIGURES;
-        this.normalDistribution = new NormalDistribution();
 
         // math notation
         this.isCall = contract.optionType() == OptionType.CALL;
@@ -77,26 +75,6 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
     //----------------------------------------------------------------------
 
     /**
-     * Returns the standard normal cumulative distribution function (CDF) evaluated at {@code x}.
-     *
-     * @param x point to evaluate the standard normal CDF at
-     * @return standard normal CDF at {@code x}
-     */
-    public final double standardNormalCdf(double x) {
-        return this.normalDistribution.cumulativeProbability(x);
-    }
-
-    /**
-     * Returns the standard normal probability density function (PDF) evaluated at {@code x}.
-     *
-     * @param x point to evaluate the standard normal PDF at
-     * @return standard normal PDF at {@code x}
-     */
-    public final double standardNormalPdf(double x) {
-        return this.normalDistribution.density(x);
-    }
-
-    /**
      * Returns the details of a standard normal cumulative distribution function calculation step.
      * <p>The parts of the calculation step are:</p>
      * <ol start="0">
@@ -107,7 +85,7 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
      */
     public final String[] standardNormalCdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalCdfLatex(variableLatex).trim();
-        double answer = this.standardNormalCdf(variableValue.doubleValue());
+        double answer = this.N(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
             .withNumberValue(variableValue)
             .withPrecision(this.calculationStepPrecisionDigits, this.calculationStepPrecisionType)
@@ -131,7 +109,7 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
      */
     public final String[] standardNormalPdfCalculationStep(String variableLatex, Number variableValue) {
         String formula = standardNormalPdfLatex(variableLatex).trim();
-        double answer = this.standardNormalPdf(variableValue.doubleValue());
+        double answer = this.N̕(variableValue.doubleValue());
         EquationInput input = new EquationInput.Builder(variableLatex)
             .withNumberValue(variableValue)
             .withPrecision(this.calculationStepPrecisionDigits, this.calculationStepPrecisionType)
@@ -177,7 +155,7 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
      * Standard normal cumulative distribution function, usually denoted by the capital Greek letter phi 𝚽 .
      */
     protected final double N(double x) {
-        return this.standardNormalCdf(x);
+        return MathUtils.standardNormalCdf(x);
     }
 
     /**
@@ -186,7 +164,7 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
      * TODO: Raise issue with PMD
      */
     protected final double N̕(double x) {
-        return this.standardNormalPdf(x);
+        return MathUtils.standardNormalPdf(x);
     }
 
     protected final String roundCalculationStepValue(double value) {
