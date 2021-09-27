@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.enums;
+package dev.peterrhodes.optionpricing.internal.enums;
 
 /**
  * Types of precision for displaying numbers.

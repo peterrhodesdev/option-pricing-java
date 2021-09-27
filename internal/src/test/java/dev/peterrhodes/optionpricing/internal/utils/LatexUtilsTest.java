@@ -1,8 +1,8 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;

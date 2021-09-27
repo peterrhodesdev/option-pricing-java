@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
 import dev.peterrhodes.optionpricing.AnalyticOptionFactory;
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.AnalyticCalculationModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

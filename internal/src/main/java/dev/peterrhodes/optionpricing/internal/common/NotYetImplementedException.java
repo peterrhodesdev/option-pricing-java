@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.common;
+package dev.peterrhodes.optionpricing.internal.common;
 
 /**
  * Custom exception class used for code that hasn't been implemented yet.

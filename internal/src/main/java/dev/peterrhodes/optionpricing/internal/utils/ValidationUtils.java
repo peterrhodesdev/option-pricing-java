@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
 import java.util.Map;
 

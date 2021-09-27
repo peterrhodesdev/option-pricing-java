@@ -1,10 +1,10 @@
 package dev.peterrhodes.optionpricing.pricers;
 
 import dev.peterrhodes.optionpricing.Contract;
-import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
-import dev.peterrhodes.optionpricing.common.LatticeNode;
+import dev.peterrhodes.optionpricing.internal.common.ExerciseValueInput;
+import dev.peterrhodes.optionpricing.internal.common.LatticeNode;
+import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinsteinModel;
-import dev.peterrhodes.optionpricing.utils.ValidationUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;

@@ -1,10 +1,10 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import dev.peterrhodes.optionpricing.common.EquationInput;
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.common.EquationInput;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;

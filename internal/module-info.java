@@ -1,3 +1,3 @@
 module internal {
-    exports dev.peterrhodes.optionpricing.utils to api;
+    exports dev.peterrhodes.optionpricing.internal to api;
 }

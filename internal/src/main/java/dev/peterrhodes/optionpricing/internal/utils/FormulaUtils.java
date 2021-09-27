@@ -1,6 +1,6 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
-import dev.peterrhodes.optionpricing.common.EquationInput;
+import dev.peterrhodes.optionpricing.internal.common.EquationInput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

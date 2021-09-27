@@ -1,6 +1,6 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
 
 /**
  * Miscellaneous utility methods for the {@link java.lang.Number} class.

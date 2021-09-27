@@ -1,6 +1,6 @@
-package dev.peterrhodes.optionpricing.utils;
+package dev.peterrhodes.optionpricing.internal.utils;
 
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
 
 /**
  * Collection of static constants and methods for building LaTeX strings.&nbsp;For more information see the <a href="https://download.nus.edu.sg/mirror/ctan/info/latex2e-help-texinfo/latex2e.html">LaTeX2e unofficial reference manual</a> or the LaTeX project <a href="https://www.latex-project.org/help/documentation/">documentation</a>:

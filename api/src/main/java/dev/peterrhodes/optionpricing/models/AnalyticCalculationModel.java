@@ -1,6 +1,6 @@
 package dev.peterrhodes.optionpricing.models;
 
-import dev.peterrhodes.optionpricing.utils.CopyUtils;
+import dev.peterrhodes.optionpricing.internal.utils.CopyUtils;
 
 /**
  * Model of an analytic option calculation.

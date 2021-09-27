@@ -1,8 +1,8 @@
 package dev.peterrhodes.optionpricing;
 
-import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.internal.common.ExerciseValueInput;
 
 /**
  * Defines the option contract.

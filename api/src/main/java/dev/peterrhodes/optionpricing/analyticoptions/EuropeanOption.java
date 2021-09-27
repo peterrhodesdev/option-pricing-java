@@ -1,11 +1,11 @@
 package dev.peterrhodes.optionpricing.analyticoptions;
 
 import dev.peterrhodes.optionpricing.Contract;
-import dev.peterrhodes.optionpricing.common.EquationInput;
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.common.EquationInput;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.utils.FormulaUtils;
+import dev.peterrhodes.optionpricing.internal.utils.LatexUtils;
 import dev.peterrhodes.optionpricing.models.AnalyticCalculationModel;
-import dev.peterrhodes.optionpricing.utils.FormulaUtils;
-import dev.peterrhodes.optionpricing.utils.LatexUtils;
 import java.util.Arrays;
 import java.util.stream.Stream;
 

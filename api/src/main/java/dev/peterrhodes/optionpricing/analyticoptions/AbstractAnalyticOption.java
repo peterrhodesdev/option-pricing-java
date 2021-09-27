@@ -2,15 +2,15 @@ package dev.peterrhodes.optionpricing.analyticoptions;
 
 import dev.peterrhodes.optionpricing.AnalyticOption;
 import dev.peterrhodes.optionpricing.Contract;
-import dev.peterrhodes.optionpricing.common.EquationInput;
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
-import dev.peterrhodes.optionpricing.utils.FormulaUtils;
-import dev.peterrhodes.optionpricing.utils.LatexUtils;
-import dev.peterrhodes.optionpricing.utils.MathUtils;
-import dev.peterrhodes.optionpricing.utils.NumberUtils;
-import dev.peterrhodes.optionpricing.utils.ValidationUtils;
+import dev.peterrhodes.optionpricing.internal.common.EquationInput;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.internal.utils.FormulaUtils;
+import dev.peterrhodes.optionpricing.internal.utils.LatexUtils;
+import dev.peterrhodes.optionpricing.internal.utils.MathUtils;
+import dev.peterrhodes.optionpricing.internal.utils.NumberUtils;
+import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 
 /**
  * Base class for concrete option classes that have an analytical solution, e.g.&nbsp;vanilla European options.

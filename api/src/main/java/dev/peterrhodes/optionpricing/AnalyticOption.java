@@ -1,6 +1,6 @@
 package dev.peterrhodes.optionpricing;
 
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.AnalyticCalculationModel;
 
 /**

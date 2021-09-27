@@ -1,8 +1,8 @@
-package dev.peterrhodes.optionpricing.common;
+package dev.peterrhodes.optionpricing.internal.common;
 
-import dev.peterrhodes.optionpricing.enums.LatexDelimeterType;
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
-import dev.peterrhodes.optionpricing.utils.ValidationUtils;
+import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 
 /**
  * Holds the details of an input that is to be substituted into a LaTeX mathemtical expression.

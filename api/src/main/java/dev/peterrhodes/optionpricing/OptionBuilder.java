@@ -2,7 +2,7 @@ package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
-import dev.peterrhodes.optionpricing.utils.ValidationUtils;
+import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 
 /**
  * Builds a customizable {@link Option}.

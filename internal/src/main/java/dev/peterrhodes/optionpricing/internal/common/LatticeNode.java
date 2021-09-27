@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.common;
+package dev.peterrhodes.optionpricing.internal.common;
 
 /**
  * Represents an individual node of a pricing model lattice.
