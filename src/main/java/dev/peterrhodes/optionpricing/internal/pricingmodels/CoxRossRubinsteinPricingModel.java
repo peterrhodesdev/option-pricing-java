@@ -84,11 +84,11 @@ public class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubins
     }
 
     private void setMathNotation(Option option) {
-        this.S_0 = option.contract().initialSpotPrice().doubleValue();
-        this.τ = option.contract().timeToMaturity().doubleValue();
-        this.σ = option.contract().volatility().doubleValue();
-        this.r = option.contract().riskFreeRate().doubleValue();
-        this.q = option.contract().dividendYield().doubleValue();
+        this.S_0 = option.initialSpotPrice().doubleValue();
+        this.τ = option.timeToMaturity().doubleValue();
+        this.σ = option.volatility().doubleValue();
+        this.r = option.riskFreeRate().doubleValue();
+        this.q = option.dividendYield().doubleValue();
     }
 
     private double[] determineModelParameters() {
@@ -157,6 +157,6 @@ public class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubins
     private double calculateExerciseValue(double t_i, double S_ij, Option option) {
         ExerciseValueParameter exerciseValueParameter = new ExerciseValueParameter.Builder(t_i, S_ij)
             .build();
-        return option.contract().exerciseValue(exerciseValueParameter);
+        return option.exerciseValue(exerciseValueParameter);
     }
 }

@@ -1,6 +1,7 @@
 package dev.peterrhodes.optionpricing.internal.analyticoptions;
 
-import dev.peterrhodes.optionpricing.Contract;
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
+import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.internal.common.EquationInput;
 import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.internal.utils.FormulaUtils;
@@ -18,8 +19,8 @@ public final class EuropeanOption extends AbstractAnalyticOption {
     /**
      * Vanilla European option.
      */
-    public EuropeanOption(Contract contract) {
-        super(contract);
+    public EuropeanOption(OptionType optionType, Number initialSpotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) {
+        super(OptionStyle.EUROPEAN, optionType, initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     //region d₁, d₂

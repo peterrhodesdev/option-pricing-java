@@ -1,8 +1,9 @@
 package dev.peterrhodes.optionpricing.internal.analyticoptions;
 
 import dev.peterrhodes.optionpricing.AnalyticOption;
-import dev.peterrhodes.optionpricing.Contract;
+import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.internal.OptionImpl;
 import dev.peterrhodes.optionpricing.internal.common.EquationInput;
 import dev.peterrhodes.optionpricing.internal.enums.LatexDelimeterType;
 import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
@@ -15,7 +16,7 @@ import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 /**
  * Base class for concrete option classes that have an analytical solution, e.g.&nbsp;vanilla European options.
  */
-public abstract class AbstractAnalyticOption implements AnalyticOption {
+public abstract class AbstractAnalyticOption extends OptionImpl implements AnalyticOption {
     
     protected Integer calculationStepPrecisionDigits;
     protected PrecisionType calculationStepPrecisionType;
@@ -31,33 +32,28 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
     protected double C̟P̠; // +1 for call, -1 for put
     protected double C̠P̟; // -1 for call, +1 for put
 
-    private Contract contract;
-
     /**
      * Creates the base class for an analytic option.
      */
-    public AbstractAnalyticOption(Contract contract) {
-        this.contract = contract;
+    public AbstractAnalyticOption(OptionStyle optionStyle, OptionType optionType, Number initialSpotPrice, Number strikePrice, Number timeToMaturity, Number volatility, Number riskFreeRate, Number dividendYield) {
+        super(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
+        this.setOptionStyle(optionStyle);
+        this.setOptionType(optionType);
 
         // defaults
         this.calculationStepPrecisionDigits = 3;
         this.calculationStepPrecisionType = PrecisionType.SIGNIFICANT_FIGURES;
 
         // math notation
-        this.isCall = contract.optionType() == OptionType.CALL;
-        this.S = contract.initialSpotPrice().doubleValue();
-        this.K = contract.strikePrice().doubleValue();
-        this.τ = contract.timeToMaturity().doubleValue();
-        this.σ = contract.volatility().doubleValue();
-        this.r = contract.riskFreeRate().doubleValue();
-        this.q = contract.dividendYield().doubleValue();
-        this.C̟P̠ = contract.optionType() == OptionType.CALL ? 1d : -1d;
+        this.isCall = optionType == OptionType.CALL;
+        this.S = initialSpotPrice.doubleValue();
+        this.K = strikePrice.doubleValue();
+        this.τ = timeToMaturity.doubleValue();
+        this.σ = volatility.doubleValue();
+        this.r = riskFreeRate.doubleValue();
+        this.q = dividendYield.doubleValue();
+        this.C̟P̠ = optionType == OptionType.CALL ? 1d : -1d;
         this.C̠P̟ = this.C̟P̠ * -1d;
-    }
-
-    @Override
-    public final Contract contract() {
-        return this.contract;
     }
 
     @Override
@@ -127,12 +123,12 @@ public abstract class AbstractAnalyticOption implements AnalyticOption {
 
     protected final EquationInput[] baseCalculationInputs(LatexDelimeterType latexDelimeterType) {
         return new EquationInput[] {
-            this.baseCalculationInput(LATEX_S.trim(), this.contract.initialSpotPrice(), latexDelimeterType),
-            this.baseCalculationInput(LATEX_K.trim(), this.contract.strikePrice(), latexDelimeterType),
-            this.baseCalculationInput(LATEX_τ.trim(), this.contract.timeToMaturity(), latexDelimeterType),
-            this.baseCalculationInput(LATEX_σ.trim(), this.contract.volatility(), latexDelimeterType),
-            this.baseCalculationInput(LATEX_r.trim(), this.contract.riskFreeRate(), latexDelimeterType),
-            this.baseCalculationInput(LATEX_q.trim(), this.contract.dividendYield(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_S.trim(), this.initialSpotPrice(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_K.trim(), this.strikePrice(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_τ.trim(), this.timeToMaturity(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_σ.trim(), this.volatility(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_r.trim(), this.riskFreeRate(), latexDelimeterType),
+            this.baseCalculationInput(LATEX_q.trim(), this.dividendYield(), latexDelimeterType),
         };
     }
 

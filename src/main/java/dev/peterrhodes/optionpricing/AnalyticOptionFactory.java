@@ -1,6 +1,5 @@
 package dev.peterrhodes.optionpricing;
 
-import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.internal.analyticoptions.EuropeanOption;
 import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
@@ -78,11 +77,7 @@ public interface AnalyticOptionFactory {
         ValidationUtils.checkGreaterThanZero(timeToMaturity, "timeToMaturity");
         ValidationUtils.checkGreaterThanZero(volatility, "volatility");
 
-        ContractImpl contract = new ContractImpl(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
-        contract.setOptionStyle(OptionStyle.EUROPEAN);
-        contract.setOptionType(optionType);
-
-        return new EuropeanOption(contract);
+        return new EuropeanOption(optionType, initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     //----------------------------------------------------------------------

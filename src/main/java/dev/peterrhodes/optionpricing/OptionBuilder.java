@@ -2,6 +2,7 @@ package dev.peterrhodes.optionpricing;
 
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
+import dev.peterrhodes.optionpricing.internal.OptionImpl;
 import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 
 /**
@@ -9,7 +10,7 @@ import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
  */
 public final class OptionBuilder {
 
-    private ContractImpl contract;
+    private OptionImpl option;
 
     /**
      * Creates the base object for building a customizable {@link Option}.
@@ -57,7 +58,7 @@ public final class OptionBuilder {
         ValidationUtils.checkGreaterThanZero(timeToMaturity, "timeToMaturity");
         ValidationUtils.checkGreaterThanZero(volatility, "volatility");
 
-        this.contract = new ContractImpl(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
+        this.option = new OptionImpl(initialSpotPrice, strikePrice, timeToMaturity, volatility, riskFreeRate, dividendYield);
     }
 
     //region option style
@@ -67,7 +68,7 @@ public final class OptionBuilder {
      * Configures the option style as 'American', i.e.&nbsp;it can be exercised at any time up to and including the expiration date..
      */
     public OptionBuilder americanStyle() {
-        this.contract.setOptionStyle(OptionStyle.AMERICAN);
+        this.option.setOptionStyle(OptionStyle.AMERICAN);
         return this;
     }
 
@@ -75,7 +76,7 @@ public final class OptionBuilder {
      * Configures the option style as 'European', i.e.&nbsp;it can only be exercised at maturity (the option's expiration date).
      */
     public OptionBuilder europeanStyle() {
-        this.contract.setOptionStyle(OptionStyle.EUROPEAN);
+        this.option.setOptionStyle(OptionStyle.EUROPEAN);
         return this;
     }
 
@@ -89,7 +90,7 @@ public final class OptionBuilder {
      * Configures the option type as 'call', i.e.&nbsp;the holder has the right, but not the obligation, to buy an asset.
      */
     public OptionBuilder asCall() {
-        this.contract.setOptionType(OptionType.CALL);
+        this.option.setOptionType(OptionType.CALL);
         return this;
     }
 
@@ -97,7 +98,7 @@ public final class OptionBuilder {
      * Configures the option type as 'put', i.e.&nbsp;the holder has the right, but not the obligation, to sell an asset.
      */
     public OptionBuilder asPut() {
-        this.contract.setOptionType(OptionType.PUT);
+        this.option.setOptionType(OptionType.PUT);
         return this;
     }
 
@@ -111,12 +112,12 @@ public final class OptionBuilder {
      * @throws IllegalStateException if the type (call or put) and/or the style (European, American, ...) haven't been configured
      */
     public Option build() throws IllegalStateException {
-        if (this.contract.optionStyle() == null) {
+        if (this.option.optionStyle() == null) {
             throw new IllegalStateException("option style not configured");
         }
-        if (this.contract.optionType() == null) {
+        if (this.option.optionType() == null) {
             throw new IllegalStateException("option type not configured");
         }
-        return new OptionImpl(this.contract);
+        return this.option.clone();
     }
 }
