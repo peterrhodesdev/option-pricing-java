@@ -142,7 +142,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.N_at_d_calculationStep(1, this.isCall),
                 this.N_at_d_calculationStep(2, this.isCall),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] priceFormula() {
@@ -201,7 +201,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.dCalculationStep(1),
                 this.N_at_d_calculationStep(1, this.isCall),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] deltaFormula() {
@@ -253,7 +253,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.dCalculationStep(1),
                 this.N̕_at_d_calculationStep(1, true),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] gammaFormula() {
@@ -307,7 +307,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.dCalculationStep(1),
                 this.N̕_at_d_calculationStep(1, true),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] vegaFormula() {
@@ -368,7 +368,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.N_at_d_calculationStep(2, this.isCall),
                 this.N̕_at_d_calculationStep(1, true),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] thetaFormula() {
@@ -433,7 +433,7 @@ public final class EuropeanOption extends AbstractAnalyticOption {
                 this.dCalculationStep(2),
                 this.N_at_d_calculationStep(2, this.isCall),
                 finalStep
-            }, answer);
+            });
     }
 
     private String[] rhoFormula() {

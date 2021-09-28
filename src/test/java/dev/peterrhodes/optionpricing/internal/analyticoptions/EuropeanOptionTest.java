@@ -67,11 +67,14 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_call_with_no_dividend_HullSsm2014P1513() {
         // Arrange
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
-        call.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
+        option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        AnalyticCalculation result = call.priceCalculation();
+        double price = option.price();
+        assertThat(price).as("price").isEqualTo(5.06, withPrecision(0.01));
+
+        AnalyticCalculation result = option.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(d₁), N(d₂), price
@@ -84,8 +87,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { "0.5365", "0.3865", "0.7042", "0.6504", null }; // price not given to 4.d.p.
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 5.06, 0.01);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.price());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     /**
@@ -94,11 +96,14 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_put_with_no_dividend_Hull2014Ex156() {
         // Arrange
-        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
-        put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
+        option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        AnalyticCalculation result = put.priceCalculation();
+        double price = option.price();
+        assertThat(price).as("price").isEqualTo(0.81, withPrecision(0.01));
+
+        AnalyticCalculation result = option.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(-d₁), N(-d₂), price
@@ -111,8 +116,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { "0.7693", "0.6278", "0.2209", "0.2651", null }; // price not given to 4.d.p.
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 0.81, 0.01);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(put.price());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO put with dividend
@@ -129,11 +133,14 @@ public class EuropeanOptionTest {
     @Test
     public void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        AnalyticCalculation result = call.deltaCalculation();
+        double greek = option.delta();
+        assertThat(greek).as("greek").isEqualTo(0.522, withPrecision(0.001));
+
+        AnalyticCalculation result = option.deltaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N(d₁), Δ
@@ -144,8 +151,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { "0.0542", "0.522", "0.522" };
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 0.522, 0.001);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.delta());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO call dividend, put no dividend
@@ -156,11 +162,14 @@ public class EuropeanOptionTest {
     @Test
     public void Delta_for_put_with_dividend_Hull2014Ex199() {
         // Arrange
-        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
-        put.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
+        option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
-        AnalyticCalculation result = put.deltaCalculation();
+        double greek = option.delta();
+        assertThat(greek).as("greek").isEqualTo(-0.3215, withPrecision(0.0001));
+
+        AnalyticCalculation result = option.deltaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₁, N(-d₁), Δ
@@ -171,8 +180,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { "0.4499", null, "-0.3215" };
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, -0.3215, 0.0001);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(put.delta());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     //----------------------------------------------------------------------
@@ -194,6 +202,11 @@ public class EuropeanOptionTest {
         put.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
 
         // Act
+        double callGreek = call.gamma();
+        assertThat(callGreek).as("call greek").isEqualTo(0.066, withPrecision(0.001));
+        double putGreek = put.gamma();
+        assertThat(putGreek).as("put greek").isEqualTo(0.066, withPrecision(0.001));
+
         AnalyticCalculation callResult = call.gammaCalculation();
         AnalyticCalculation putResult = put.gammaCalculation();
 
@@ -206,9 +219,8 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { null, null, "0.066" };
 
-        this.assertCalculation(callResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 0.066, 0.001);
-        this.assertCalculation(putResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 0.066, 0.001);
-        assertThat(callResult.getAnswer()).as("model value same as double method").isEqualTo(call.gamma());
+        this.assertCalculation(callResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
+        this.assertCalculation(putResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO dividend
@@ -232,6 +244,11 @@ public class EuropeanOptionTest {
         put.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
+        double callGreek = call.vega();
+        assertThat(callGreek).as("call greek").isEqualTo(12.1, withPrecision(0.1));
+        double putGreek = put.vega();
+        assertThat(putGreek).as("put greek").isEqualTo(12.1, withPrecision(0.1));
+
         AnalyticCalculation callResult = call.vegaCalculation();
         AnalyticCalculation putResult = put.vegaCalculation();
 
@@ -244,9 +261,8 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { null, null, "12.1" };
 
-        this.assertCalculation(callResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 12.1, 0.1);
-        this.assertCalculation(putResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 12.1, 0.1);
-        assertThat(callResult.getAnswer()).as("model value same as double method").isEqualTo(call.vega());
+        this.assertCalculation(callResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
+        this.assertCalculation(putResult, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO dividend
@@ -263,11 +279,14 @@ public class EuropeanOptionTest {
     @Test
     public void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        AnalyticCalculation result = call.thetaCalculation();
+        double greek = option.theta();
+        assertThat(greek).as("greek").isEqualTo(-4.31, withPrecision(0.01));
+
+        AnalyticCalculation result = option.thetaCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 3, 5 }; // d₁, d₂, N(-d₁), N(-d₂), N̕(d₁), ϴ
@@ -281,8 +300,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { null, null, null, null, null, "-4.31" };
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, -4.31, 0.01);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.theta());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO call dividend, put no/with dividend
@@ -299,11 +317,14 @@ public class EuropeanOptionTest {
     @Test
     public void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
-        call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        AnalyticCalculation result = call.rhoCalculation();
+        double greek = option.rho();
+        assertThat(greek).as("greek").isEqualTo(8.91, withPrecision(0.01));
+
+        AnalyticCalculation result = option.rhoCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 3, 5 }; // d₂, N(d₂), vega
@@ -314,8 +335,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { null, null, "8.91" };
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 8.91, 0.01);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.rho());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     // TODO call dividend, put no/with dividend
@@ -333,11 +353,14 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
-        call.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);
+        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
+        option.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
-        AnalyticCalculation result = call.priceCalculation();
+        double price = option.price();
+        assertThat(price).as("price").isEqualTo(51.83, withPrecision(0.01));
+
+        AnalyticCalculation result = option.priceCalculation();
 
         // Assert
         int[] expectedStepLengths = { 4, 4, 3, 3, 4 }; // d₁, d₂, N(d₁), N(d₂), price
@@ -350,8 +373,7 @@ public class EuropeanOptionTest {
         };
         String[] expectedStepAnswers = { "0.5444", "0.4628", "0.7069", "0.6782", "51.83" };
 
-        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers, 51.83, 0.01);
-        assertThat(result.getAnswer()).as("model value same as double method").isEqualTo(call.price());
+        this.assertCalculation(result, expectedStepLengths, expectedStepSubstitutionContains, expectedStepAnswers);
     }
 
     //----------------------------------------------------------------------
@@ -360,7 +382,7 @@ public class EuropeanOptionTest {
     //region private methods
     //----------------------------------------------------------------------
 
-    private void assertCalculation(AnalyticCalculation result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers, double expectedAnswer, double answerPrecision) {
+    private void assertCalculation(AnalyticCalculation result, int[] expectedStepLengths, String[][] expectedStepSubstitutionContains, String[] expectedStepAnswers) {
         int expectedStepsLength = expectedStepLengths.length;
 
         String[][] steps = result.getSteps();
@@ -391,7 +413,5 @@ public class EuropeanOptionTest {
                     .isEqualTo(expectedStepAnswers[i]);
             }
         }
-
-        assertThat(result.getAnswer()).isEqualTo(expectedAnswer, withPrecision(answerPrecision));
     }
 }

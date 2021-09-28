@@ -7,6 +7,8 @@ import static org.assertj.core.api.Assertions.withPrecision;
 import dev.peterrhodes.optionpricing.AnalyticOptionFactory;
 import dev.peterrhodes.optionpricing.Option;
 import dev.peterrhodes.optionpricing.OptionBuilder;
+import dev.peterrhodes.optionpricing.PricingModel;
+import dev.peterrhodes.optionpricing.PricingModelSelector;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 import dev.peterrhodes.optionpricing.models.CoxRossRubinstein;
@@ -34,7 +36,7 @@ public class CoxRossRubinsteinPricingModelTest {
 
         // Act Assert
         assertThatThrownBy(() -> {
-            CoxRossRubinsteinPricingModel ex = new CoxRossRubinsteinPricingModel(timeSteps);
+            PricingModel ex = PricingModelSelector.coxRossRubinstein(timeSteps);
         }).isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("must be greater than zero");
     }
@@ -56,7 +58,7 @@ public class CoxRossRubinsteinPricingModelTest {
             .asCall()
             .build();
         int timeSteps = 3;
-        CoxRossRubinsteinPricingModel pricingModel = new CoxRossRubinsteinPricingModel(timeSteps);
+        PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
 
         // Act
         double price = pricingModel.price(option);
@@ -94,7 +96,7 @@ public class CoxRossRubinsteinPricingModelTest {
             .asPut()
             .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricingModel pricingModel = new CoxRossRubinsteinPricingModel(timeSteps);
+        PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
 
         // Act
         double price = pricingModel.price(option);
@@ -128,7 +130,7 @@ public class CoxRossRubinsteinPricingModelTest {
             .asCall()
             .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricingModel pricingModel = new CoxRossRubinsteinPricingModel(timeSteps);
+        PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
 
         // Act
         double price = pricingModel.price(option);
@@ -149,9 +151,9 @@ public class CoxRossRubinsteinPricingModelTest {
         CoxRossRubinstein expected = new CoxRossRubinstein(timeSteps, 0.25, 1.1052, 0.9048, 0.5126, expectedNodes);
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
-        /*assertThat(price)
+        assertThat(price)
             .as("same result for concrete implementation")
-            .isEqualTo(AnalyticOptionFactory.createEuropeanCall(810, 800, 0.5, 0.2, 0.05, 0.02).coxRossRubinsteinPrice(timeSteps));*/
+            .isEqualTo(pricingModel.price(AnalyticOptionFactory.createEuropeanCall(810, 800, 0.5, 0.2, 0.05, 0.02)));
     }
 
     /**
@@ -165,7 +167,7 @@ public class CoxRossRubinsteinPricingModelTest {
             .asPut()
             .build();
         int timeSteps = 2;
-        CoxRossRubinsteinPricingModel pricingModel = new CoxRossRubinsteinPricingModel(timeSteps);
+        PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
 
         // Act
         double price = pricingModel.price(option);
@@ -186,9 +188,9 @@ public class CoxRossRubinsteinPricingModelTest {
         CoxRossRubinstein expected = new CoxRossRubinstein(timeSteps, 0.25, 1.1331, 0.8825, 0.5089, expectedNodes);
 
         this.assertCalculation(result, expected, 0.0001, 0.01); // precision: parameters, outputs
-        /*assertThat(price)
+        assertThat(price)
             .as("same result for concrete implementation")
-            .isEqualTo(AnalyticOptionFactory.createEuropeanPut(140, 150, 0.5, 0.25, 0.04, 0).coxRossRubinsteinPrice(timeSteps));*/
+            .isEqualTo(pricingModel.price(AnalyticOptionFactory.createEuropeanPut(140, 150, 0.5, 0.25, 0.04, 0)));
     }
 
     //----------------------------------------------------------------------
