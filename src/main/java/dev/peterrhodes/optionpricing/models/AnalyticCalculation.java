@@ -5,7 +5,7 @@ import dev.peterrhodes.optionpricing.internal.utils.CopyUtils;
 /**
  * Model of an analytic option calculation.
  */
-public class AnalyticCalculation {
+public final class AnalyticCalculation {
 
     private String[][] steps;
     private double answer;

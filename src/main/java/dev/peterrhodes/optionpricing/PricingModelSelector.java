@@ -4,7 +4,7 @@ import dev.peterrhodes.optionpricing.internal.pricingmodels.CoxRossRubinsteinPri
 import dev.peterrhodes.optionpricing.models.CoxRossRubinstein;
 
 /**
- * TODO.
+ * Provides a selection of the available option pricing models.
  */
 public interface PricingModelSelector {
 

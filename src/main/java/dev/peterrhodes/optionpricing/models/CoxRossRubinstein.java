@@ -6,7 +6,7 @@ import dev.peterrhodes.optionpricing.internal.utils.CopyUtils;
 /**
  * Model for the details of an option price calculation performed with the <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a> model.
  */
-public class CoxRossRubinstein {
+public final class CoxRossRubinstein {
 
     private int timeSteps;
     private double deltat;

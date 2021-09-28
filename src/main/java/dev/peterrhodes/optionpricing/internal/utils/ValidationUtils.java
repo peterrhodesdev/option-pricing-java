@@ -21,7 +21,10 @@ public interface ValidationUtils {
     }
 
     /**
-     * TODO.
+     * Checks whether a map's (Object) values are null.
+     *
+     * @param map the map values to check (the keys are a description added to the exception message)
+     * @throws NullPointerException if any of the map values are null
      */
     static void checkNotNull(Map<String, Object> map) {
         for (Map.Entry<String, Object> entry : map.entrySet()) {

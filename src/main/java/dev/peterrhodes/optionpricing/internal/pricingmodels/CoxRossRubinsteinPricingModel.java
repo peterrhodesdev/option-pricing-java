@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 /**
  * Binomial options pricing model described by <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.379.7582">Cox, Ross, and Rubinstein (1979)</a>.
  */
-public class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubinstein> {
+public final class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubinstein> {
 
     private int timeSteps;
 
@@ -35,9 +35,10 @@ public class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubins
     }
 
     /**
-     * TODO.
+     * Calculates the price of the option using the Cox, Ross, and Rubinstein option pricing model.
      *
-     * @param option the option to perform the calculation on
+     * @param option the option to be priced
+     * @return option price
      * @throws NullPointerException if {@code option} is null
      */
     @Override
@@ -47,10 +48,11 @@ public class CoxRossRubinsteinPricingModel implements PricingModel<CoxRossRubins
     }
 
     /**
-     * Returns the details of the Cox, Ross, and Rubinstein calculation.
-     * TODO
+     * Returns a {@link CoxRossRubinstein} model with the details of the Cox, Ross, and Rubinstein option pricing model calculation.
      *
-     * @return calculation details
+     * @param option the option to perform the calculation on
+     * @return calculation details model
+     * @throws NullPointerException if {@code option} is null
      */
     @Override
     public CoxRossRubinstein calculation(Option option) throws NullPointerException {

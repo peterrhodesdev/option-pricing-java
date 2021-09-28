@@ -5,7 +5,7 @@ package dev.peterrhodes.optionpricing.internal.common;
  *
  * @see <a href="https://stackoverflow.com/a/50461711/4545255">stackoverflow answer</a>
  */
-public class NotYetImplementedException extends RuntimeException {
+public final class NotYetImplementedException extends RuntimeException {
 
     /**
      * Throw this for code that still needs to be implemented.

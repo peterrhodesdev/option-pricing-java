@@ -7,7 +7,7 @@ import dev.peterrhodes.optionpricing.internal.utils.ValidationUtils;
 /**
  * Holds the details of an input that is to be substituted into a LaTeX mathemtical expression.
  */
-public class EquationInput implements PublicCloneable<EquationInput> {
+public final class EquationInput implements PublicCloneable<EquationInput> {
 
     private final String key;
     private final Number numberValue;

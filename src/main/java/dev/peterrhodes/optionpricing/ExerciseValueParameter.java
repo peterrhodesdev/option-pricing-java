@@ -3,7 +3,7 @@ package dev.peterrhodes.optionpricing;
 /**
  * Parameters that are required to determine the exercise value of an option.
  */
-public class ExerciseValueParameter {
+public final class ExerciseValueParameter {
 
     private double time;
     private double spotPrice;
