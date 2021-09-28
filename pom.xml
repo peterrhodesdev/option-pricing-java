@@ -4,7 +4,35 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<modelVersion>4.0.0</modelVersion>
+
+  <name>Option Pricing</name>
+  <description>
+    Detailed analytic and numerical calculations of financial option values and their Greeks.
+  </description>
+  <url>https://github.com/peterrhodesdev/option-pricing-java</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Peter Rhodes</name>
+      <email>peter@peterrhodes.dev</email>
+      <organization>Peter Rhodes dev</organization>
+      <organizationUrl>https://peterrhodes.dev</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/peterrhodesdev/option-pricing-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com:peterrhodesdev/option-pricing-java.git</developerConnection>
+    <url>http://github.com/peterrhodesdev/option-pricing-java/tree/main</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +49,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>aggregator</module>
     <module>api</module>
     <module>internal</module>
   </modules>
@@ -58,7 +87,7 @@
           <target>${java.version}</target>
           <encoding>UTF-8</encoding>
           <compilerArgs>
-            <arg>-Xlint:unchecked</arg>
+            <!--<arg>-Xlint:unchecked</arg>-->
           </compilerArgs>
         </configuration>
       </plugin>

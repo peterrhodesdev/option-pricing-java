@@ -1,4 +1,4 @@
-package dev.peterrhodes.optionpricing.internal.common;
+package dev.peterrhodes.optionpricing.models;
 
 /**
  * Parameters that are required to determine the exercise value of an option.

@@ -1,4 +1,6 @@
-package dev.peterrhodes.optionpricing.internal.common;
+package dev.peterrhodes.optionpricing.models;
+
+import dev.peterrhodes.optionpricing.internal.common.PublicCloneable;
 
 /**
  * Represents an individual node of a pricing model lattice.

@@ -12,9 +12,7 @@
     <version>1.0</version>
   </parent>
 
-  <groupId>dev.peterrhodes.optionpricing</groupId>
   <artifactId>internal</artifactId>
-  <version>1.0</version>
   <packaging>jar</packaging>
   <name>internal</name>
 </project>

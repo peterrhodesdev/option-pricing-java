@@ -1,6 +1,5 @@
 package dev.peterrhodes.optionpricing.models;
 
-import dev.peterrhodes.optionpricing.internal.common.LatticeNode;
 import dev.peterrhodes.optionpricing.internal.utils.CopyUtils;
 import java.util.List;
 
