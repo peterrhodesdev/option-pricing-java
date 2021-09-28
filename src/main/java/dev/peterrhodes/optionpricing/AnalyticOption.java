@@ -1,7 +1,7 @@
 package dev.peterrhodes.optionpricing;
 
-import dev.peterrhodes.optionpricing.enums.PrecisionType;
-import dev.peterrhodes.optionpricing.models.AnalyticCalculationModel;
+import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
+import dev.peterrhodes.optionpricing.models.AnalyticCalculation;
 
 /**
  * Interface for an option that has an analytical solution, i.e.&nbsp;can analytically calculate the option's value and its greeks.&nbsp;If the specific option doesn't have an analytical solution then it will extend {@link Option}.
@@ -20,7 +20,7 @@ public interface AnalyticOption extends Option {
      *
      * @return price calculation details
      */
-    AnalyticCalculationModel priceCalculation();
+    AnalyticCalculation priceCalculation();
 
     /**
      * Calculates the value of delta (Δ) of the option (first derivative of the option value with respect to the underlying asset price).
@@ -34,7 +34,7 @@ public interface AnalyticOption extends Option {
      *
      * @return delta calculation details
      */
-    AnalyticCalculationModel deltaCalculation();
+    AnalyticCalculation deltaCalculation();
 
     /**
      * Calculates the value of gamma (Γ) of the option (second derivative of the option value with respect to the underlying asset price).
@@ -48,7 +48,7 @@ public interface AnalyticOption extends Option {
      *
      * @return gamma calculation details
      */
-    AnalyticCalculationModel gammaCalculation();
+    AnalyticCalculation gammaCalculation();
 
     /**
      * Calculates the value of vega of the option (first derivative of the option value with respect to the underlying asset volatility).
@@ -62,7 +62,7 @@ public interface AnalyticOption extends Option {
      *
      * @return vega calculation details
      */
-    AnalyticCalculationModel vegaCalculation();
+    AnalyticCalculation vegaCalculation();
 
     /**
      * Calculates the value of theta (Θ) of the option (negative first derivative of the option value with respect to the time to maturity).
@@ -76,7 +76,7 @@ public interface AnalyticOption extends Option {
      *
      * @return theta calculation details
      */
-    AnalyticCalculationModel thetaCalculation();
+    AnalyticCalculation thetaCalculation();
 
     /**
      * Calculates the value of rho (ρ) of the option (first derivative of the option value with respect to the risk free interest rate).
@@ -90,7 +90,7 @@ public interface AnalyticOption extends Option {
      *
      * @return rho calculation details
      */
-    AnalyticCalculationModel rhoCalculation();
+    AnalyticCalculation rhoCalculation();
 
     /**
      * Sets the precision of the calculated values (not option parameters) for display in the LaTeX mathematical expressions.

@@ -1,6 +1,5 @@
 package dev.peterrhodes.optionpricing;
 
-import dev.peterrhodes.optionpricing.common.ExerciseValueInput;
 import dev.peterrhodes.optionpricing.enums.OptionStyle;
 import dev.peterrhodes.optionpricing.enums.OptionType;
 
@@ -12,15 +11,15 @@ public interface Contract {
     /**
      * Calculates the value of exercising the option (assuming all preconditions are met).
      *
-     * @param exerciseValueInput inputs required to calculate the exercise value
+     * @param exerciseValueParameter inputs required to calculate the exercise value
      * @return exercise value
      */
-    default double exerciseValue(ExerciseValueInput exerciseValueInput) {
+    default double exerciseValue(ExerciseValueParameter exerciseValueParameter) {
         double τ = this.timeToMaturity().doubleValue();
         double C̟P̠ = this.optionType() == OptionType.CALL ? 1d : -1d;
 
-        double t = exerciseValueInput.getTime();
-        double S_t = exerciseValueInput.getSpotPrice();
+        double t = exerciseValueParameter.getTime();
+        double S_t = exerciseValueParameter.getSpotPrice();
         double K = this.strikePrice().doubleValue();
 
         switch (this.optionStyle()) {
