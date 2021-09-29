@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.withPrecision;
 
+import dev.peterrhodes.optionpricing.AnalyticOption;
 import dev.peterrhodes.optionpricing.AnalyticOptionFactory;
 import dev.peterrhodes.optionpricing.internal.enums.PrecisionType;
 import dev.peterrhodes.optionpricing.models.AnalyticCalculation;
@@ -30,28 +31,28 @@ public class EuropeanOptionTest {
 
         // Act Assert
         assertThatThrownBy(() -> {
-            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(0, K, τ, σ, r, q);
+            AnalyticOption ex = AnalyticOptionFactory.createEuropeanCall(0, K, τ, σ, r, q);
         })
             .as("zero spot price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, 0, τ, σ, r, q);
+            AnalyticOption ex = AnalyticOptionFactory.createEuropeanCall(S, 0, τ, σ, r, q);
         })
             .as("zero strike price")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, 0, σ, r, q);
+            AnalyticOption ex = AnalyticOptionFactory.createEuropeanCall(S, K, 0, σ, r, q);
         })
             .as("zero time to maturity")
             .isInstanceOf(exClass)
             .hasMessageContaining(greaterThanZeroMessage);
 
         assertThatThrownBy(() -> {
-            EuropeanOption ex = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, 0, r, q);
+            AnalyticOption ex = AnalyticOptionFactory.createEuropeanCall(S, K, τ, 0, r, q);
         })
             .as("zero volatiliy")
             .isInstanceOf(exClass)
@@ -67,7 +68,7 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_call_with_no_dividend_HullSsm2014P1513() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanCall(52, 50, 0.25, 0.3, 0.12, 0);
         option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
@@ -96,7 +97,7 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_put_with_no_dividend_Hull2014Ex156() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanPut(42, 40, 0.5, 0.2, 0.1, 0);
         option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
@@ -133,7 +134,7 @@ public class EuropeanOptionTest {
     @Test
     public void Delta_for_call_with_no_dividend_Hull2014Ex191() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
@@ -162,7 +163,7 @@ public class EuropeanOptionTest {
     @Test
     public void Delta_for_put_with_dividend_Hull2014Ex199() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanPut(90, 87, 0.5, 0.25, 0.09, 0.03);
         option.setCalculationStepPrecision(4, PrecisionType.DECIMAL_PLACES);
 
         // Act
@@ -196,9 +197,9 @@ public class EuropeanOptionTest {
     public void Gamma_for_option_with_no_dividend_Hull2014Ex194() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
+        AnalyticOption call = AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
         call.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
-        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
+        AnalyticOption put = AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
         put.setCalculationStepPrecision(3, PrecisionType.DECIMAL_PLACES);
 
         // Act
@@ -238,9 +239,9 @@ public class EuropeanOptionTest {
     public void Vega_for_option_with_no_dividend_Hull2014Ex196() {
         // Arrange
         Number S = 49, K = 50, τ = 0.3846, σ = 0.2, r = 0.05, q = 0;
-        EuropeanOption call = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
+        AnalyticOption call = AnalyticOptionFactory.createEuropeanCall(S, K, τ, σ, r, q);
         call.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
-        EuropeanOption put = (EuropeanOption) AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
+        AnalyticOption put = AnalyticOptionFactory.createEuropeanPut(S, K, τ, σ, r, q);
         put.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
@@ -279,7 +280,7 @@ public class EuropeanOptionTest {
     @Test
     public void Theta_for_call_with_no_dividend_Hull2014Ex192() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
@@ -317,7 +318,7 @@ public class EuropeanOptionTest {
     @Test
     public void Rho_for_call_with_no_dividend_Hull2014Ex197() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanCall(49, 50, 0.3846, 0.2, 0.05, 0);
         option.setCalculationStepPrecision(3, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
@@ -353,7 +354,7 @@ public class EuropeanOptionTest {
     @Test
     public void Price_for_call_with_dividend_Hull2014Ex171() {
         // Arrange
-        EuropeanOption option = (EuropeanOption) AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
+        AnalyticOption option = AnalyticOptionFactory.createEuropeanCall(930, 900, 2 / 12d, 0.2, 0.08, 0.03);
         option.setCalculationStepPrecision(4, PrecisionType.SIGNIFICANT_FIGURES);
 
         // Act
