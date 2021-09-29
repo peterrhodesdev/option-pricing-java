@@ -8,9 +8,9 @@ Analytically calculated option values/greeks:
 Option pricing models:
 - Cox, Ross, and Rubinstein (1979)
 
-[Examples](#examples)
-[Get the code](#get-the-code)
-[Run the tests](#run-the-tests)
+[Examples](#examples) \
+[Get the code](#get-the-code) \
+[Run the tests](#run-the-tests) \
 [Build the jar](#build-the-jar)
 
 ## Examples
@@ -45,7 +45,7 @@ latex += " \\end{align*}";
 
 Which will produce the following LaTeX expression:
 
-![equation](https://latex.codecogs.com/gif.download?%5Cbegin%7Balign*%7D%20%26%20d_1%20%3D%20%5Cfrac%7B%5Cln%7B%5Cleft%28%20%5Cfrac%7B%20S%20%7D%7B%20K%20%7D%20%5Cright%29%7D%5Cleft%28%20r%20-%20q%20+%20%5Cfrac%7B%20%5Csigma%20%5E%7B2%7D%7D%7B2%7D%20%5Cright%29%20%5Ctau%20%7D%7B%5Csigma%20%5Csqrt%7B%20%5Ctau%20%7D%7D%20%3D%20%5Cfrac%7B%5Cln%7B%5Cleft%28%20%5Cfrac%7B%2052%20%7D%7B%2050%20%7D%20%5Cright%29%7D%5Cleft%28%200.12%20-%200%20+%20%5Cfrac%7B%200.3%20%5E%7B2%7D%7D%7B2%7D%20%5Cright%29%200.25%20%7D%7B0.3%20%5Csqrt%7B%200.25%20%7D%7D%20%3D%200.5365%20%5C%5C%26%20d_2%20%3D%20%5Cfrac%7B%5Cln%7B%5Cleft%28%20%5Cfrac%7B%20S%20%7D%7B%20K%20%7D%20%5Cright%29%7D%5Cleft%28%20r%20-%20q%20-%20%5Cfrac%7B%20%5Csigma%20%5E%7B2%7D%7D%7B2%7D%20%5Cright%29%20%5Ctau%20%7D%7B%5Csigma%20%5Csqrt%7B%20%5Ctau%20%7D%7D%20%3D%20%5Cfrac%7B%5Cln%7B%5Cleft%28%20%5Cfrac%7B%2052%20%7D%7B%2050%20%7D%20%5Cright%29%7D%5Cleft%28%200.12%20-%200%20-%20%5Cfrac%7B%200.3%20%5E%7B2%7D%7D%7B2%7D%20%5Cright%29%200.25%20%7D%7B0.3%20%5Csqrt%7B%200.25%20%7D%7D%20%3D%200.3865%20%5C%5C%26%20%5Cmathrm%7BN%7D%20%28%20d_1%20%29%20%3D%20%5Cmathrm%7BN%7D%20%28%200.5365%20%29%20%3D%200.7042%20%5C%5C%26%20%5Cmathrm%7BN%7D%20%28%20d_2%20%29%20%3D%20%5Cmathrm%7BN%7D%20%28%200.3865%20%29%20%3D%200.6504%20%5C%5C%26%20C%20%3D%20S%20%5Cmathrm%7Be%7D%5E%7B-%20q%20%5Ctau%20%7D%20%5Cmathrm%7BN%7D%20%28%20d_1%20%29%20-%20%5Cmathrm%7Be%7D%5E%7B-%20r%20%5Ctau%20%7D%20K%20%5Cmathrm%7BN%7D%20%28%20d_2%20%29%20%3D%20%5Cleft%28%2052%20%5Cright%29%20%5Cmathrm%7Be%7D%5E%7B-%20%5Cleft%28%200%20%5Cright%29%20%5Cleft%28%200.25%20%5Cright%29%20%7D%20%5Cmathrm%7BN%7D%20%28%200.5365%20%29%20-%20%5Cmathrm%7Be%7D%5E%7B-%20%5Cleft%28%200.12%20%5Cright%29%20%5Cleft%28%200.25%20%5Cright%29%20%7D%20%5Cleft%28%2050%20%5Cright%29%20%5Cmathrm%7BN%7D%20%28%200.3865%20%29%20%3D%205.0574%20%5C%5C%20%5Cend%7Balign*%7D)
+![EuropeanLatex](https://user-images.githubusercontent.com/40833704/135256871-ffa6737c-ca7e-4518-ae48-0c0f8cf76172.gif)
 
 Similar functionality is provided for the following Greeks: delta, gamma, vega, theta, rho.
 
