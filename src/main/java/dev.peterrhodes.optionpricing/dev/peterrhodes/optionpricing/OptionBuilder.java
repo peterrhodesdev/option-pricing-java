@@ -17,14 +17,14 @@ public final class OptionBuilder {
      * <ul>The minimum required configuration is:
      *   <li>Select the style of the option:
      *     <ul>
-     *       <li>{@link americanStyle}</li>
-     *       <li>{@link europeanStyle}</li>
+     *       <li>{@link styleAmerican}</li>
+     *       <li>{@link styleEuropean}</li>
      *     </ul>
      *   </li>
      *   <li>Select the type of the option:
      *     <ul>
-     *       <li>{@link asCall}</li>
-     *       <li>{@link asPut}</li>
+     *       <li>{@link typeCall}</li>
+     *       <li>{@link typePut}</li>
      *     </ul>
      *   </li>
      * </ul>
@@ -67,7 +67,7 @@ public final class OptionBuilder {
     /**
      * Configures the option style as 'American', i.e.&nbsp;it can be exercised at any time up to and including the expiration date..
      */
-    public OptionBuilder americanStyle() {
+    public OptionBuilder styleAmerican() {
         this.option.setOptionStyle(OptionStyle.AMERICAN);
         return this;
     }
@@ -75,7 +75,7 @@ public final class OptionBuilder {
     /**
      * Configures the option style as 'European', i.e.&nbsp;it can only be exercised at maturity (the option's expiration date).
      */
-    public OptionBuilder europeanStyle() {
+    public OptionBuilder styleEuropean() {
         this.option.setOptionStyle(OptionStyle.EUROPEAN);
         return this;
     }
@@ -89,7 +89,7 @@ public final class OptionBuilder {
     /**
      * Configures the option type as 'call', i.e.&nbsp;the holder has the right, but not the obligation, to buy an asset.
      */
-    public OptionBuilder asCall() {
+    public OptionBuilder typeCall() {
         this.option.setOptionType(OptionType.CALL);
         return this;
     }
@@ -97,7 +97,7 @@ public final class OptionBuilder {
     /**
      * Configures the option type as 'put', i.e.&nbsp;the holder has the right, but not the obligation, to sell an asset.
      */
-    public OptionBuilder asPut() {
+    public OptionBuilder typePut() {
         this.option.setOptionType(OptionType.PUT);
         return this;
     }

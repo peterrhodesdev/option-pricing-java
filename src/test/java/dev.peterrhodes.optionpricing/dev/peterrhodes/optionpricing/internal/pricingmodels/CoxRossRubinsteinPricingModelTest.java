@@ -54,8 +54,8 @@ public class CoxRossRubinsteinPricingModelTest {
     public void American_call_Hull2014Fig1312() {
         // Arrange
         Option option = new OptionBuilder(0.6100, 0.6000, 0.25, 0.12, 0.05, 0.07)
-            .americanStyle()
-            .asCall()
+            .styleAmerican()
+            .typeCall()
             .build();
         int timeSteps = 3;
         PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
@@ -89,11 +89,11 @@ public class CoxRossRubinsteinPricingModelTest {
      * Hull SSM (2014): page 142, Problem 13.17.
      */
     @Test
-    public void American_put_calculation_HullSsm2014P1317() {
+    public void American_put_HullSsm2014P1317() {
         // Arrange
         Option option = new OptionBuilder(1500, 1480, 1, 0.18, 0.04, 0.025)
-            .americanStyle()
-            .asPut()
+            .styleAmerican()
+            .typePut()
             .build();
         int timeSteps = 2;
         PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
@@ -123,11 +123,11 @@ public class CoxRossRubinsteinPricingModelTest {
      * Hull (2014): page 313, section 13.11, Figure 13.11.
      */
     @Test
-    public void European_call_calculation_Hull2014Fig1311() {
+    public void European_call_Hull2014Fig1311() {
         // Arrange
         Option option = new OptionBuilder(810, 800, 0.5, 0.2, 0.05, 0.02)
-            .europeanStyle()
-            .asCall()
+            .styleEuropean()
+            .typeCall()
             .build();
         int timeSteps = 2;
         PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);
@@ -160,11 +160,11 @@ public class CoxRossRubinsteinPricingModelTest {
      * Hull SSM (2014): page 144, Problem 13.19.
      */
     @Test
-    public void European_put_calculation_HullSsm2014P1319() {
+    public void European_put_HullSsm2014P1319() {
         // Arrange
         Option option = new OptionBuilder(140, 150, 0.5, 0.25, 0.04, 0)
-            .europeanStyle()
-            .asPut()
+            .styleEuropean()
+            .typePut()
             .build();
         int timeSteps = 2;
         PricingModel<CoxRossRubinstein> pricingModel = PricingModelSelector.coxRossRubinstein(timeSteps);

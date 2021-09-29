@@ -14,7 +14,7 @@
   <!-- https://central.sonatype.org/publish/requirements/#project-name-description-and-url -->
   <name>Option Pricing</name>
   <description>
-    Financial option price calculator that also provides details on the analytical or numerical pricing method used.
+    Detailed analytic and numerical calculations of financial option values and their Greeks.
   </description>
   <url>https://github.com/peterrhodesdev/option-pricing-java</url>
 
